@@ -6,7 +6,7 @@ import sys.FileSystem;
 #else
 import openfl.utils.Assets;
 #end
-import haxe.Json;
+import tjson.TJSON;
 import haxe.format.JsonParser;
 import Song;
 
@@ -88,6 +88,6 @@ class StageData {
 		{
 			return null;
 		}
-		return cast Json.parse(rawJson);
+		return cast TJSON.parse(rawJson);
 	}
 }

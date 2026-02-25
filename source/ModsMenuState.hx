@@ -17,17 +17,13 @@ import lime.utils.Assets;
 import openfl.utils.Assets as OpenFlAssets;
 import sys.io.File;
 import sys.FileSystem;
-import haxe.Json;
+import tjson.TJSON;
 import haxe.format.JsonParser;
 import openfl.display.BitmapData;
 import openfl.geom.Rectangle;
 import flixel.ui.FlxButton;
 import flixel.FlxBasic;
 import sys.io.File;
-/*import haxe.zip.Reader;
-import haxe.zip.Entry;
-import haxe.zip.Uncompress;
-import haxe.zip.Writer;*/
 
 using StringTools;
 
@@ -729,7 +725,7 @@ class ModMetadata
 		if(FileSystem.exists(path)) {
 			var rawJson:String = File.getContent(path);
 			if(rawJson != null && rawJson.length > 0) {
-				var stuff:Dynamic = Json.parse(rawJson);
+				var stuff:Dynamic = TJSON.parse(rawJson);
 					//using reflects cuz for some odd reason my haxe hates the stuff.var shit
 					var colors:Array<Int> = Reflect.getProperty(stuff, "color");
 					var description:String = Reflect.getProperty(stuff, "description");
