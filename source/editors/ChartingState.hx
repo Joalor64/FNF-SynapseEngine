@@ -54,7 +54,6 @@ import sys.FileSystem;
 import sys.io.File;
 #end
 
-
 @:access(flixel.system.FlxSound._sound)
 @:access(openfl.media.Sound.__buffer)
 
@@ -288,7 +287,7 @@ class ChartingState extends MusicBeatState
 		currentSongName = Paths.formatToSongPath(_song.song);
 		loadSong();
 		reloadGridLayer();
-		Conductor.changeBPM(_song.bpm);
+		Conductor.bpm = _song.bpm;
 		Conductor.mapBPMChanges(_song);
 
 		bpmTxt = new FlxText(1000, 50, 0, "", 16);
@@ -1442,7 +1441,7 @@ class ChartingState extends MusicBeatState
 			{
 				tempBpm = nums.value;
 				Conductor.mapBPMChanges(_song);
-				Conductor.changeBPM(nums.value);
+				Conductor.bpm = nums.value;
 			}
 			else if (wname == 'note_susLength')
 			{
@@ -2191,6 +2190,7 @@ class ChartingState extends MusicBeatState
 
 		if (FlxG.save.data.chart_waveformInst) {
 			var sound:FlxSound = FlxG.sound.music;
+			@:privateAccess
 			if (sound._sound != null && sound._sound.__buffer != null) {
 				var bytes:Bytes = sound._sound.__buffer.data.toBytes();
 
@@ -2208,6 +2208,7 @@ class ChartingState extends MusicBeatState
 
 		if (FlxG.save.data.chart_waveformVoices) {
 			var sound:FlxSound = vocals;
+			@:privateAccess
 			if (sound._sound != null && sound._sound.__buffer != null) {
 				var bytes:Bytes = sound._sound.__buffer.data.toBytes();
 
@@ -2569,7 +2570,7 @@ class ChartingState extends MusicBeatState
 
 		if (_song.notes[curSec].changeBPM && _song.notes[curSec].bpm > 0)
 		{
-			Conductor.changeBPM(_song.notes[curSec].bpm);
+			Conductor.bpm = _song.notes[curSec].bpm;
 			//trace('BPM of this section:');
 		}
 		else
@@ -2579,7 +2580,7 @@ class ChartingState extends MusicBeatState
 			for (i in 0...curSec)
 				if (_song.notes[i].changeBPM)
 					daBPM = _song.notes[i].bpm;
-			Conductor.changeBPM(daBPM);
+			Conductor.bpm = daBPM;
 		}
 
 		// CURRENT SECTION

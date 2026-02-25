@@ -42,6 +42,23 @@ class Main extends Sprite
 		Lib.current.addChild(new Main());
 	}
 
+	#if desktop
+	static function __init__():Void {
+		var origin:String = #if hl Sys.getCwd() #else Sys.programPath() #end;
+
+		var configPath:String = Path.directory(Path.withoutExtension(origin));
+		#if windows
+		configPath += "/alsoft.ini";
+		#elseif mac
+		configPath = Path.directory(configPath) + "/Resources/alsoft.conf";
+		#else
+		configPath += "/alsoft.conf";
+		#end
+
+		Sys.putEnv("ALSOFT_CONF", configPath);
+	}
+	#end
+
 	public function new()
 	{
 		super();
@@ -57,9 +74,12 @@ class Main extends Sprite
 			fpsVar.visible = ClientPrefs.showFPS;
 		}
 
+		#if (linux || mac)
+		Lib.current.stage.window.setIcon(lime.graphics.Image.fromFile("icon.png"));
+		#end
+
 		#if html5
-		FlxG.autoPause = false;
-		FlxG.mouse.visible = false;
+		FlxG.autoPause = FlxG.mouse.visible = false;
 		#end
 		
 		#if CRASH_HANDLER

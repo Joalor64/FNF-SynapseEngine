@@ -44,8 +44,6 @@ typedef PointerGraphic = flixel.system.debug.interaction.tools.Pointer.GraphicCu
 class PointerGraphic extends openfl.display.BitmapData {}
 #end
 
-using StringTools;
-
 /**
 	*DEBUG MODE
  */
