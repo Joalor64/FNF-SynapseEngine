@@ -246,7 +246,8 @@ class DialogueBoxPsych extends FlxSpriteGroup
 			if(dialogueList.dialogue[i] != null) {
 				var charToAdd:String = dialogueList.dialogue[i].portrait;
 				if(!charsMap.exists(charToAdd) || !charsMap.get(charToAdd)) {
-					charsMap.set(charToAdd, true);
+					if (charToAdd != "none")
+						charsMap.set(charToAdd, true);
 				}
 			}
 		}
@@ -298,6 +299,13 @@ class DialogueBoxPsych extends FlxSpriteGroup
 			super.update(elapsed);
 			return;
 		}
+
+		if (FlxG.keys.justPressed.X)
+			{
+				dialogueEnded = true;
+				finishThing();
+				kill();
+			}
 
 		if(!dialogueEnded) {
 			bgFade.alpha += 0.5 * elapsed;
@@ -508,6 +516,11 @@ class DialogueBoxPsych extends FlxSpriteGroup
 			}
 		}
 		currentText++;
+
+		if (curDialogue.portrait == "none")
+		{
+			char.visible = false;
+		}
 
 		if(nextDialogueThing != null) {
 			nextDialogueThing();

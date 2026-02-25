@@ -27,7 +27,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
-import flixel.system.FlxSound;
+import flixel.sound.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -72,7 +72,7 @@ import sys.io.File;
 #end
 
 #if VIDEOS_ALLOWED
-import vlc.MP4Handler;
+import hxvlc.flixel.FlxVideoSprite;
 #end
 
 using StringTools;
@@ -1600,30 +1600,52 @@ class PlayState extends MusicBeatState
 		char.y += char.positionArray[1];
 	}
 
-	public function startVideo(name:String)
+	public var video:FlxVideoSprite = null;
+
+	private var videoCallback:Void->Void = null;
+	private var continueAfterVid:Bool = true;
+
+	public function startVideo(name:String, ?customCallback:Void->Void = null, ?cont:Bool = true)
 	{
 		#if VIDEOS_ALLOWED
 		inCutscene = true;
 
+		videoCallback = customCallback;
+		continueAfterVid = cont;
+
 		var filepath:String = Paths.video(name);
 		#if sys
-		if(!FileSystem.exists(filepath))
+		if (!FileSystem.exists(filepath))
 		#else
-		if(!OpenFlAssets.exists(filepath))
+		if (!Assets.exists(filepath))
 		#end
 		{
 			FlxG.log.warn('Couldnt find video file: ' + name);
 			startAndEnd();
 			return;
 		}
-
-		var video:MP4Handler = new MP4Handler();
-		video.playVideo(filepath);
-		video.finishCallback = function()
+		video = new FlxVideoSprite();
+		video.scrollFactor.set();
+		video.antialiasing = ClientPrefs.globalAntialiasing;
+		video.bitmap.onFormatSetup.add(function()
 		{
-			startAndEnd();
-			return;
-		}
+			if (video.bitmap != null && video.bitmap.bitmapData != null)
+			{
+				video.setGraphicSize(FlxG.width, FlxG.height);
+				video.updateHitbox();
+				video.screenCenter();
+			}
+		});
+		video.cameras = [camOther];
+		add(video);
+		video.load(filepath);
+		video.play();
+		video.bitmap.onEndReached.add(() ->
+		{
+			onVideoFinish(continueAfterVid);
+			if (videoCallback != null)
+				videoCallback();
+		});
 		#else
 		FlxG.log.warn('Platform not supported!');
 		startAndEnd();
@@ -1631,9 +1653,18 @@ class PlayState extends MusicBeatState
 		#end
 	}
 
-	function startAndEnd()
+	public function onVideoFinish(cont:Bool = true)
 	{
-		if(endingSong)
+		video.stop();
+		video.destroy();
+		video.visible = false;
+		if (cont)
+			startAndEnd();
+	}
+
+	inline function startAndEnd()
+	{
+		if (endingSong)
 			endSong();
 		else
 			startCountdown();
@@ -2873,10 +2904,6 @@ class PlayState extends MusicBeatState
 
 	override public function update(elapsed:Float)
 	{
-		/*if (FlxG.keys.justPressed.NINE)
-		{
-			iconP1.swapOldIcon();
-		}*/
 		callOnLuas('onUpdate', [elapsed]);
 
 		switch (curStage)
@@ -3007,6 +3034,16 @@ class PlayState extends MusicBeatState
 						heyTimer = 0;
 					}
 				}
+		}
+
+		if (FlxG.keys.justPressed.Z && inCutscene)
+		{
+			onVideoFinish(continueAfterVid);
+			if (videoCallback != null)
+			{
+				videoCallback();
+				videoCallback = null;
+			}
 		}
 
 		if(!inCutscene) {
