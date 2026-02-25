@@ -32,16 +32,10 @@ import haxe.Json;
 import Character;
 import lime.system.Clipboard;
 import flixel.animation.FlxAnimation;
+import flixel.system.debug.interaction.tools.Pointer.GraphicCursorCross;
 
 #if MODS_ALLOWED
 import sys.FileSystem;
-#end
-
-#if (FLX_DEBUG || flixel < version("5.7.0"))
-typedef PointerGraphic = flixel.system.debug.interaction.tools.Pointer.GraphicCursorCross;
-#else
-@:bitmap("assets/images/debugger/cursorCross.png")
-class PointerGraphic extends openfl.display.BitmapData {}
 #end
 
 /**
@@ -102,7 +96,7 @@ class CharacterEditorState extends MusicBeatState
 		charLayer = new FlxTypedGroup<Character>();
 		add(charLayer);
 
-		var pointer:FlxGraphic = FlxGraphic.fromClass(PointerGraphic);
+		var pointer:FlxGraphic = FlxGraphic.fromClass(GraphicCursorCross);
 		cameraFollowPointer = new FlxSprite().loadGraphic(pointer);
 		cameraFollowPointer.setGraphicSize(40, 40);
 		cameraFollowPointer.updateHitbox();
