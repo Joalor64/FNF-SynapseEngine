@@ -49,7 +49,13 @@ class ClientPrefs {
 		'instakill' => false,
 		'practice' => false,
 		'botplay' => false,
-		'opponentplay' => false
+		'opponentplay' => false,
+		'randommode' => false,
+		'flip' => false,
+		'stairmode' => false,
+		'wavemode' => false,
+		'onekey' => false,
+		'randomspeed' => false
 	];
 
 	public static var comboOffset:Array<Int> = [0, 0, 0, 0];

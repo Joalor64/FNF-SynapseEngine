@@ -3,7 +3,7 @@ package editors;
 #if desktop
 import Discord.DiscordClient;
 #end
-import flash.geom.Rectangle;
+import openfl.geom.Rectangle;
 import haxe.Json;
 import haxe.format.JsonParser;
 import haxe.io.Bytes;
@@ -143,8 +143,7 @@ class ChartingState extends MusicBeatState
 	**/
 	var curSelectedNote:Array<Dynamic> = null;
 
-	var tempBpm:Float = 0;
-	var playbackSpeed:Float = 1;
+	var playbackSpeed(default, set):Float = 1;
 
 	var vocals:FlxSound = null;
 
@@ -221,8 +220,7 @@ class ChartingState extends MusicBeatState
 				player2: 'dad',
 				gfVersion: 'gf',
 				speed: 1,
-				stage: 'stage',
-				validScore: false
+				stage: 'stage'
 			};
 			addSection();
 			PlayState.SONG = _song;
@@ -277,8 +275,6 @@ class ChartingState extends MusicBeatState
 
 		FlxG.mouse.visible = true;
 		//FlxG.save.bind('funkin', 'ninjamuffin99');
-
-		tempBpm = _song.bpm;
 
 		addSection();
 
@@ -341,14 +337,15 @@ class ChartingState extends MusicBeatState
 		"W/S or Mouse Wheel - Change Conductor's strum time
 		\nA/D - Go to the previous/next section
 		\nLeft/Right - Change Snap
-		\nUp/Down - Change Conductor's Strum Time with Snapping
-		\nLeft Bracket / Right Bracket - Change Song Playback Rate (SHIFT to go Faster)
-		\nALT + Left Bracket / Right Bracket - Reset Song Playback Rate
-		\nHold Shift to move 4x faster
+		\nUp/Down - Change Conductor's Strum Time with Snapping" + 
+		#if FLX_PITCH
+		"\nLeft Bracket / Right Bracket - Change Song Playback Rate (SHIFT to go Faster)
+		\nALT + Left Bracket / Right Bracket - Reset Song Playback Rate" +
+		#end
+		"\nHold Shift to move 4x faster
 		\nHold Control and click on an arrow to select it
 		\nZ/X - Zoom in/out
 		\n
-		\nEsc - Test your chart inside Chart Editor
 		\nEnter - Play your chart
 		\nQ/E - Decrease/Increase Note Sustain Length
 		\nSpace - Stop/Resume song";
@@ -401,7 +398,9 @@ class ChartingState extends MusicBeatState
 	var noteSkinInputText:FlxUIInputText;
 	var noteSplashesInputText:FlxUIInputText;
 	var stageDropDown:FlxUIDropDownMenuCustom;
+	#if FLX_PITCH
 	var sliderRate:FlxUISlider;
+	#end
 	function addSongUI():Void
 	{
 		UI_songTitle = new FlxUIInputText(10, 10, 70, _song.song, 8);
@@ -481,7 +480,7 @@ class ChartingState extends MusicBeatState
 		clear_notes.color = FlxColor.RED;
 		clear_notes.label.color = FlxColor.WHITE;
 
-		var stepperBPM:FlxUINumericStepper = new FlxUINumericStepper(10, 70, 1, 1, 1, 400, 3);
+		var stepperBPM:FlxUINumericStepper = new FlxUINumericStepper(10, 70, 1, 1, 1, 999, 3);
 		stepperBPM.value = Conductor.bpm;
 		stepperBPM.name = 'song_bpm';
 		blockPressWhileTypingOnStepper.push(stepperBPM);
@@ -678,7 +677,7 @@ class ChartingState extends MusicBeatState
 		check_changeBPM.checked = _song.notes[curSec].changeBPM;
 		check_changeBPM.name = 'check_changeBPM';
 
-		stepperSectionBPM = new FlxUINumericStepper(10, check_changeBPM.y + 20, 1, Conductor.bpm, 0, 999, 1);
+		stepperSectionBPM = new FlxUINumericStepper(10, check_changeBPM.y + 20, 1, Conductor.bpm, 0, 9999, 1);
 		if(check_changeBPM.checked) {
 			stepperSectionBPM.value = _song.notes[curSec].bpm;
 		} else {
@@ -1313,7 +1312,7 @@ class ChartingState extends MusicBeatState
 		voicesVolume.name = 'voices_volume';
 		blockPressWhileTypingOnStepper.push(voicesVolume);
 		
-		#if !html5
+		#if FLX_PITCH
 		sliderRate = new FlxUISlider(this, 'playbackSpeed', 120, 120, 0.5, 3, 150, null, 5, FlxColor.WHITE, FlxColor.BLACK);
 		sliderRate.nameLabel.text = 'Playback Rate';
 		tab_group_chart.add(sliderRate);
@@ -1351,12 +1350,14 @@ class ChartingState extends MusicBeatState
 			// vocals.stop();
 		}
 
-		var file:Dynamic = Paths.voices(currentSongName);
-		vocals = new FlxSound();
-		if (Std.isOfType(file, Sound) || OpenFlAssets.exists(file)) {
-			vocals.loadEmbedded(file);
-			FlxG.sound.list.add(vocals);
+		if (_song.needsVoices){
+			var file:Dynamic = Paths.voices(currentSongName);
+			vocals = new FlxSound();
+			if (Std.isOfType(file, Sound) || OpenFlAssets.exists(file)) {
+				vocals.loadEmbedded(file);
+			}
 		}
+		FlxG.sound.list.add(vocals);
 		generateSong();
 		FlxG.sound.music.pause();
 		Conductor.songPosition = sectionStartTime();
@@ -1439,7 +1440,7 @@ class ChartingState extends MusicBeatState
 			}
 			else if (wname == 'song_bpm')
 			{
-				tempBpm = nums.value;
+				_song.bpm = nums.value;
 				Conductor.mapBPMChanges(_song);
 				Conductor.bpm = nums.value;
 			}
@@ -1497,7 +1498,7 @@ class ChartingState extends MusicBeatState
 			switch (sender)
 			{
 				case 'playbackSpeed':
-					playbackSpeed = Std.int(sliderRate.value);
+					playbackSpeed = #if FLX_PITCH Std.int(sliderRate.value) #else 1.0 #end;
 			}
 		}
 
@@ -1663,11 +1664,6 @@ class ChartingState extends MusicBeatState
 
 		if (!blockInput)
 		{
-			if (FlxG.keys.justPressed.ESCAPE)
-			{
-				autosaveSong();
-				LoadingState.loadAndSwitchState(new editors.EditorPlayState(sectionStartTime()));
-			}
 			if (FlxG.keys.justPressed.ENTER)
 			{
 				autosaveSong();
@@ -1949,8 +1945,6 @@ class ChartingState extends MusicBeatState
 			}
 		}
 
-		_song.bpm = tempBpm;
-
 		strumLineNotes.visible = quant.visible = vortex;
 
 		if(FlxG.sound.music.time < 0) {
@@ -1970,6 +1964,7 @@ class ChartingState extends MusicBeatState
 			strumLineNotes.members[i].alpha = FlxG.sound.music.playing ? 1 : 0.35;
 		}
 
+		#if FLX_PITCH
 		// PLAYBACK SPEED CONTROLS //
 		var holdingShift = FlxG.keys.pressed.SHIFT;
 		var holdingLB = FlxG.keys.pressed.LBRACKET;
@@ -1978,20 +1973,12 @@ class ChartingState extends MusicBeatState
 		var pressedRB = FlxG.keys.justPressed.RBRACKET;
 
 		if (!holdingShift && pressedLB || holdingShift && holdingLB)
-			playbackSpeed -= 0.01;
+			set_playbackSpeed(playbackSpeed -= 0.01);
 		if (!holdingShift && pressedRB || holdingShift && holdingRB)
-			playbackSpeed += 0.01;
+			set_playbackSpeed(playbackSpeed += 0.01);
 		if (FlxG.keys.pressed.ALT && (pressedLB || pressedRB || holdingLB || holdingRB))
-			playbackSpeed = 1;
-		//
-
-		if (playbackSpeed <= 0.5)
-			playbackSpeed = 0.5;
-		if (playbackSpeed >= 3)
-			playbackSpeed = 3;
-
-		FlxG.sound.music.pitch = playbackSpeed;
-		vocals.pitch = playbackSpeed;
+			set_playbackSpeed(1);
+		#end
 
 		bpmTxt.text =
 		Std.string(FlxMath.roundDecimal(Conductor.songPosition / 1000, 2)) + " / " + Std.string(FlxMath.roundDecimal(FlxG.sound.music.length / 1000, 2)) +
@@ -2055,6 +2042,21 @@ class ChartingState extends MusicBeatState
 		}
 		lastConductorPos = Conductor.songPosition;
 		super.update(elapsed);
+	}
+
+	inline function set_playbackSpeed(rate:Float){
+		playbackSpeed = rate;
+
+		if (playbackSpeed <= 0.5)
+			playbackSpeed = 0.5;
+		if (playbackSpeed >= 3)
+			playbackSpeed = 3;
+
+		FlxG.sound.music.pitch = playbackSpeed;
+		if (vocals != null)
+			vocals.pitch = playbackSpeed;
+
+		return playbackSpeed;
 	}
 
 	function updateZoom() {
@@ -2736,10 +2738,11 @@ class ChartingState extends MusicBeatState
 		return spr;
 	}
 
-	private function addSection(sectionBeats:Float = 4):Void
+	private function addSection(sectionBeats:Float = 4, lengthInSteps:Int = 16):Void
 	{
 		var sec:SwagSection = {
 			sectionBeats: sectionBeats,
+			lengthInSteps: lengthInSteps,
 			bpm: _song.bpm,
 			changeBPM: false,
 			mustHitSection: true,
@@ -2897,36 +2900,26 @@ class ChartingState extends MusicBeatState
 		updateNoteUI();
 	}
 
-	// will figure this out l8r
-	function redo()
+	inline function undo()
 	{
-		//_song = redos[curRedoIndex];
-	}
-
-	function undo()
-	{
-		//redos.push(_song);
 		undos.pop();
-		//_song.notes = undos[undos.length - 1];
-		///trace(_song.notes);
-		//updateGrid();
 	}
 
-	function getStrumTime(yPos:Float, doZoomCalc:Bool = true):Float
+	inline function getStrumTime(yPos:Float, doZoomCalc:Bool = true):Float
 	{
 		var leZoom:Float = zoomList[curZoom];
 		if(!doZoomCalc) leZoom = 1;
 		return FlxMath.remapToRange(yPos, gridBG.y, gridBG.y + gridBG.height * leZoom, 0, 16 * Conductor.stepCrochet);
 	}
 
-	function getYfromStrum(strumTime:Float, doZoomCalc:Bool = true):Float
+	inline function getYfromStrum(strumTime:Float, doZoomCalc:Bool = true):Float
 	{
 		var leZoom:Float = zoomList[curZoom];
 		if(!doZoomCalc) leZoom = 1;
 		return FlxMath.remapToRange(strumTime, 0, 16 * Conductor.stepCrochet, gridBG.y, gridBG.y + gridBG.height * leZoom);
 	}
 	
-	function getYfromStrumNotes(strumTime:Float, beats:Float):Float
+	inline function getYfromStrumNotes(strumTime:Float, beats:Float):Float
 	{
 		var value:Float = strumTime / (beats * 4 * Conductor.stepCrochet);
 		return GRID_SIZE * beats * 4 * zoomList[curZoom] * value + gridBG.y;
@@ -2992,7 +2985,7 @@ class ChartingState extends MusicBeatState
 		}
 	}
 
-	function sortByTime(Obj1:Array<Dynamic>, Obj2:Array<Dynamic>):Int
+	inline function sortByTime(Obj1:Array<Dynamic>, Obj2:Array<Dynamic>):Int
 	{
 		return FlxSort.byValues(FlxSort.ASCENDING, Obj1[0], Obj2[0]);
 	}
