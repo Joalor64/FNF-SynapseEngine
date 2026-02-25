@@ -1,5 +1,7 @@
 package;
 
+import flixel.FlxG;
+
 class PlayerSettings
 {
 	static public var player1(default, null):PlayerSettings;
