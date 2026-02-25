@@ -80,6 +80,18 @@ class AttachedAchievement extends FlxSprite {
 		reloadAchievementImage();
 	}
 
+	public function forget()
+	{
+		if (Achievements.isAchievementUnlocked(tag) && FlxG.save.data.achievementsMap)
+		{
+			var savedStuff:Map<String, String> = FlxG.save.data.achievementsMap;
+			if (savedStuff.exists(tag))
+				savedStuff.remove(tag);
+			FlxG.save.data.achievementsMap = savedStuff;
+			loadGraphic(Paths.image('achievements/lockedachievement'));
+		}
+	}
+
 	public function reloadAchievementImage() {
 		if(Achievements.isAchievementUnlocked(tag)) {
 			loadGraphic(Paths.image('achievements/' + tag));
@@ -129,7 +141,8 @@ class AchievementObject extends FlxSpriteGroup {
 		add(achievementText);
 		add(achievementIcon);
 
-		var cam:Array<FlxCamera> = FlxCamera.defaultCameras;
+		@:privateAccess
+		var cam:Array<FlxCamera> = FlxCamera._defaultCameras;
 		if(camera != null) {
 			cam = [camera];
 		}

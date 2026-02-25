@@ -1,10 +1,5 @@
 package;
 
-import Controls;
-import flixel.FlxCamera;
-import flixel.FlxG;
-import flixel.util.FlxSignal;
-
 class PlayerSettings
 {
 	static public var player1(default, null):PlayerSettings;
@@ -22,10 +17,7 @@ class PlayerSettings
 	static public function init():Void
 	{
 		if (player1 == null)
-		{
-			player1 = new PlayerSettings(0, Solo);
-			++numPlayers;
-		}
+			player1 = new PlayerSettings(Solo);
 
 		var numGamepads = FlxG.gamepads.numActiveGamepads;
 		if (numGamepads > 0)
