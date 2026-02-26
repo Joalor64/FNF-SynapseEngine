@@ -2,7 +2,7 @@ package scripts;
 
 import openfl.display.BlendMode;
 import Type.ValueType;
-import objects.DialogueBoxPsych;
+import cutscenes.DialogueBoxPsych;
 #if DISCORD_ALLOWED
 import backend.Discord;
 #end
