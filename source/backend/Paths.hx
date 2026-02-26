@@ -378,7 +378,7 @@ class Paths
 						break;
 					}
 				}
-				else if(fileExists('images/$originalPath/spritemap$st.png'))
+				else if(fileExists('images/$originalPath/spritemap$st.png', IMAGE))
 				{
 					changedImage = true;
 					folderOrImg = image('$originalPath/spritemap$st');

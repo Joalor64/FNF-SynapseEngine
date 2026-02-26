@@ -7,8 +7,8 @@ import cutscenes.DialogueBoxPsych;
 import backend.Discord;
 #end
 
-// TO-DO: change code here to use FunkinHScript instead for using hscript in lua
-// because it's better to me idk
+import scripts.FunkinHScript;
+
 class FunkinLua {
 	public static var Function_Stop:Dynamic = 1;
 	public static var Function_Continue:Dynamic = 0;
@@ -22,8 +22,8 @@ class FunkinLua {
 	public var scriptName:String = '';
 	public var closed:Bool = false;
 
-	#if hscript
-	public static var hscript:HScript = null;
+	#if HSCRIPT_ALLOWED
+	public static var hscript:FunkinHScript = null;
 	#end
 	
 	public function new(script:String) {
@@ -834,10 +834,30 @@ class FunkinLua {
 		Lua_helper.add_callback(lua, "runHaxeCode", function(codeToRun:String) {
 			var retVal:Dynamic = null;
 
-			#if hscript
+			#if HSCRIPT_ALLOWED
 			initHaxeModule();
 			try {
-				retVal = hscript.execute(codeToRun);
+				retVal = hscript.executeStr(codeToRun);
+			}
+			catch (e:Dynamic) {
+				luaTrace(scriptName + ":" + lastCalledFunction + " - " + e, false, false, FlxColor.RED);
+			}
+			#else
+			luaTrace("runHaxeCode: HScript isn't supported on this platform!", false, false, FlxColor.RED);
+			#end
+
+			if(retVal != null && !isOfTypes(retVal, [Bool, Int, Float, String, Array])) retVal = null;
+			if(retVal == null) Lua.pushnil(lua);
+			return retVal;
+		});
+
+		Lua_helper.add_callback(lua, "runHaxeFunction", function(codeToRun:String, ?args:Array<Dynamic>) {
+			var retVal:Dynamic = null;
+
+			#if HSCRIPT_ALLOWED
+			initHaxeModule();
+			try {
+				retVal = hscript.executeFunc(codeToRun, args);
 			}
 			catch (e:Dynamic) {
 				luaTrace(scriptName + ":" + lastCalledFunction + " - " + e, false, false, FlxColor.RED);
@@ -852,14 +872,10 @@ class FunkinLua {
 		});
 
 		Lua_helper.add_callback(lua, "addHaxeLibrary", function(libName:String, ?libPackage:String = '') {
-			#if hscript
+			#if HSCRIPT_ALLOWED
 			initHaxeModule();
 			try {
-				var str:String = '';
-				if(libPackage.length > 0)
-					str = libPackage + '.';
-
-				hscript.variables.set(libName, Type.resolveClass(str + libName));
+				hscript.setVariable(libName, Type.resolveClass((packageName != null ? packageName + '.' : '') + libName));
 			}
 			catch (e:Dynamic) {
 				luaTrace(scriptName + ":" + lastCalledFunction + " - " + e, false, false, FlxColor.RED);
@@ -2752,13 +2768,13 @@ class FunkinLua {
 		return false;
 	}
 
-	#if hscript
+	#if HSCRIPT_ALLOWED
 	public function initHaxeModule()
 	{
 		if(hscript == null)
 		{
 			trace('initializing haxe interp for: $scriptName');
-			hscript = new HScript(); //TO DO: Fix issue with 2 scripts not being able to use the same variable names
+			hscript = new FunkinHScript();
 		}
 	}
 	#end
@@ -3351,70 +3367,3 @@ class CustomSubstate extends MusicBeatSubstate
 		super.destroy();
 	}
 }
-
-#if hscript
-class HScript
-{
-	public static var parser:Parser = new Parser();
-	public var interp:Interp;
-
-	public var variables(get, never):Map<String, Dynamic>;
-
-	public function get_variables()
-	{
-		return interp.variables;
-	}
-
-	public function new()
-	{
-		interp = new Interp();
-		interp.variables.set('FlxG', FlxG);
-		interp.variables.set('FlxSprite', FlxSprite);
-		interp.variables.set('FlxCamera', FlxCamera);
-		interp.variables.set('FlxTimer', FlxTimer);
-		interp.variables.set('FlxTween', FlxTween);
-		interp.variables.set('FlxEase', FlxEase);
-		interp.variables.set('PlayState', PlayState);
-		interp.variables.set('game', PlayState.instance);
-		interp.variables.set('Paths', Paths);
-		interp.variables.set('Conductor', Conductor);
-		interp.variables.set('ClientPrefs', ClientPrefs);
-		interp.variables.set('Character', Character);
-		interp.variables.set('Alphabet', Alphabet);
-		interp.variables.set('CustomSubstate', CustomSubstate);
-		#if (!flash && sys)
-		interp.variables.set('FlxRuntimeShader', FlxRuntimeShader);
-		#end
-		interp.variables.set('ShaderFilter', openfl.filters.ShaderFilter);
-		interp.variables.set('StringTools', StringTools);
-
-		interp.variables.set('setVar', function(name:String, value:Dynamic)
-		{
-			PlayState.instance.variables.set(name, value);
-		});
-		interp.variables.set('getVar', function(name:String)
-		{
-			var result:Dynamic = null;
-			if(PlayState.instance.variables.exists(name)) result = PlayState.instance.variables.get(name);
-			return result;
-		});
-		interp.variables.set('removeVar', function(name:String)
-		{
-			if(PlayState.instance.variables.exists(name))
-			{
-				PlayState.instance.variables.remove(name);
-				return true;
-			}
-			return false;
-		});
-	}
-
-	public function execute(codeToRun:String):Dynamic
-	{
-		@:privateAccess
-		HScript.parser.line = 1;
-		HScript.parser.allowTypes = true;
-		return interp.execute(HScript.parser.parseString(codeToRun));
-	}
-}
-#end
