@@ -14,7 +14,8 @@
 * [X] FlxAnimate Support
 * [X] Source Code Reorganization
 * [X] Asset Reorganization
-* [ ] Restore Combo Sprite
+* [ ] Options Menu Reorganization
+* [X] Restore Combo Sprite
 * [ ] Colorblind Filters
 * [ ] Update to hxdiscord_rpc
 
