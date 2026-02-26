@@ -422,7 +422,7 @@ class RuleScriptInterp extends hscript.Interp
 		return prop;
 	}
 
-	function resolveType(path:String):Dynamic
+	override function resolveType(path:String):Dynamic
 	{
 		var t:Dynamic = RuleScript.resolveScript(path);
 
@@ -491,7 +491,7 @@ class RuleScriptInterp extends hscript.Interp
 		declared.push({n: key, old: locals.get(key)});
 		declared.push({n: value, old: locals.get(value)});
 
-		var it:{hasNext:() -> Bool, next:() -> Dynamic} = makeKeyValueIterator(expr(it));
+		var it:{next:() -> Bool, hasNext:() -> Dynamic} = makeKeyValueIterator(expr(it));
 		while (it.hasNext())
 		{
 			var itNext = it.next();

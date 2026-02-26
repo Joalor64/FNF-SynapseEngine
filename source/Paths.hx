@@ -194,7 +194,7 @@ class Paths
 		var extension:String = '.hx';
 
 		for (ext in HSCRIPT_EXT)
-			extension = (fileExists(getPath(key + ext))) ? ext : extension;
+			extension = (fileExists(getPath(key + ext, TEXT, library))) ? ext : extension;
 
 		return getPath(key + extension, TEXT, library);
 	}
