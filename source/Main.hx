@@ -6,6 +6,10 @@ import haxe.CallStack;
 import haxe.io.Path;
 #end
 
+#if DISCORD_ALLOWED
+import backend.Discord;
+#end
+
 import openfl.display.FPS;
 
 class Main extends Sprite
@@ -66,10 +70,8 @@ class Main extends Sprite
 		addChild(new FlxGame(config.gameDimensions[0], config.gameDimensions[1], config.initialState, config.defaultFPS, config.defaultFPS, config.skipSplash,
 			config.startFullscreen));
 
-		fpsVar = new FPS(10, 3, 0xFFFFFF);
+		fpsVar = new FPS(10, 10, 0xFFFFFF);
 		addChild(fpsVar);
-		Lib.current.stage.align = "tl";
-		Lib.current.stage.scaleMode = StageScaleMode.NO_SCALE;
 		if(fpsVar != null) {
 			fpsVar.visible = ClientPrefs.showFPS;
 		}

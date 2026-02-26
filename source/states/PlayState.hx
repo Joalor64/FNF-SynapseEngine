@@ -7,6 +7,7 @@ import flixel.addons.display.FlxRuntimeShader;
 import openfl.events.KeyboardEvent;
 import openfl.display.BlendMode;
 import flixel.ui.FlxBar;
+import flixel.addons.effects.FlxTrail;
 
 import cutscenes.CutsceneHandler;
 import cutscenes.DialogueBox;
@@ -274,6 +275,8 @@ class PlayState extends MusicBeatState
 
 	override public function create()
 	{
+		PauseSubState.fromPlayState = false;
+		
 		#if cpp
 		cpp.vm.Gc.enable(true);
 		#end
@@ -2588,7 +2591,7 @@ class PlayState extends MusicBeatState
 				swagNote.sustainLength = songNotes[2];
 				swagNote.gfNote = (section.gfSection && (songNotes[1]<4));
 				swagNote.noteType = songNotes[3];
-				if(!Std.isOfType(songNotes[3], String)) swagNote.noteType = editors.ChartingState.noteTypeList[songNotes[3]]; //Backward compatibility + compatibility with Week 7 charts
+				if(!Std.isOfType(songNotes[3], String)) swagNote.noteType = ChartingState.noteTypeList[songNotes[3]]; //Backward compatibility + compatibility with Week 7 charts
 
 				swagNote.scrollFactor.set();
 

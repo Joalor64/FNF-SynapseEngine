@@ -4,7 +4,9 @@
 * [ ] Custom States + Substates
 * [ ] Crossfades
 * [ ] New Events
-* [ ] Softcoding States
+* [ ] Softcoding
+    * [ ] Main Menu States
+    * [ ] Stages
 * [ ] Optimizations
 * [ ] Customizations
 * [ ] RGB Notes
