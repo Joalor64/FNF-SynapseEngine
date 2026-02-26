@@ -1,4 +1,4 @@
-package backend;
+package objects;
 
 typedef CharacterFile = {
 	var animations:Array<AnimArray>;
