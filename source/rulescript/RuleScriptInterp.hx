@@ -464,7 +464,7 @@ class RuleScriptInterp extends hscript.Interp
 		return t;
 	}
 
-	function makeKeyValueIterator(v:Dynamic)
+	override function makeKeyValueIterator(v:Dynamic)
 	{
 		#if ((flash && !flash9) || (php && !php7 && haxe_ver < '4.0.0'))
 		if (v.keyValueIterator != null)

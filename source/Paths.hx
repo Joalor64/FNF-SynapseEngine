@@ -189,14 +189,14 @@ class Paths
 		return getPath('$key.lua', TEXT, library);
 	}
 
-	inline static public function script(key:String)
+	inline static public function script(key:String, ?library:String)
 	{
 		var extension:String = '.hx';
 
 		for (ext in HSCRIPT_EXT)
-			extension = (exists(getPath(key + ext))) ? ext : extension;
+			extension = (fileExists(getPath(key + ext))) ? ext : extension;
 
-		return getPath(key + extension);
+		return getPath(key + extension, TEXT, library);
 	}
 
 	static public function validScriptType(n:String):Bool
