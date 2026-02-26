@@ -12,7 +12,7 @@ typedef GarbageCollect = #if cpp cpp.vm.Gc; #elseif hl hl.Gc; #elseif neko neko.
 @:access(openfl.display.BitmapData)
 class Paths
 {
-	inline public final var SOUND_EXT = #if web "mp3" #else "ogg" #end;
+	inline public final SOUND_EXT = #if web "mp3" #else "ogg" #end;
 	public static var HSCRIPT_EXT:Array<String> = ['.hx', '.hxs', '.hxc', '.hscript'];
 
 	public static function excludeAsset(key:String) {
