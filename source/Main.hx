@@ -1,39 +1,21 @@
 package;
 
-import flixel.graphics.FlxGraphic;
-import flixel.FlxG;
-import flixel.FlxGame;
-import flixel.FlxState;
-import openfl.Assets;
-import openfl.Lib;
-import openfl.display.FPS;
-import openfl.display.Sprite;
-import openfl.events.Event;
-import openfl.display.StageScaleMode;
-import haxe.io.Path;
-
-//crash handler stuff
 #if CRASH_HANDLER
-import lime.app.Application;
 import openfl.events.UncaughtErrorEvent;
 import haxe.CallStack;
 import haxe.io.Path;
-import Discord.DiscordClient;
-import sys.FileSystem;
-import sys.io.File;
-import sys.io.Process;
 #end
-
-using StringTools;
 
 class Main extends Sprite
 {
-	var gameWidth:Int = 1280; // Width of the game in pixels (might be less / more in actual pixels depending on your zoom).
-	var gameHeight:Int = 720; // Height of the game in pixels (might be less / more in actual pixels depending on your zoom).
-	var initialState:Class<FlxState> = TitleState; // The FlxState the game starts with.
-	var framerate:Int = 60; // How many frames per second the game should run at.
-	var skipSplash:Bool = true; // Whether to skip the flixel splash screen that appears in release mode.
-	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
+	public final config:Dynamic = {
+		gameDimensions: [1280, 720],
+		initialState: TitleState,
+		defaultFPS: 60,
+		skipSplash: true,
+		startFullscreen: false
+	};
+
 	public static var fpsVar:FPS;
 
 	// You can pretty much ignore everything from here on - your code should go in your states.
@@ -63,9 +45,24 @@ class Main extends Sprite
 	public function new()
 	{
 		super();
-	
+
+		#if CRASH_HANDLER
+		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onCrash);
+		#if cpp
+		untyped __global__.__hxcpp_set_critical_error_handler(onFatalCrash);
+		#end
+		#end
+		
+		FlxG.save.bind('funkin', 'ninjamuffin99');
+		Highscore.load();
+
+		#if VIDEOS_ALLOWED
+		hxvlc.util.Handle.init(#if (hxvlc >= "1.8.0") ['--no-lua'] #end);
+		#end
+
 		ClientPrefs.loadDefaultKeys();
-		addChild(new FlxGame(gameWidth, gameHeight, initialState, framerate, framerate, skipSplash, startFullscreen));
+		addChild(new FlxGame(config.gameDimensions[0], config.gameDimensions[1], config.initialState, config.defaultFPS, config.defaultFPS, config.skipSplash,
+			config.startFullscreen));
 
 		fpsVar = new FPS(10, 3, 0xFFFFFF);
 		addChild(fpsVar);
@@ -83,15 +80,93 @@ class Main extends Sprite
 		FlxG.autoPause = FlxG.mouse.visible = false;
 		#end
 		
-		#if CRASH_HANDLER
-		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onCrash);
+		#if DISCORD_ALLOWED
+		if (!Discord.isInitialized)
+		{
+			Discord.initialize();
+		}
+
+		Lib.current.stage.application.window.onClose.add(function()
+		{
+			if (Discord.isInitialized)
+				Discord.shutdown();
+		});
 		#end
 	}
 
-	// Code was entirely made by sqirra-rng for their fnf engine named "Izzy Engine", big props to them!!!
-	// very cool person for real they don't get enough credit for their work
 	#if CRASH_HANDLER
 	function onCrash(e:UncaughtErrorEvent):Void
+	{
+		var stack:Array<String> = [];
+		stack.push(e.error);
+
+		for (stackItem in CallStack.exceptionStack(true))
+		{
+			switch (stackItem)
+			{
+				case CFunction:
+					stack.push('C Function');
+				case Module(m):
+					stack.push('Module ($m)');
+				case FilePos(s, file, line, column):
+					stack.push('$file (line $line)');
+				case Method(classname, method):
+					stack.push('$classname (method $method)');
+				case LocalFunction(name):
+					stack.push('Local Function ($name)');
+			}
+		}
+
+		e.preventDefault();
+		e.stopPropagation();
+		e.stopImmediatePropagation();
+
+		final msg:String = stack.join('\n');
+
+		#if sys
+		try
+		{
+			if (!FileSystem.exists('./crash/'))
+				FileSystem.createDirectory('./crash/');
+
+			File.saveContent('./crash/'
+				+ Lib.application.meta.get('file')
+				+ '-'
+				+ Date.now().toString().replace(' ', '-').replace(':', "'")
+				+ '.txt',
+				msg
+				+ '\n');
+		}
+		catch (e:Dynamic)
+		{
+			Sys.println("Error!\nCouldn't save the crash dump because:\n" + e);
+		}
+		#end
+
+		#if (flixel < "6.0.0")
+		FlxG.bitmap.dumpCache();
+		#end
+		FlxG.bitmap.clearCache();
+
+		if (FlxG.sound.music != null)
+			FlxG.sound.music.stop();
+
+		#if DISCORD_ALLOWED
+		Discord.shutdown();
+		#end
+
+		Lib.application.window.alert('Uncaught Error: \n'
+			+ msg
+			+ '\n\nPlease report this error to the GitHub page: https://github.com/Joalor64GH/FNF-SynapseEngine/issues\n\n> Crash Handler written by: sqirra-rng',
+			'Error!');
+		Sys.println('Uncaught Error: \n'
+			+ msg
+			+
+			'\n\nPlease report this error to the GitHub page: https://github.com/Joalor64GH/FNF-SynapseEngine/issues\n\n> Crash Handler written by: sqirra-rng');
+		Sys.exit(1);
+	}
+
+	function onFatalCrash(msg:String):Void
 	{
 		var errMsg:String = "";
 		var path:String;
@@ -101,31 +176,38 @@ class Main extends Sprite
 		dateNow = dateNow.replace(" ", "_");
 		dateNow = dateNow.replace(":", "'");
 
-		path = "./crash/" + "PsychEngine_" + dateNow + ".txt";
+		path = "./crash/" + "VSRob_" + dateNow + ".txt";
+
+		errMsg += '${msg}\n';
 
 		for (stackItem in callStack)
 		{
 			switch (stackItem)
 			{
 				case FilePos(s, file, line, column):
-					errMsg += file + " (line " + line + ")\n";
+					errMsg += 'in ${file} (line ${line})\n';
 				default:
 					Sys.println(stackItem);
 			}
 		}
 
-		errMsg += "\nUncaught Error: " + e.error + "\nPlease report this error to the GitHub page: https://github.com/ShadowMario/FNF-PsychEngine\n\n> Crash Handler written by: sqirra-rng";
+		errMsg += "\n\nPlease report this error to the GitHub page: https://github.com/Joalor64GH/FNF-SynapseEngine/issues\n\n> Crash Handler written by: sqirra-rng";
 
 		if (!FileSystem.exists("./crash/"))
 			FileSystem.createDirectory("./crash/");
 
 		File.saveContent(path, errMsg + "\n");
 
+		if (FlxG.sound.music != null)
+			FlxG.sound.music.stop();
+
 		Sys.println(errMsg);
 		Sys.println("Crash dump saved in " + Path.normalize(path));
 
 		Application.current.window.alert(errMsg, "Error!");
-		DiscordClient.shutdown();
+		#if DISCORD_ALLOWED
+		Discord.shutdown();
+		#end
 		Sys.exit(1);
 	}
 	#end

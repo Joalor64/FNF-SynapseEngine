@@ -48,16 +48,43 @@ import sys.io.*;
 import animateatlas.AtlasFrameMaker;
 
 #if DISCORD_ALLOWED
-import Discord;
+import backend.Discord;
 #end
+
+import backend.*;
+import backend.CoolUtil;
+import backend.Conductor;
+import backend.Conductor.BPMChangeEvent;
+import backend.Controls;
+import backend.Section;
+import backend.Song;
+import backend.Paths;
+import backend.Highscore;
+import backend.PlayerSettings;
+import backend.MusicBeatState;
+import backend.MusicBeatSubstate;
+import objects.*;
+import objects.Alphabet;
+import options.*;
+import scripts.FunkinLua;
+import scripts.FunkinHScript;
+import shaders.*;
+import states.*;
+import states.editors.*;
+import states.PlayState;
+import substates.*;
 
 #if LUA_ALLOWED
 import llua.*;
 import llua.Lua;
 #end
 
+#if (hscript || HSCRIPT_ALLOWED)
+import hscript.*;
+#end
+
 using StringTools;
-using CoolUtil;
+using backend.CoolUtil;
 
 #if !debug
 @:noDebug

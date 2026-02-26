@@ -1,20 +1,6 @@
 package options;
 
-import flixel.util.FlxStringUtil;
-import flixel.tweens.FlxEase;
-import flixel.tweens.FlxTween;
-import flixel.tweens.FlxEase;
-import flixel.text.FlxText;
-import flixel.group.FlxSpriteGroup;
-import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.util.FlxColor;
-import flixel.FlxSprite;
-import flixel.FlxCamera;
-import flixel.FlxG;
-import flixel.ui.FlxBar;
-import flixel.math.FlxPoint;
-
-using StringTools;
+import objects.*;
 
 class NoteOffsetState extends MusicBeatState
 {
