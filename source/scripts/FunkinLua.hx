@@ -875,7 +875,7 @@ class FunkinLua {
 			#if HSCRIPT_ALLOWED
 			initHaxeModule();
 			try {
-				hscript.setVariable(libName, Type.resolveClass((packageName != null ? packageName + '.' : '') + libName));
+				hscript.setVariable(libName, Type.resolveClass((libPackage != null ? libPackage + '.' : '') + libName));
 			}
 			catch (e:Dynamic) {
 				luaTrace(scriptName + ":" + lastCalledFunction + " - " + e, false, false, FlxColor.RED);
