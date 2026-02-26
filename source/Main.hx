@@ -7,7 +7,7 @@ import haxe.io.Path;
 #end
 
 #if DISCORD_ALLOWED
-import backend.Discord;
+import backend.Discord.DiscordClient;
 #end
 
 import openfl.display.FPS;
@@ -85,15 +85,15 @@ class Main extends Sprite
 		#end
 		
 		#if DISCORD_ALLOWED
-		if (!Discord.isInitialized)
+		if (!DiscordClient.isInitialized)
 		{
-			Discord.initialize();
+			DiscordClient.initialize();
 		}
 
 		Lib.current.stage.application.window.onClose.add(function()
 		{
-			if (Discord.isInitialized)
-				Discord.shutdown();
+			if (DiscordClient.isInitialized)
+				DiscordClient.shutdown();
 		});
 		#end
 	}
