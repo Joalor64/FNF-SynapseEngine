@@ -5,7 +5,7 @@
 * [ ] Crossfades
 * [ ] New Events
 * [ ] Softcoding
-    * [ ] Main Menu States
+    * [ ] Menu States
     * [ ] Stages
 * [ ] Optimizations
 * [ ] Customizations
@@ -13,7 +13,8 @@
 * [ ] Noteskins
 * [X] FlxAnimate Support
 * [X] Source Code Reorganization
-* [ ] Asset Reorganization
+* [X] Asset Reorganization
+* [ ] Restore Combo Sprite
 * [ ] Colorblind Filters
 * [ ] Update to hxdiscord_rpc
 
@@ -22,3 +23,5 @@
 * [ ] Weekend 1
 * [ ] Erect Mixes
 * [ ] Potentially Backport Psych 1.0 Stuff
+* [ ] Custom Achievements
+* [ ] Support for more than 2 health icons

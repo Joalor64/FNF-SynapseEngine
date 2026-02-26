@@ -51,6 +51,10 @@ import animateatlas.AtlasFrameMaker;
 import backend.Discord;
 #end
 
+#if MODS_ALLOWED
+import backend.Mods;
+#end
+
 import backend.*;
 import backend.CoolUtil;
 import backend.Conductor;

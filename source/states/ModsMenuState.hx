@@ -56,35 +56,8 @@ class ModsMenuState extends MusicBeatState
 		noModsTxt.screenCenter();
 		visibleWhenNoMods.push(noModsTxt);
 
-		var path:String = 'modsList.txt';
-		if(FileSystem.exists(path))
-		{
-			var leMods:Array<String> = CoolUtil.coolTextFile(path);
-			for (i in 0...leMods.length)
-			{
-				if(leMods.length > 1 && leMods[0].length > 0) {
-					var modSplit:Array<String> = leMods[i].split('|');
-					if(!Paths.ignoreModFolders.contains(modSplit[0].toLowerCase()))
-					{
-						addToModsList([modSplit[0], (modSplit[1] == '1')]);
-						//trace(modSplit[1]);
-					}
-				}
-			}
-		}
-
-		// FIND MOD FOLDERS
-		var boolshit = true;
-		if (FileSystem.exists("modsList.txt")){
-			for (folder in Paths.getModDirectories())
-			{
-				if(!Paths.ignoreModFolders.contains(folder))
-				{
-					addToModsList([folder, true]); //i like it false by default. -bb //Well, i like it True! -Shadow
-				}
-			}
-		}
-		saveTxt();
+		var list:ModsList = Mods.parseList();
+		for (mod in list.all) modsList.push([mod, list.enabled.contains(mod)]);
 
 		selector = new AttachedSprite();
 		selector.xAdd = -205;
@@ -347,26 +320,6 @@ class ModsMenuState extends MusicBeatState
 		super.create();
 	}
 
-	/*function getIntArray(max:Int):Array<Int>{
-		var arr:Array<Int> = [];
-		for (i in 0...max) {
-			arr.push(i);
-		}
-		return arr;
-	}*/
-	function addToModsList(values:Array<Dynamic>)
-	{
-		for (i in 0...modsList.length)
-		{
-			if(modsList[i][0] == values[0])
-			{
-				//trace(modsList[i][0], values[0]);
-				return;
-			}
-		}
-		modsList.push(values);
-	}
-
 	function updateButtonToggle()
 	{
 		if (modsList[curSelected][1])
@@ -426,7 +379,7 @@ class ModsMenuState extends MusicBeatState
 
 		var path:String = 'modsList.txt';
 		File.saveContent(path, fileStr);
-		Paths.pushGlobalMods();
+		Mods.pushGlobalMods();
 	}
 
 	var noModsSine:Float = 0;
@@ -612,67 +565,6 @@ class ModsMenuState extends MusicBeatState
 		selector.pixels.fillRect(new Rectangle((flipX ? antiX : 6), Std.int(Math.abs(antiY - 2)),  5, 1), FlxColor.BLACK);
 		selector.pixels.fillRect(new Rectangle((flipX ? antiX : 8), Std.int(Math.abs(antiY - 1)),  3, 1), FlxColor.BLACK);
 	}
-
-	/*var _file:FileReference = null;
-	function installMod() {
-		var zipFilter:FileFilter = new FileFilter('ZIP', 'zip');
-		_file = new FileReference();
-		_file.addEventListener(Event.SELECT, onLoadComplete);
-		_file.addEventListener(Event.CANCEL, onLoadCancel);
-		_file.addEventListener(IOErrorEvent.IO_ERROR, onLoadError);
-		_file.browse([zipFilter]);
-		canExit = false;
-	}
-
-	function onLoadComplete(_):Void
-	{
-		_file.removeEventListener(Event.SELECT, onLoadComplete);
-		_file.removeEventListener(Event.CANCEL, onLoadCancel);
-		_file.removeEventListener(IOErrorEvent.IO_ERROR, onLoadError);
-
-		var fullPath:String = null;
-		@:privateAccess
-		if(_file.__path != null) fullPath = _file.__path;
-
-		if(fullPath != null)
-		{
-			var rawZip:String = File.getContent(fullPath);
-			if(rawZip != null)
-			{
-				MusicBeatState.resetState();
-				var uncompressingFile:Bytes = new Uncompress().run(File.getBytes(rawZip));
-				if (uncompressingFile.done)
-				{
-					trace('test');
-					_file = null;
-					return;
-				}
-			}
-		}
-		_file = null;
-		canExit = true;
-		trace("File couldn't be loaded! Wtf?");
-	}
-
-	function onLoadCancel(_):Void
-	{
-		_file.removeEventListener(Event.SELECT, onLoadComplete);
-		_file.removeEventListener(Event.CANCEL, onLoadCancel);
-		_file.removeEventListener(IOErrorEvent.IO_ERROR, onLoadError);
-		_file = null;
-		canExit = true;
-		trace("Cancelled file loading.");
-	}
-
-	function onLoadError(_):Void
-	{
-		_file.removeEventListener(Event.SELECT, onLoadComplete);
-		_file.removeEventListener(Event.CANCEL, onLoadCancel);
-		_file.removeEventListener(IOErrorEvent.IO_ERROR, onLoadError);
-		_file = null;
-		canExit = true;
-		trace("Problem loading file");
-	}*/
 }
 
 class ModMetadata
@@ -693,54 +585,28 @@ class ModMetadata
 		this.color = ModsMenuState.defaultColor;
 		this.restart = false;
 
-		//Try loading json
-		var path = Paths.mods(folder + '/pack.json');
-		if(FileSystem.exists(path)) {
-			var rawJson:String = File.getContent(path);
-			if(rawJson != null && rawJson.length > 0) {
-				var stuff:Dynamic = TJSON.parse(rawJson);
-					//using reflects cuz for some odd reason my haxe hates the stuff.var shit
-					var colors:Array<Int> = Reflect.getProperty(stuff, "color");
-					var description:String = Reflect.getProperty(stuff, "description");
-					var name:String = Reflect.getProperty(stuff, "name");
-					var restart:Bool = Reflect.getProperty(stuff, "restart");
-
-				if(name != null && name.length > 0)
-				{
-					this.name = name;
-				}
-				if(description != null && description.length > 0)
-				{
-					this.description = description;
-				}
-				if(name == 'Name')
-				{
-					this.name = folder;
-				}
-				if(description == 'Description')
-				{
-					this.description = "No description provided.";
-				}
-				if(colors != null && colors.length > 2)
-				{
-					this.color = FlxColor.fromRGB(colors[0], colors[1], colors[2]);
-				}
-
-				this.restart = restart;
-				/*
-				if(stuff.name != null && stuff.name.length > 0)
-				{
-					this.name = stuff.name;
-				}
-				if(stuff.description != null && stuff.description.length > 0)
-				{
-					this.description = stuff.description;
-				}
-				if(stuff.color != null && stuff.color.length > 2)
-				{
-					this.color = FlxColor.fromRGB(stuff.color[0], stuff.color[1], stuff.color[2]);
-				}*/
+		var pack:Dynamic = Mods.getPack(folder);
+		if(pack != null) {
+			if (pack.name != null && pack.name.length > 0)
+			{
+				if(pack.name != 'Name')
+					this.name = pack.name;
+				else
+					this.name = pack.folder;
 			}
+
+			if (pack.description != null && pack.description.length > 0)
+			{
+				if(pack.description != 'Description')
+					this.description = pack.description;
+				else
+					this.description = "No description provided.";
+			}
+
+			if (pack.colors != null && pack.colors.length > 2)
+				this.color = FlxColor.fromRGB(pack.colors[0], pack.colors[1], pack.colors[2]);
+
+			this.restart = pack.restart;
 		}
 	}
 }

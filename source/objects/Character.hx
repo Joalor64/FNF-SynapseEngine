@@ -71,7 +71,6 @@ class Character extends FlxSprite
 		curCharacter = character;
 		this.isPlayer = isPlayer;
 		antialiasing = ClientPrefs.globalAntialiasing;
-		var library:String = null;
 		switch (curCharacter)
 		{
 			//case 'your character name in case you want to hardcode them instead':
@@ -107,14 +106,14 @@ class Character extends FlxSprite
 				//texture
 				#if MODS_ALLOWED
 				var modTxtToFind:String = Paths.modsTxt(json.image);
-				var txtToFind:String = Paths.getPath('images/' + json.image + '.txt', TEXT);
+				var txtToFind:String = Paths.getPath('images/' + json.image + '.txt');
 				
 				//var modTextureToFind:String = Paths.modFolders("images/"+json.image);
 				//var textureToFind:String = Paths.getPath('images/' + json.image, new AssetType();
 				
 				if (FileSystem.exists(modTxtToFind) || FileSystem.exists(txtToFind) || Assets.exists(txtToFind))
 				#else
-				if (Assets.exists(Paths.getPath('images/' + json.image + '.txt', TEXT)))
+				if (Assets.exists(Paths.getPath('images/' + json.image + '.txt')))
 				#end
 				{
 					spriteType = "packer";

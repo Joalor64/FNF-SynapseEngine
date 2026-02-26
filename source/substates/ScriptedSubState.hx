@@ -19,10 +19,10 @@ class ScriptedSubState extends MusicBeatSubstate
 			var folders:Array<String> = [Paths.getPath('substates/')];
 			#if MODS_ALLOWED
             folders.insert(0, Paths.mods('substates/'));
-		    if (Paths.currentModDirectory != null && Paths.currentModDirectory.length > 0)
-			    folders.insert(0, Paths.mods(Paths.currentModDirectory + '/substates/'));
+		    if (Mods.currentModDirectory != null && Mods.currentModDirectory.length > 0)
+			    folders.insert(0, Paths.mods(Mods.currentModDirectory + '/substates/'));
 
-		    for (mod in Paths.getGlobalMods())
+		    for (mod in Mods.getGlobalMods())
 			    foldersToCheck.insert(0, Paths.mods(mod + '/substates/'));
 			#end
 			for (folder in folders)

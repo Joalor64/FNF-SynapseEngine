@@ -19,10 +19,10 @@ class ScriptedState extends MusicBeatState
 			var folders:Array<String> = [Paths.getPath('states/')];
 			#if MODS_ALLOWED
             folders.insert(0, Paths.mods('states/'));
-		    if (Paths.currentModDirectory != null && Paths.currentModDirectory.length > 0)
-			    folders.insert(0, Paths.mods(Paths.currentModDirectory + '/states/'));
+		    if (Mods.currentModDirectory != null && Mods.currentModDirectory.length > 0)
+			    folders.insert(0, Paths.mods(Mods.currentModDirectory + '/states/'));
 
-		    for (mod in Paths.getGlobalMods())
+		    for (mod in Mods.getGlobalMods())
 			    foldersToCheck.insert(0, Paths.mods(mod + '/states/'));
 			#end
 			for (folder in folders)
