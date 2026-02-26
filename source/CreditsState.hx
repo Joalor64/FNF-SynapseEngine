@@ -1,6 +1,6 @@
 package;
 
-#if desktop
+#if DISCORD_ALLOWED
 import Discord.DiscordClient;
 #end
 import flixel.FlxG;
@@ -16,7 +16,6 @@ import flixel.tweens.FlxEase;
 import sys.FileSystem;
 import sys.io.File;
 #end
-import lime.utils.Assets;
 
 using StringTools;
 
@@ -38,7 +37,7 @@ class CreditsState extends MusicBeatState
 
 	override function create()
 	{
-		#if desktop
+		#if DISCORD_ALLOWED
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
 		#end

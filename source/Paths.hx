@@ -10,8 +10,6 @@ import openfl.system.System;
 import flixel.FlxG;
 import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.utils.AssetType;
-import openfl.utils.Assets as OpenFlAssets;
-import lime.utils.Assets;
 import flixel.FlxSprite;
 #if sys
 import sys.io.File;
@@ -29,6 +27,7 @@ class Paths
 {
 	inline public static var SOUND_EXT = #if web "mp3" #else "ogg" #end;
 	inline public static var VIDEO_EXT = "mp4";
+	public static var HSCRIPT_EXT:Array<String> = ['.hx', '.hxs', '.hxc', '.hscript'];
 
 	#if MODS_ALLOWED
 	public static var ignoreModFolders:Array<String> = [
@@ -129,12 +128,12 @@ class Paths
 			var levelPath:String = '';
 			if(currentLevel != 'shared') {
 				levelPath = getLibraryPathForce(file, currentLevel);
-				if (OpenFlAssets.exists(levelPath, type))
+				if (Assets.exists(levelPath, type))
 					return levelPath;
 			}
 
 			levelPath = getLibraryPathForce(file, "shared");
-			if (OpenFlAssets.exists(levelPath, type))
+			if (Assets.exists(levelPath, type))
 				return levelPath;
 		}
 
@@ -189,6 +188,19 @@ class Paths
 	{
 		return getPath('$key.lua', TEXT, library);
 	}
+
+	inline static public function script(key:String)
+	{
+		var extension:String = '.hx';
+
+		for (ext in HSCRIPT_EXT)
+			extension = (exists(getPath(key + ext))) ? ext : extension;
+
+		return getPath(key + extension);
+	}
+
+	static public function validScriptType(n:String):Bool
+		return n.endsWith('.hx') || n.endsWith('.hxs') || n.endsWith('.hxc') || n.endsWith('.hscript');
 
 	static public function video(key:String)
 	{
@@ -286,7 +298,7 @@ class Paths
 		}
 		#end
 
-		if(OpenFlAssets.exists(getPath(key, type))) {
+		if(Assets.exists(getPath(key, type))) {
 			return true;
 		}
 		return false;
@@ -350,7 +362,7 @@ class Paths
 
 		var path = getPath('images/$key.png', IMAGE, library);
 		//trace(path);
-		if (OpenFlAssets.exists(path, IMAGE)) {
+		if (Assets.exists(path, IMAGE)) {
 			if(!currentTrackedAssets.exists(path)) {
 				var newGraphic:FlxGraphic = FlxG.bitmap.add(path, false, path);
 				newGraphic.persist = true;
@@ -387,7 +399,7 @@ class Paths
 			var folder:String = '';
 			if(path == 'songs') folder = 'songs:';
 
-			currentTrackedSounds.set(gottenPath, OpenFlAssets.getSound(folder + getPath('$path/$key.$SOUND_EXT', SOUND, library)));
+			currentTrackedSounds.set(gottenPath, Assets.getSound(folder + getPath('$path/$key.$SOUND_EXT', SOUND, library)));
 		}
 		#end
 		localTrackedAssets.push(gottenPath);

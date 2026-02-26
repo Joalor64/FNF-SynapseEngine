@@ -7,7 +7,6 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
-import lime.utils.Assets;
 import flixel.FlxSubState;
 import flixel.FlxG;
 import flixel.FlxSprite;

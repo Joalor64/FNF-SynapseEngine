@@ -4,7 +4,6 @@ package;
 import sys.io.File;
 import sys.FileSystem;
 #end
-import lime.utils.Assets;
 import openfl.utils.Assets as OpenFlAssets;
 import tjson.TJSON;
 import haxe.format.JsonParser;
@@ -67,7 +66,6 @@ class WeekData {
 		return weekFile;
 	}
 
-	// HELP: Is there any way to convert a WeekFile to WeekData without having to put all variables there manually? I'm kind of a noob in haxe lmao
 	public function new(weekFile:WeekFile, fileName:String) {
 		for (field in Reflect.fields(weekFile))
 			if (Reflect.fields(this).contains(field))
