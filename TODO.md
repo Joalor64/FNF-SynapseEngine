@@ -11,8 +11,8 @@
 * [ ] Customizations
 * [ ] RGB Notes
 * [ ] Noteskins
-* [ ] FlxAnimate Support
-* [ ] Source Code Reorganization
+* [X] FlxAnimate Support
+* [X] Source Code Reorganization
 * [ ] Asset Reorganization
 * [ ] Colorblind Filters
 * [ ] Update to hxdiscord_rpc

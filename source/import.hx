@@ -83,6 +83,11 @@ import llua.Lua;
 import hscript.*;
 #end
 
+#if flxanimate
+import flxanimate.*;
+import flxanimate.PsychFlxAnimate as FlxAnimate;
+#end
+
 using StringTools;
 using backend.CoolUtil;
 

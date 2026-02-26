@@ -24,6 +24,12 @@
       "type": "haxelib"
     },
     {
+      "name": "flxanimate",
+      "type": "git",
+      "ref": "master",
+      "url": "https://github.com/Dot-Stuff/flxanimate"
+    },
+    {
       "name": "hxcpp",
       "type": "haxelib"
     },

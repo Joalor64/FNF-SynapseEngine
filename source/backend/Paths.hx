@@ -340,6 +340,69 @@ class Paths
 		#end
 	}
 
+	#if flxanimate
+	public static function loadAnimateAtlas(spr:FlxAnimate, folderOrImg:Dynamic, spriteJson:Dynamic = null, animationJson:Dynamic = null)
+	{
+		var changedAnimJson = false;
+		var changedAtlasJson = false;
+		var changedImage = false;
+		
+		if(spriteJson != null)
+		{
+			changedAtlasJson = true;
+			spriteJson = File.getContent(spriteJson);
+		}
+
+		if(animationJson != null) 
+		{
+			changedAnimJson = true;
+			animationJson = File.getContent(animationJson);
+		}
+
+		if(Std.isOfType(folderOrImg, String))
+		{
+			var originalPath:String = folderOrImg;
+			for (i in 0...10)
+			{
+				var st:String = '$i';
+				if(i == 0) st = '1';
+
+				if(!changedAtlasJson)
+				{
+					spriteJson = getTextFromFile('images/$originalPath/spritemap$st.json');
+					if(spriteJson != null)
+					{
+						changedImage = true;
+						changedAtlasJson = true;
+						folderOrImg = image('$originalPath/spritemap$st');
+						break;
+					}
+				}
+				else if(fileExists('images/$originalPath/spritemap$st.png'))
+				{
+					changedImage = true;
+					folderOrImg = image('$originalPath/spritemap$st');
+					break;
+				}
+			}
+
+			if(!changedImage)
+			{
+				changedImage = true;
+				folderOrImg = image(originalPath);
+			}
+
+			if(!changedAnimJson)
+			{
+				changedAnimJson = true;
+				animationJson = getTextFromFile('images/$originalPath/Animation.json');
+			}
+		}
+
+		spr.loadAtlasEx(folderOrImg, spriteJson, animationJson);
+	}
+	#end
+
 	inline static public function formatToSongPath(path:String) {
 		var invalidChars = ~/[~&\\;:<>#]/;
 		var hideChars = ~/[.,'"%?!]/;

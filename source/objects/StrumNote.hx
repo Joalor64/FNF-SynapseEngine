@@ -1,6 +1,7 @@
 package objects;
 
 import shaders.ColorSwap;
+import backend.animation.PsychAnimationController;
 
 class StrumNote extends FlxSprite
 {
@@ -23,6 +24,8 @@ class StrumNote extends FlxSprite
 	}
 
 	public function new(x:Float, y:Float, leData:Int, player:Int) {
+		animation = new PsychAnimationController(this);
+		
 		colorSwap = new ColorSwap();
 		shader = colorSwap.shader;
 		noteData = leData;

@@ -1,5 +1,7 @@
 package objects;
 
+import backend.animation.PsychAnimationController;
+
 typedef CharacterFile = {
 	var animations:Array<AnimArray>;
 	var image:String;
@@ -63,11 +65,9 @@ class Character extends FlxSprite
 	{
 		super(x, y);
 
-		#if (haxe >= "4.0.0")
-		animOffsets = new Map();
-		#else
+		animation = new PsychAnimationController(this);
+
 		animOffsets = new Map<String, Array<Dynamic>>();
-		#end
 		curCharacter = character;
 		this.isPlayer = isPlayer;
 		antialiasing = ClientPrefs.globalAntialiasing;
@@ -397,6 +397,15 @@ class Character extends FlxSprite
 	public function quickAnimAdd(name:String, anim:String)
 	{
 		animation.addByPrefix(name, anim, 24, false);
+	}
+
+	inline public function isAnimationNull():Bool
+		return animation.curAnim == null;
+
+	public function isAnimationFinished():Bool
+	{
+		if(isAnimationNull()) return false;
+		return animation.curAnim.finished;
 	}
 }
 
