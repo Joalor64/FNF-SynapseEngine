@@ -55,6 +55,7 @@ class ScriptedState extends MusicBeatState
 			if (foundPath != null) {
 				path = foundPath;
 				script = new FunkinHScript(path, false);
+				script.execute(path, false);
 				trace('Script loaded: $path');
 			} else {
 				trace('Could not find script for: $path');
