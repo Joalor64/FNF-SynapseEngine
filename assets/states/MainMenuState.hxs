@@ -15,6 +15,6 @@ function create() {
 
 function update(elapsed:Float) {
     if (FlxG.keys.justPressed.ENTER) {
-        MusicBeatState.switchState(new MainMenuState());
+        FlxG.switchState(new MainMenuState());
     }
 }
