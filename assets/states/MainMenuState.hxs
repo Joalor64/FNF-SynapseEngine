@@ -5,8 +5,6 @@ import states.MainMenuState;
 import backend.Paths;
 
 function create() {
-    FlxG.sound.playMusic(Paths.music('freakyMenu'));
-
     var bg:FlxSprite = new FlxSprite(0, 0).makeGraphic(1280, 720, FlxColor.WHITE);
 	add(bg);
 
