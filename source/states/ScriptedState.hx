@@ -23,7 +23,7 @@ class ScriptedState extends MusicBeatState
 			    folders.insert(0, Paths.mods(Mods.currentModDirectory + '/states/'));
 
 		    for (mod in Mods.getGlobalMods())
-			    foldersToCheck.insert(0, Paths.mods(mod + '/states/'));
+			    folders.insert(0, Paths.mods(mod + '/states/'));
 			#end
 			for (folder in folders)
 			{
@@ -47,8 +47,6 @@ class ScriptedState extends MusicBeatState
 			scriptSet('insert', this.insert);
 			scriptSet('remove', this.remove);
 			scriptSet('members', this.members);
-			scriptSet('multiAdd', this.multiAdd);
-			scriptSet('multiRemove', this.multiRemove);
 			scriptSet('openSubState', openSubState);
 		}
 		catch (e:Dynamic)
