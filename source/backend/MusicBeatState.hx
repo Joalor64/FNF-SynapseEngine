@@ -21,10 +21,10 @@ class MusicBeatState extends FlxUIState
 
 	override function create() {
 		camBeat = FlxG.camera;
-		var skip:Bool = FlxTransitionableState.skipNextTransOut;
+		
 		super.create();
 
-		if(!skip) {
+		if(!FlxTransitionableState.skipNextTransOut) {
 			openSubState(new CustomFadeTransition(0.7, true));
 		}
 		FlxTransitionableState.skipNextTransOut = false;
@@ -109,37 +109,44 @@ class MusicBeatState extends FlxUIState
 		curStep = lastChange.stepTime + Math.floor(shit);
 	}
 
-	public static function switchState(nextState:FlxState) {
-		// Custom made Trans in
-		var curState:Dynamic = FlxG.state;
-		var leState:MusicBeatState = curState;
-		if(!FlxTransitionableState.skipNextTransIn) {
-			leState.openSubState(new CustomFadeTransition(0.6, false));
-			if(nextState == FlxG.state) {
-				CustomFadeTransition.finishCallback = function() {
-					FlxG.resetState();
-				};
-				//trace('resetted');
-			} else {
-				CustomFadeTransition.finishCallback = function() {
-					FlxG.switchState(nextState);
-				};
-				//trace('changed state');
-			}
+	public static function switchState(nextState:FlxState = null) {
+		if (nextState == null) nextState = FlxG.state;
+		if (nextState == FlxG.state)
+		{
+			resetState();
 			return;
 		}
+
+		if (FlxTransitionableState.skipNextTransIn) FlxG.switchState(nextState);
+		else startTransition(nextState);
 		FlxTransitionableState.skipNextTransIn = false;
-		FlxG.switchState(nextState);
 	}
 
 	public static function resetState() {
-		MusicBeatState.switchState(FlxG.state);
+		if (FlxTransitionableState.skipNextTransIn) FlxG.resetState();
+		else startTransition();
+		FlxTransitionableState.skipNextTransIn = false;
+	}
+
+	public static function startTransition(nextState:FlxState = null)
+	{
+		if (nextState == null)
+			nextState = FlxG.state;
+
+		FlxG.state.openSubState(new CustomFadeTransition(0.6, false));
+		if (nextState == FlxG.state) {
+			CustomFadeTransition.finishCallback = function() {
+				FlxG.resetState();
+			};
+		} else {
+			CustomFadeTransition.finishCallback = function() {
+				FlxG.switchState(nextState);
+			};
+		}
 	}
 
 	public static function getState():MusicBeatState {
-		var curState:Dynamic = FlxG.state;
-		var leState:MusicBeatState = curState;
-		return leState;
+		return cast(FlxG.state, MusicBeatState);
 	}
 
 	public function stepHit():Void
@@ -148,15 +155,8 @@ class MusicBeatState extends FlxUIState
 			beatHit();
 	}
 
-	public function beatHit():Void
-	{
-		//trace('Beat: ' + curBeat);
-	}
-
-	public function sectionHit():Void
-	{
-		//trace('Section: ' + curSection + ', Beat: ' + curBeat + ', Step: ' + curStep);
-	}
+	public function beatHit():Void {}
+	public function sectionHit():Void {}
 
 	function getBeatsOnSection()
 	{
