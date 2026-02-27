@@ -129,6 +129,7 @@ class ScriptedState extends MusicBeatState
 				deferStateSwitch(target);
 			}
 			return;
+		}
 		
 		super.update(elapsed);
 
