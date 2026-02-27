@@ -298,6 +298,12 @@ class FunkinHScript extends FlxBasic
 		setVariable('members', FlxG.state.members);
 		setVariable('state', FlxG.state);
 
+		setVariable('Paths', Paths);
+		setVariable('Alphabet', Alphabet);
+		setVariable('ClientPrefs', ClientPrefs);
+		setVariable('MusicBeatState', MusicBeatState);
+		setVariable('MainMenuState', MainMenuState);
+
 		if (FlxG.state is PlayState && PlayState.instance != null)
 			setVariable('game', PlayState.instance);
 
@@ -307,10 +313,26 @@ class FunkinHScript extends FlxBasic
 
 	public function execute(file:String, ?executeCreate:Bool = true):Void
 	{
-		script.tryExecute(File.getContent(file));
-		trace('Script Loaded Succesfully: $file');
-		if (executeCreate)
-			executeFunc('create', []);
+		try
+		{
+			trace('Starting to load script: $file');
+			var content:String = File.getContent(file);
+			trace('File content loaded, size: ${content.length} bytes');
+			script.tryExecute(content);
+			trace('Script Loaded Successfully: $file');
+			if (executeCreate)
+			{
+				trace('Executing create function...');
+				executeFunc('create', []);
+				trace('Create function executed successfully');
+			}
+		}
+		catch (e:Dynamic)
+		{
+			trace('ERROR loading script: $file');
+			trace('Exception: $e');
+			Lib.application.window.alert('Script Error: $e', 'Failed to load $file');
+		}
 	}
 
 	public function executeStr(code:String):Dynamic
