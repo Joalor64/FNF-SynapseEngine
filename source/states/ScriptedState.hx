@@ -25,6 +25,9 @@ class ScriptedState extends MusicBeatState
 		    for (mod in Mods.getGlobalMods())
 			    folders.insert(0, Paths.mods(mod + '/states/'));
 			#end
+
+			var foundPath:String = null;
+
 			for (folder in folders)
 			{
 				if (FileSystem.exists(folder))
@@ -33,21 +36,28 @@ class ScriptedState extends MusicBeatState
 					{
 						if (file.startsWith(path) && Paths.validScriptType(file))
 						{
-							path = folder + file;
+							foundPath = folder + file;
+							break;
 						}
 					}
+					if (foundPath != null) break;
 				}
 			}
 
-			script = new FunkinHScript(path, false);
-			script.execute(path, false);
+			if (foundPath != null) {
+            	path = foundPath;
+            	script = new FunkinHScript(path, false);
+            	script.execute(path, false);
 
-			scriptSet('state', this);
-			scriptSet('add', this.add);
-			scriptSet('insert', this.insert);
-			scriptSet('remove', this.remove);
-			scriptSet('members', this.members);
-			scriptSet('openSubState', openSubState);
+            	scriptSet('state', this);
+            	scriptSet('add', this.add);
+            	scriptSet('insert', this.insert);
+            	scriptSet('remove', this.remove);
+            	scriptSet('members', this.members);
+            	scriptSet('openSubState', openSubState);
+        	} else {
+            	trace('Could not find script for: $path');
+        	}
 		}
 		catch (e:Dynamic)
 		{
@@ -55,9 +65,10 @@ class ScriptedState extends MusicBeatState
 			trace('Error while getting script: $path!\n$e');
 		}
 
-		scriptExecute('new', args);
-
 		super();
+
+		if (script != null)
+			scriptExecute('new', args);
 	}
 
 	override public function create():Void
