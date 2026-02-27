@@ -42,7 +42,9 @@ class PreloadState extends FlxState {
 			FlxTransitionableState.skipNextTransOut = true;
 			FlxG.switchState(new FlashingState());
 		} else {
-            FlxG.switchState(new ScriptedState('TitleState', []));
+			// broken???
+            // FlxG.switchState(new ScriptedState('TitleState', []));
+			FlxG.switchState(new TitleState());
         }
             
         super.create();
