@@ -2,10 +2,11 @@
 
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxFrame;
-import obejcts.Alphabet;
+import objects.Alphabet;
 import backend.ClientPrefs;
 import backend.MusicBeatState;
 import states.MainMenuState;
+import backend.Paths;
 
 var blackScreen:FlxSprite;
 var credGroup:FlxGroup;
@@ -23,18 +24,16 @@ var titleTextAlphas:Array<Float> = [1, .64];
 var curWacky:Array<String> = [];
 
 function create() {
-    FlxG.sound.music.play(Paths.music('freakyMenu'));
+    FlxG.sound.playMusic(Paths.music('freakyMenu'));
     
-    curWacky = FlxG.random.getObject(getIntroTextShit());
+    // curWacky = FlxG.random.getObject(getIntroTextShit());
 
-    logoBl = new FlxSprite(0, 0);
-		logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
+   var bg:FlxSprite = new FlxSprite(0, 0).makeGraphic(1280, 720, FlxColor.WHITE);
+	add(bg);
 
-		logoBl.antialiasing = ClientPrefs.globalAntialiasing;
-		logoBl.animation.addByPrefix('bump', 'logo bumpin', 24, false);
-		logoBl.animation.play('bump');
-		logoBl.updateHitbox();
-        add(logoBl);
+	var text:FlxText = new FlxText(0, 0, FlxG.width, "I am a custom state!", 48);
+	text.color = FlxColor.BLACK;
+	add(text);
 }
 
 function update(elapsed:Float) {
