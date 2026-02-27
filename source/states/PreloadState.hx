@@ -40,9 +40,9 @@ class PreloadState extends FlxState {
             if(FlxG.save.data.flashing == null && !FlashingState.leftState) {
 			FlxTransitionableState.skipNextTransIn = true;
 			FlxTransitionableState.skipNextTransOut = true;
-			MusicBeatState.switchState(new FlashingState());
+			FlxG.switchState(new FlashingState());
 		} else {
-            MusicBeatState.switchState(new ScriptedState('TitleState'));
+            FlxG.switchState(new ScriptedState('TitleState'));
         }
             
         super.create();
