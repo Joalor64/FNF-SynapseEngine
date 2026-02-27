@@ -26,26 +26,26 @@ class FunkinHScript extends FlxBasic
 	public var interp:RuleScriptInterp = new RuleScriptInterp();
 
 	public var script:RuleScript = null;
+	public var scriptPath:String = null;
 
 	public function new(?file:String, ?execute:Bool = true)
 	{
 		super();
 
+		scriptPath = file;
 		script = new RuleScript(interp, parser);
-		script.scriptName = ~/\.(hx|hxs|hxc|hscript)$/.replace(file.split('/').pop(), '');
+		
+		if (file != null)
+			script.scriptName = ~/\.(hx|hxs|hxc|hscript)$/.replace(file.split('/').pop(), '');
 
 		parser.allowAll();
 		parser.preprocesorValues = macros.Macros.getDefines();
 
-		// Default Variables
 		setVariable('this', this);
-
 		setVariable('Function_Stop', Function_Stop);
 		setVariable('Function_Continue', Function_Continue);
-
 		setVariable('version', Lib.application.meta.get('version'));
 
-		// Default Functions
 		setVariable('trace', function(value:Dynamic)
 		{
 			trace(value);
@@ -291,7 +291,7 @@ class FunkinHScript extends FlxBasic
 			return variable = new FlxSpriteGroup();
 		});
 
-		// State Stuff
+		// State Stuff - These will be overridden by ScriptedState
 		setVariable('add', FlxG.state.add);
 		setVariable('remove', FlxG.state.remove);
 		setVariable('insert', FlxG.state.insert);
@@ -307,26 +307,63 @@ class FunkinHScript extends FlxBasic
 
 	public function execute(file:String, ?executeCreate:Bool = true):Void
 	{
-       	script.tryExecute(File.getContent(file));
-        trace('Script Loaded Successfully: $file');
-		if (executeCreate)
-			executeFunc('create', []);
+		try
+		{
+			var content = File.getContent(file);
+			var result = script.tryExecute(content);
+			
+			if (result == null)
+			{
+				trace('Script returned null: $file');
+				return;
+			}
+			
+			#if (rulescript >= "0.5.0")
+			if (result.error != null)
+			{
+				trace('Script error in $file: ${result.error}');
+				return;
+			}
+			#end
+			
+			trace('Script Loaded Successfully: $file');
+			
+			if (executeCreate)
+				executeFunc('create', []);
+		}
+		catch (e:Dynamic)
+		{
+			trace('Fatal error executing script $file: $e');
+		}
 	}
 
 	public function executeStr(code:String):Dynamic
 	{
-		return script.tryExecute(code);
+		try
+		{
+			return script.tryExecute(code);
+		}
+		catch (e:Dynamic)
+		{
+			trace('Error executing string: $e');
+			return null;
+		}
 	}
 
 	public function setVariable(name:String, val:Dynamic):Void
 	{
 		try
 		{
-			script?.variables.set(name, val);
-			locals.set(name, {r: val});
+			if (script != null)
+			{
+				script.variables.set(name, val);
+				locals.set(name, {r: val});
+			}
 		}
 		catch (e:Dynamic)
-			Lib.application.window.alert(Std.string(e), 'HScript Error!');
+		{
+			trace('Error setting variable $name: $e');
+		}
 	}
 
 	public function getVariable(name:String):Dynamic
@@ -335,11 +372,13 @@ class FunkinHScript extends FlxBasic
 		{
 			if (locals.exists(name) && locals[name] != null)
 				return locals.get(name).r;
-			else if (script.variables.exists(name))
-				return script?.variables.get(name);
+			else if (script != null && script.variables.exists(name))
+				return script.variables.get(name);
 		}
 		catch (e:Dynamic)
-			Lib.application.window.alert(Std.string(e), 'HScript Error!');
+		{
+			trace('Error getting variable $name: $e');
+		}
 		return null;
 	}
 
@@ -347,48 +386,67 @@ class FunkinHScript extends FlxBasic
 	{
 		try
 		{
-			script?.variables.remove(name);
+			if (script != null)
+				script.variables.remove(name);
 		}
 		catch (e:Dynamic)
-			Lib.application.window.alert(Std.string(e), 'HScript Error!');
+		{
+			trace('Error removing variable $name: $e');
+		}
 	}
 
 	public function existsVariable(name:String):Bool
 	{
 		try
 		{
-			return script?.variables.exists(name);
+			if (script != null)
+				return script.variables.exists(name);
 		}
 		catch (e:Dynamic)
-			Lib.application.window.alert(Std.string(e), 'HScript Error!');
+		{
+			trace('Error checking variable $name: $e');
+		}
 		return false;
 	}
 
 	public function executeFunc(funcName:String, ?args:Array<Dynamic>):Dynamic
 	{
-		if (existsVariable(funcName))
+		if (!existsVariable(funcName))
+			return null;
+			
+		try
 		{
-			try
-			{
-				return Reflect.callMethod(this, getVariable(funcName), args == null ? [] : args);
-			}
-			catch (e:Dynamic)
-				Lib.application.window.alert(Std.string(e), 'Hscript Error!');
+			var func = getVariable(funcName);
+			if (func == null)
+				return null;
+				
+			return Reflect.callMethod(null, func, args == null ? [] : args);
 		}
-
+		catch (e:Dynamic)
+		{
+			trace('Error calling function $funcName: $e');
+		}
+		
 		return null;
 	}
 
 	public function getAll():Dynamic
 	{
-		var balls:Dynamic = {};
+		var result:Dynamic = {};
 
-		for (i in locals.keys())
-			Reflect.setField(balls, i, getVariable(i));
-		for (i in interp.variables.keys())
-			Reflect.setField(balls, i, getVariable(i));
+		try
+		{
+			for (key in locals.keys())
+				Reflect.setField(result, key, getVariable(key));
+			for (key in interp.variables.keys())
+				Reflect.setField(result, key, getVariable(key));
+		}
+		catch (e:Dynamic)
+		{
+			trace('Error getting all variables: $e');
+		}
 
-		return balls;
+		return result;
 	}
 
 	override function destroy()
@@ -396,5 +454,6 @@ class FunkinHScript extends FlxBasic
 		super.destroy();
 		parser = null;
 		interp = null;
+		script = null;
 	}
 }

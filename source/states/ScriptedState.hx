@@ -4,6 +4,7 @@ class ScriptedState extends MusicBeatState
 {
 	public var path:String = '';
 	public var script:FunkinHScript = null;
+	public var scriptArgs:Array<Dynamic> = null;
 
 	public static var instance:ScriptedState = null;
 
@@ -11,21 +12,26 @@ class ScriptedState extends MusicBeatState
 	{
 		if (_path != null)
 			path = _path;
-
+		scriptArgs = args;
 		instance = this;
 
 		super();
 
+		loadScript();
+	}
+
+	function loadScript():Void
+	{
 		try
 		{
 			var folders:Array<String> = [Paths.getPath('states/')];
 			#if MODS_ALLOWED
-            folders.insert(0, Paths.mods('states/'));
-		    if (Mods.currentModDirectory != null && Mods.currentModDirectory.length > 0)
-			    folders.insert(0, Paths.mods(Mods.currentModDirectory + '/states/'));
+			folders.insert(0, Paths.mods('states/'));
+			if (Mods.currentModDirectory != null && Mods.currentModDirectory.length > 0)
+				folders.insert(0, Paths.mods(Mods.currentModDirectory + '/states/'));
 
-		    for (mod in Mods.getGlobalMods())
-			    folders.insert(0, Paths.mods(mod + '/states/'));
+			for (mod in Mods.getGlobalMods())
+				folders.insert(0, Paths.mods(mod + '/states/'));
 			#end
 
 			var foundPath:String = null;
@@ -47,28 +53,18 @@ class ScriptedState extends MusicBeatState
 			}
 
 			if (foundPath != null) {
-            	path = foundPath;
-            	script = new FunkinHScript(path, false);
-            	script.execute(path, false);
-
-            	scriptSet('state', this);
-            	scriptSet('add', this.add);
-            	scriptSet('insert', this.insert);
-            	scriptSet('remove', this.remove);
-            	scriptSet('members', this.members);
-            	scriptSet('openSubState', openSubState);
-        	} else {
-            	trace('Could not find script for: $path');
-        	}
+				path = foundPath;
+				script = new FunkinHScript(path, false);
+				trace('Script loaded: $path');
+			} else {
+				trace('Could not find script for: $path');
+			}
 		}
 		catch (e:Dynamic)
 		{
 			script = null;
-			trace('Error while getting script: $path!\n$e');
+			trace('Error loading script: $path\n$e');
 		}
-
-		if (script != null)
-			scriptExecute('new', args);
 	}
 
 	override public function create():Void
@@ -77,16 +73,35 @@ class ScriptedState extends MusicBeatState
 		Paths.clearUnusedMemory();
 
 		super.create();
-		scriptExecute('create', []);
+
+		if (script != null)
+		{
+			scriptSet('state', this);
+			scriptSet('add', this.add);
+			scriptSet('insert', this.insert);
+			scriptSet('remove', this.remove);
+			scriptSet('members', this.members);
+			scriptSet('openSubState', openSubState);
+
+			scriptExecute('new', scriptArgs);
+			scriptExecute('create', []);
+		}
 	}
 
 	override public function update(elapsed:Float):Void
 	{
-		scriptExecute('update', [elapsed]);
+		try
+		{
+			scriptExecute('update', [elapsed]);
+		}
+		catch (e:Dynamic)
+		{
+			trace('Script update error: $e');
+		}
 		super.update(elapsed);
 
-		if (FlxG.keys.justPressed.F4) // emergency exit
-			FlxG.switchState(new MainMenuState());
+		if (FlxG.keys.justPressed.F4)
+			MusicBeatState.switchState(new MainMenuState());
 	}
 
 	override public function beatHit():Void
@@ -135,7 +150,14 @@ class ScriptedState extends MusicBeatState
 
 	public function scriptSet(key:String, value:Dynamic):Void
 	{
-		script?.setVariable(key, value);
+		try
+		{
+			script?.setVariable(key, value);
+		}
+		catch (e:Dynamic)
+		{
+			trace('Error setting script variable $key: $e');
+		}
 	}
 
 	public function scriptExecute(func:String, args:Array<Dynamic>):Void
@@ -146,7 +168,7 @@ class ScriptedState extends MusicBeatState
 		}
 		catch (e:Dynamic)
 		{
-			trace('Error executing $func!\n$e');
+			trace('Error executing $func: $e');
 		}
 	}
 }
