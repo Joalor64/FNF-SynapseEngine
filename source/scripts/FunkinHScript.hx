@@ -291,7 +291,7 @@ class FunkinHScript extends FlxBasic
 			return variable = new FlxSpriteGroup();
 		});
 
-		// State Stuff - These will be overridden by ScriptedState
+		// State Stuff
 		setVariable('add', FlxG.state.add);
 		setVariable('remove', FlxG.state.remove);
 		setVariable('insert', FlxG.state.insert);

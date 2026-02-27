@@ -5,6 +5,9 @@ class ScriptedState extends MusicBeatState
 	public var path:String = '';
 	public var script:FunkinHScript = null;
 	public var scriptArgs:Array<Dynamic> = null;
+	
+	public var requestedState:FlxState = null;
+	public var skipTransition:Bool = false;
 
 	public static var instance:ScriptedState = null;
 
@@ -83,6 +86,18 @@ class ScriptedState extends MusicBeatState
 			scriptSet('remove', this.remove);
 			scriptSet('members', this.members);
 			scriptSet('openSubState', openSubState);
+			
+			scriptSet('switchState', function(newState:FlxState, ?skipTrans:Bool = false) {
+				requestedState = newState;
+				skipTransition = skipTrans;
+			});
+			
+			scriptSet('MusicBeatState', {
+				switchState: function(s:FlxState) {
+					requestedState = s;
+					skipTransition = false;
+				}
+			});
 
 			scriptExecute('new', scriptArgs);
 			scriptExecute('create', []);
@@ -99,10 +114,34 @@ class ScriptedState extends MusicBeatState
 		{
 			trace('Script update error: $e');
 		}
+	
+		if (requestedState != null)
+		{
+			var target = requestedState;
+			var skip = skipTransition;
+			requestedState = null;
+			skipTransition = false;
+			
+			if (skip) {
+				FlxTransitionableState.skipNextTransIn = true;
+				MusicBeatState.switchState(target);
+			} else {
+				deferStateSwitch(target);
+			}
+			return;
+		
 		super.update(elapsed);
 
-		if (FlxG.keys.justPressed.F4)
-			MusicBeatState.switchState(new MainMenuState());
+		if (FlxG.keys.justPressed.F4) {
+			deferStateSwitch(new MainMenuState());
+		}
+	}
+	
+	function deferStateSwitch(target:FlxState):Void
+	{
+		FlxG.signals.postUpdate.addOnce(function() {
+			MusicBeatState.switchState(target);
+		});
 	}
 
 	override public function beatHit():Void
