@@ -72,6 +72,7 @@ import objects.Alphabet;
 import options.*;
 import scripts.FunkinLua;
 import scripts.FunkinHScript;
+import shaders.Colorblind;
 import shaders.*;
 import states.*;
 import states.editors.*;

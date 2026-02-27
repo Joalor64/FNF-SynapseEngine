@@ -24,7 +24,8 @@ class ClientPrefs {
 	public static var healthBarAlpha:Float = 1;
 	public static var hitsoundVolume:Float = 0;
 	public static var pauseMusic:String = 'Tea Time';
-	public static var comboStacking = true;
+	public static var colorBlindFilter:String = 'None';
+	public static var comboStacking:Bool = true;
 	public static var gameplaySettings:Map<String, Dynamic> = [
 		'scrollspeed' => 1.0,
 		'scrolltype' => 'multiplicative', 
@@ -124,6 +125,8 @@ class ClientPrefs {
 		FlxG.save.data.hitsoundVolume = hitsoundVolume;
 		FlxG.save.data.pauseMusic = pauseMusic;
 		FlxG.save.data.comboStacking = comboStacking;
+
+		FlxG.save.data.colorBlindFilter = colorBlindFilter;
 	
 		FlxG.save.flush();
 
@@ -227,6 +230,8 @@ class ClientPrefs {
 		if(FlxG.save.data.pauseMusic != null) {
 			pauseMusic = FlxG.save.data.pauseMusic;
 		}
+		if (FlxG.save.data.colorBlindFilter != null)
+			colorBlindFilter = FlxG.save.data.colorBlindFilter;
 		if(FlxG.save.data.gameplaySettings != null)
 		{
 			var savedMap:Map<String, Dynamic> = FlxG.save.data.gameplaySettings;

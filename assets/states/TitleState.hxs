@@ -1,0 +1,44 @@
+// WORK IN PROGRESS!!
+
+import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.graphics.frames.FlxFrame;
+import obejcts.Alphabet;
+import backend.ClientPrefs;
+import backend.MusicBeatState;
+import states.MainMenuState;
+
+var blackScreen:FlxSprite;
+var credGroup:FlxGroup;
+var credTextShit:Alphabet;
+var textGroup:FlxGroup;
+var ngSpr:FlxSprite;
+var logoBl:FlxSprite;
+var gfDance:FlxSprite;
+var danceLeft:Bool = false;
+var titleText:FlxSprite;
+	
+var titleTextColors:Array<FlxColor> = [0xFF33FFFF, 0xFF3333CC];
+var titleTextAlphas:Array<Float> = [1, .64];
+
+var curWacky:Array<String> = [];
+
+function create() {
+    FlxG.sound.music.play(Paths.music('freakyMenu'));
+    
+    curWacky = FlxG.random.getObject(getIntroTextShit());
+
+    logoBl = new FlxSprite(0, 0);
+		logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
+
+		logoBl.antialiasing = ClientPrefs.globalAntialiasing;
+		logoBl.animation.addByPrefix('bump', 'logo bumpin', 24, false);
+		logoBl.animation.play('bump');
+		logoBl.updateHitbox();
+        add(logoBl);
+}
+
+function update(elapsed:Float) {
+    if (FlxG.keys.justPressed.ENTER) {
+        MusicBeatState.switchState(new MainMenuState());
+    }
+}

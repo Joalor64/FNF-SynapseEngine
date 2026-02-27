@@ -1,7 +1,7 @@
 # To-Dos (Not Final)
 ## V0.1.0
-* [ ] HScript Support
-* [ ] Custom States + Substates
+* [X] HScript Support
+    * [ ] Custom States + Substates
 * [ ] Crossfades
 * [ ] New Events
 * [ ] Softcoding
@@ -14,9 +14,9 @@
 * [X] FlxAnimate Support
 * [X] Source Code Reorganization
 * [X] Asset Reorganization
-* [ ] Options Menu Reorganization
+* [X] Options Menu Reorganization
 * [X] Restore Combo Sprite
-* [ ] Colorblind Filters
+* [X] Colorblind Filters
 * [ ] Update to hxdiscord_rpc
 
 ## V0.2.0

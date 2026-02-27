@@ -2,7 +2,7 @@ package options;
 
 class OptionsState extends MusicBeatState
 {
-	var options:Array<String> = ['Note Colors', 'Controls', 'Adjust Delay and Combo', 'Graphics', 'Visuals and UI', 'Gameplay'];
+	var options:Array<String> = ['Note Colors', 'Controls', 'Offsets', 'Visuals', 'Gameplay', 'Miscellaneous'];
 	private var grpOptions:FlxTypedGroup<Alphabet>;
 	private static var curSelected:Int = 0;
 	public static var menuBG:FlxSprite;
@@ -10,16 +10,16 @@ class OptionsState extends MusicBeatState
 	function openSelectedSubstate(label:String) {
 		switch(label) {
 			case 'Note Colors':
-				openSubState(new options.NotesSubState());
+				openSubState(new options.OptionsSubState.NotesSubState());
 			case 'Controls':
-				openSubState(new options.ControlsSubState());
-			case 'Graphics':
-				openSubState(new options.GraphicsSettingsSubState());
-			case 'Visuals and UI':
-				openSubState(new options.VisualsUISubState());
+				openSubState(new options.OptionsSubState.ControlsSubState());
+			case 'Miscellaneous':
+				openSubState(new options.OptionsSubState.MiscSubState());
+			case 'Visuals':
+				openSubState(new options.OptionsSubState.VisualsSubState());
 			case 'Gameplay':
-				openSubState(new options.GameplaySettingsSubState());
-			case 'Adjust Delay and Combo':
+				openSubState(new options.OptionsSubState.GameplaySubState());
+			case 'Offsets':
 				LoadingState.loadAndSwitchState(new options.NoteOffsetState());
 		}
 	}
