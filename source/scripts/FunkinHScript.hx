@@ -307,8 +307,17 @@ class FunkinHScript extends FlxBasic
 
 	public function execute(file:String, ?executeCreate:Bool = true):Void
 	{
-		script.tryExecute(File.getContent(file));
-		trace('Script Loaded Succesfully: $file');
+		try {
+        var content = File.getContent(file);
+        trace('Executing script content length: ${content.length}');
+        var result = script.tryExecute(content);
+        trace('Script execution result: $result');
+        trace('Script Loaded Successfully: $file');
+    } catch(e:Dynamic) {
+        trace('ERROR loading script $file: $e');
+        Lib.application.window.alert(Std.string(e), 'Script Load Error!');
+        return;
+    }
 		if (executeCreate)
 			executeFunc('create', []);
 	}

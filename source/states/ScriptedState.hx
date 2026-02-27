@@ -14,6 +14,8 @@ class ScriptedState extends MusicBeatState
 
 		instance = this;
 
+		super();
+
 		try
 		{
 			var folders:Array<String> = [Paths.getPath('states/')];
@@ -65,8 +67,6 @@ class ScriptedState extends MusicBeatState
 			trace('Error while getting script: $path!\n$e');
 		}
 
-		super();
-
 		if (script != null)
 			scriptExecute('new', args);
 	}
@@ -76,8 +76,8 @@ class ScriptedState extends MusicBeatState
 		Paths.clearStoredMemory();
 		Paths.clearUnusedMemory();
 
-		scriptExecute('create', []);
 		super.create();
+		scriptExecute('create', []);
 	}
 
 	override public function update(elapsed:Float):Void
