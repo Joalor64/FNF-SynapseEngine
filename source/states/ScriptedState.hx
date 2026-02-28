@@ -1,6 +1,5 @@
 package states;
 
-// TO-DO: Fix state switching!!
 class ScriptedState extends MusicBeatState
 {
 	public var path:String = '';
