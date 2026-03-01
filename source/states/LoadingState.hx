@@ -3,14 +3,14 @@ package states;
 class LoadingState extends MusicBeatState
 {
 	inline static final MIN_TIME = 1.0;
-	
+
 	var target:FlxState = null;
 	var stopMusic = false;
 
 	function new(target:FlxState, stopMusic:Bool)
 	{
 		super();
-		
+
 		this.target = target;
 		this.stopMusic = stopMusic;
 	}
@@ -22,7 +22,7 @@ class LoadingState extends MusicBeatState
 	{
 		var bg:FlxSprite = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, 0xffcaff4d);
 		add(bg);
-		
+
 		funkay = new FlxSprite(0, 0).loadGraphic(Paths.getPath('images/funkay.png'));
 		funkay.antialiasing = ClientPrefs.globalAntialiasing;
 		funkay.setGraphicSize(0, FlxG.height);
@@ -52,14 +52,15 @@ class LoadingState extends MusicBeatState
 
 		super.update(elapsed);
 	}
-	
+
 	function onLoad()
 	{
 		var fadeTime = 0.5;
-		
+
 		FlxG.camera.fade(FlxG.camera.bgColor, fadeTime, true);
 
-		new FlxTimer().start(fadeTime + MIN_TIME, (_) -> {
+		new FlxTimer().start(fadeTime + MIN_TIME, (_) ->
+		{
 			if (stopMusic)
 			{
 				if (FlxG.sound.music != null)
@@ -83,7 +84,7 @@ class LoadingState extends MusicBeatState
 	{
 		loadAndSwitchState(FlxG.state, stopMusic);
 	}
-	
+
 	static function getNextState(target:FlxState, stopMusic = false):FlxState
 	{
 		if (stopMusic)
@@ -91,7 +92,7 @@ class LoadingState extends MusicBeatState
 			if (FlxG.sound.music != null)
 				FlxG.sound.music.stop();
 		}
-		
+
 		return target;
 	}
 }

@@ -189,5 +189,6 @@
 		0
 	],
 	"sing_duration": 4,
-	"scale": 1
+	"scale": 1,
+	"flixel_trail": false
 }

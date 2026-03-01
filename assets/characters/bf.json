@@ -184,5 +184,10 @@
 		0
 	],
 	"sing_duration": 4,
-	"scale": 1
+	"scale": 1,
+	"trail_length": 4,
+	"trail_delay": 24,
+	"trail_diff": 0,
+	"trail_alpha": 1,
+	"flixel_trail": false
 }

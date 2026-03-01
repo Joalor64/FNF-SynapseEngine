@@ -422,7 +422,7 @@ class RuleScriptInterp extends hscript.Interp
 		return prop;
 	}
 
-	override function resolveType(path:String):Dynamic
+	function resolveType(path:String):Dynamic
 	{
 		var t:Dynamic = RuleScript.resolveScript(path);
 

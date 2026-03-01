@@ -5,12 +5,10 @@ import openfl.events.UncaughtErrorEvent;
 import haxe.CallStack;
 import haxe.io.Path;
 #end
-
 #if DISCORD_ALLOWED
-import backend.Discord.DiscordClient;
+import backend.DiscordClient;
 #end
-
-import openfl.display.FPS;
+import debug.FPS;
 
 class Main extends Sprite
 {
@@ -24,15 +22,12 @@ class Main extends Sprite
 
 	public static var fpsVar:FPS;
 
-	// You can pretty much ignore everything from here on - your code should go in your states.
-
 	public static function main():Void
-	{
 		Lib.current.addChild(new Main());
-	}
 
 	#if desktop
-	static function __init__():Void {
+	static function __init__():Void
+	{
 		var origin:String = #if hl Sys.getCwd() #else Sys.programPath() #end;
 
 		var configPath:String = Path.directory(Path.withoutExtension(origin));
@@ -58,7 +53,7 @@ class Main extends Sprite
 		untyped __global__.__hxcpp_set_critical_error_handler(onFatalCrash);
 		#end
 		#end
-		
+
 		FlxG.save.bind('funkin', 'ninjamuffin99');
 		Highscore.load();
 
@@ -66,13 +61,39 @@ class Main extends Sprite
 		hxvlc.util.Handle.init(#if (hxvlc >= "1.8.0") ['--no-lua'] #end);
 		#end
 
+		#if DISCORD_ALLOWED
+		DiscordClient.load();
+		#end
+
+		FlxG.signals.preStateSwitch.add(() ->{
+			#if cpp
+			cpp.NativeGc.run(true);
+			cpp.NativeGc.enable(true);
+			#end
+			#if (flixel < "6.0.0")
+			FlxG.bitmap.dumpCache();
+			#end
+			FlxG.bitmap.clearUnused();
+
+			openfl.system.System.gc();
+		});
+
+		FlxG.signals.postStateSwitch.add(() ->{
+			#if cpp
+			cpp.NativeGc.run(false);
+			cpp.NativeGc.enable(false);
+			#end
+			openfl.system.System.gc();
+		});
+
 		ClientPrefs.loadDefaultKeys();
 		addChild(new FlxGame(config.gameDimensions[0], config.gameDimensions[1], config.initialState, config.defaultFPS, config.defaultFPS, config.skipSplash,
 			config.startFullscreen));
 
 		fpsVar = new FPS(10, 10, 0xFFFFFF);
 		addChild(fpsVar);
-		if(fpsVar != null) {
+		if (fpsVar != null)
+		{
 			fpsVar.visible = ClientPrefs.showFPS;
 		}
 
@@ -82,19 +103,6 @@ class Main extends Sprite
 
 		#if html5
 		FlxG.autoPause = FlxG.mouse.visible = false;
-		#end
-		
-		#if DISCORD_ALLOWED
-		if (!DiscordClient.isInitialized)
-		{
-			DiscordClient.initialize();
-		}
-
-		Lib.current.stage.application.window.onClose.add(function()
-		{
-			if (DiscordClient.isInitialized)
-				DiscordClient.shutdown();
-		});
 		#end
 	}
 
@@ -156,12 +164,13 @@ class Main extends Sprite
 			FlxG.sound.music.stop();
 
 		#if DISCORD_ALLOWED
-		Discord.shutdown();
+		DiscordClient.shutdown();
 		#end
 
 		Lib.application.window.alert('Uncaught Error: \n'
 			+ msg
-			+ '\n\nPlease report this error to the GitHub page: https://github.com/Joalor64GH/FNF-SynapseEngine/issues\n\n> Crash Handler written by: sqirra-rng',
+			+
+			'\n\nPlease report this error to the GitHub page: https://github.com/Joalor64GH/FNF-SynapseEngine/issues\n\n> Crash Handler written by: sqirra-rng',
 			'Error!');
 		Sys.println('Uncaught Error: \n'
 			+ msg
@@ -180,7 +189,7 @@ class Main extends Sprite
 		dateNow = dateNow.replace(" ", "_");
 		dateNow = dateNow.replace(":", "'");
 
-		path = "./crash/" + "VSRob_" + dateNow + ".txt";
+		path = "./crash/" + "SynapseEngine_" + dateNow + ".txt";
 
 		errMsg += '${msg}\n';
 
@@ -210,7 +219,7 @@ class Main extends Sprite
 
 		Application.current.window.alert(errMsg, "Error!");
 		#if DISCORD_ALLOWED
-		Discord.shutdown();
+		DiscordClient.shutdown();
 		#end
 		Sys.exit(1);
 	}

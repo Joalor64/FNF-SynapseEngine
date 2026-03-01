@@ -1,7 +1,7 @@
 // WORK IN PROGRESS!!
 
 import backend.MusicBeatState;
-import states.MainMenuState;
+import states.ScriptedState;
 import backend.Paths;
 
 function create() {
@@ -17,6 +17,6 @@ function create() {
 
 function update(elapsed:Float) {
     if (FlxG.keys.justPressed.ENTER) {
-        MusicBeatState.switchState(new MainMenuState());
+        MusicBeatState.switchState(new ScriptedState('MainMenuState', []));
     }
 }

@@ -22,7 +22,6 @@ class MusicBeatSubstate extends FlxSubState
 
 	override function update(elapsed:Float)
 	{
-		//everyStep();
 		var oldStep:Int = curStep;
 
 		updateCurStep();
@@ -31,14 +30,13 @@ class MusicBeatSubstate extends FlxSubState
 		if (oldStep != curStep && curStep > 0)
 			stepHit();
 
-
 		super.update(elapsed);
 	}
 
 	private function updateBeat():Void
 	{
 		curBeat = Math.floor(curStep / 4);
-		curDecBeat = curDecStep/4;
+		curDecBeat = curDecStep / 4;
 	}
 
 	private function updateCurStep():Void
@@ -56,8 +54,5 @@ class MusicBeatSubstate extends FlxSubState
 			beatHit();
 	}
 
-	public function beatHit():Void
-	{
-		//do literally nothing dumbass
-	}
+	public function beatHit():Void {}
 }

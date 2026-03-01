@@ -64,19 +64,14 @@ class Highscore
 			setWeekScore(daWeek, score);
 	}
 
-	/**
-	 * YOU SHOULD FORMAT SONG WITH formatSong() BEFORE TOSSING IN SONG VARIABLE
-	 */
 	static function setScore(song:String, score:Int):Void
 	{
-		// Reminder that I don't need to format this song, it should come formatted!
 		songScores.set(song, score);
 		FlxG.save.data.songScores = songScores;
 		FlxG.save.flush();
 	}
 	static function setWeekScore(week:String, score:Int):Void
 	{
-		// Reminder that I don't need to format this song, it should come formatted!
 		weekScores.set(week, score);
 		FlxG.save.data.weekScores = weekScores;
 		FlxG.save.flush();
@@ -84,7 +79,6 @@ class Highscore
 
 	static function setRating(song:String, rating:Float):Void
 	{
-		// Reminder that I don't need to format this song, it should come formatted!
 		songRating.set(song, rating);
 		FlxG.save.data.songRating = songRating;
 		FlxG.save.flush();

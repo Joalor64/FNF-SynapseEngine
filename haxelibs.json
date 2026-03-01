@@ -17,7 +17,6 @@
       "name": "flixel-addons",
       "type": "haxelib",
       "version": "3.3.2"
-
     },
     {
       "name": "flixel-ui",
@@ -39,9 +38,7 @@
     },
     {
       "name": "hscript",
-      "type": "git",
-      "ref": "master",
-      "url": "https://github.com/HaxeFoundation/hscript"
+      "type": "haxelib"
     },
     {
       "name": "rulescript",
@@ -58,11 +55,8 @@
       "url": "https://github.com/superpowers04/linc_luajit"
     },
     {
-      "name": "linc_discord-rpc",
-      "type": "git",
-      "dir": null,
-      "ref": "master",
-      "url": "https://github.com/Aidan63/linc_discord-rpc"
+      "name": "hxdiscord_rpc",
+      "type": "haxelib"
     },
     {
       "name": "tjson",

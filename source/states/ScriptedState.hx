@@ -48,16 +48,20 @@ class ScriptedState extends MusicBeatState
 							break;
 						}
 					}
-					if (foundPath != null) break;
+					if (foundPath != null)
+						break;
 				}
 			}
 
-			if (foundPath != null) {
+			if (foundPath != null)
+			{
 				path = foundPath;
 				script = new FunkinHScript(path, false);
 				script.execute(path, false);
 				trace('Script loaded: $path');
-			} else {
+			}
+			else
+			{
 				trace('Could not find script for: $path');
 			}
 		}
@@ -82,7 +86,14 @@ class ScriptedState extends MusicBeatState
 			scriptSet('insert', this.insert);
 			scriptSet('remove', this.remove);
 			scriptSet('members', this.members);
-			scriptSet('openSubState', openSubState);
+			scriptSet('openSubState', function(sub:FlxSubState)
+			{
+				this.openSubState(sub);
+			});
+			scriptSet('closeSubState', function()
+			{
+				this.closeSubState();
+			});
 
 			scriptExecute('new', scriptArgs);
 			scriptExecute('create', []);
@@ -94,9 +105,6 @@ class ScriptedState extends MusicBeatState
 		scriptExecute('update', [elapsed]);
 
 		super.update(elapsed);
-
-		if (FlxG.keys.justPressed.F4)
-			MusicBeatState.switchState(new MainMenuState());
 	}
 
 	override public function beatHit():Void
@@ -129,18 +137,6 @@ class ScriptedState extends MusicBeatState
 	{
 		scriptExecute('onFocusLost', []);
 		super.onFocusLost();
-	}
-
-	override function openSubState(SubState:FlxSubState):Void
-	{
-		scriptExecute('openSubState', [SubState]);
-		super.openSubState(SubState);
-	}
-
-	override function closeSubState():Void
-	{
-		scriptExecute('closeSubState', []);
-		super.closeSubState();
 	}
 
 	public function scriptSet(key:String, value:Dynamic):Void

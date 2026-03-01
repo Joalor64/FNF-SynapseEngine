@@ -5,6 +5,7 @@ import objects.Character;
 class GameOverSubstate extends MusicBeatSubstate
 {
 	public var boyfriend:Boyfriend;
+
 	var camFollow:FlxPoint;
 	var camFollowPos:FlxObject;
 	var updateCamera:Bool = false;
@@ -19,7 +20,8 @@ class GameOverSubstate extends MusicBeatSubstate
 
 	public static var instance:GameOverSubstate;
 
-	public static function resetVariables() {
+	public static function resetVariables()
+	{
 		characterName = 'bf-dead';
 		deathSoundName = 'fnf_loss_sfx';
 		loopSoundName = 'gameOver';
@@ -51,8 +53,6 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		FlxG.sound.play(Paths.sound(deathSoundName));
 		Conductor.bpm = 100;
-		// FlxG.camera.followLerp = 1;
-		// FlxG.camera.focusOn(FlxPoint.get(FlxG.width / 2, FlxG.height / 2));
 		FlxG.camera.scroll.set();
 		FlxG.camera.target = null;
 
@@ -64,12 +64,14 @@ class GameOverSubstate extends MusicBeatSubstate
 	}
 
 	var isFollowingAlready:Bool = false;
+
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
 
 		PlayState.instance.callOnLuas('onUpdate', [elapsed]);
-		if(updateCamera) {
+		if (updateCamera)
+		{
 			var lerpVal:Float = CoolUtil.boundTo(elapsed * 0.6, 0, 1);
 			camFollowPos.setPosition(FlxMath.lerp(camFollowPos.x, camFollow.x, lerpVal), FlxMath.lerp(camFollowPos.y, camFollow.y, lerpVal));
 		}
@@ -98,7 +100,7 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		if (boyfriend.animation.curAnim != null && boyfriend.animation.curAnim.name == 'firstDeath')
 		{
-			if(boyfriend.animation.curAnim.curFrame >= 12 && !isFollowingAlready)
+			if (boyfriend.animation.curAnim.curFrame >= 12 && !isFollowingAlready)
 			{
 				FlxG.camera.follow(camFollowPos, LOCKON, 1);
 				updateCamera = true;
@@ -111,12 +113,10 @@ class GameOverSubstate extends MusicBeatSubstate
 				{
 					playingDeathSound = true;
 					coolStartDeath(0.2);
-					
-					var exclude:Array<Int> = [];
-					//if(!ClientPrefs.cursing) exclude = [1, 3, 8, 13, 17, 21];
 
-					FlxG.sound.play(Paths.sound('jeffGameover/jeffGameover-' + FlxG.random.int(1, 25, exclude)), 1, false, null, true, function() {
-						if(!isEnding)
+					FlxG.sound.play(Paths.sound('jeffGameover/jeffGameover-' + FlxG.random.int(1, 25)), 1, false, null, true, function()
+					{
+						if (!isEnding)
 						{
 							FlxG.sound.music.fadeIn(0.2, 1, 4);
 						}
@@ -140,8 +140,6 @@ class GameOverSubstate extends MusicBeatSubstate
 	override function beatHit()
 	{
 		super.beatHit();
-
-		//FlxG.log.add('beat');
 	}
 
 	var isEnding:Bool = false;

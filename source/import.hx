@@ -48,7 +48,7 @@ import sys.io.*;
 import animateatlas.AtlasFrameMaker;
 
 #if DISCORD_ALLOWED
-import backend.Discord;
+import backend.DiscordClient;
 #end
 
 #if MODS_ALLOWED

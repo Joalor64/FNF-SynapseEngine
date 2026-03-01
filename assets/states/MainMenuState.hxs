@@ -1,20 +1,258 @@
-// WORK IN PROGRESS!!
-
+import backend.CoolUtil;
+import backend.Mods;
+import backend.Achievements;
+import backend.DiscordClient;
 import backend.MusicBeatState;
-import states.MainMenuState;
+import backend.ClientPrefs;
+import states.LoadingState;
+import states.editors.MasterEditorMenu;
 import backend.Paths;
+import flixel.effects.FlxFlicker;
+import lime.app.Application;
 
-function create() {
-    var bg:FlxSprite = new FlxSprite(0, 0).makeGraphic(1280, 720, FlxColor.WHITE);
+var curSelected:Int = 0;
+var menuItems:FlxTypedGroup<FlxSprite>;
+var camGame:FlxCamera;
+var camAchievement:FlxCamera;
+
+var optionShit:Array<String> = [
+	'story_mode',
+	'freeplay',
+	#if MODS_ALLOWED 'mods', #end
+	#if ACHIEVEMENTS_ALLOWED 'awards', #end
+	'credits',
+	'donate',
+	'options'
+];
+
+var magenta:FlxSprite;
+var camFollow:FlxObject;
+var debugKeys:Array<Int> = [];
+
+function create()
+{
+	#if MODS_ALLOWED
+	Mods.pushGlobalMods();
+	#end
+	Mods.loadTheFirstEnabledMod();
+
+	#if DISCORD_ALLOWED
+	// Updating Discord Rich Presence
+	DiscordClient.changePresence("In the Menus", null);
+	#end
+
+	debugKeys = ClientPrefs.copyKey(ClientPrefs.keyBinds.get('debug_1'));
+
+	camGame = new FlxCamera();
+	camAchievement = new FlxCamera();
+	camAchievement.bgColor = 0x00000000;
+
+	FlxG.cameras.reset(camGame);
+	FlxG.cameras.add(camAchievement, false);
+	FlxG.cameras.setDefaultDrawTarget(camGame, true);
+
+	var yScroll:Float = Math.max(0.25 - (0.05 * (optionShit.length - 4)), 0.1);
+	var bg:FlxSprite = new FlxSprite(-80).loadGraphic(Paths.image('menuBG'));
+	bg.scrollFactor.set(0, yScroll);
+	bg.setGraphicSize(Std.int(bg.width * 1.175));
+	bg.updateHitbox();
+	bg.screenCenter();
+	bg.antialiasing = ClientPrefs.globalAntialiasing;
 	add(bg);
 
-	var text:FlxText = new FlxText(0, 0, FlxG.width, "I am a custom state!", 48);
-	text.color = FlxColor.BLACK;
-	add(text);
+	camFollow = new FlxObject(0, 0, 1, 1);
+	camFollow.screenCenter(FlxAxes.X);
+	add(camFollow);
+
+	magenta = new FlxSprite(-80).loadGraphic(Paths.image('menuDesat'));
+	magenta.scrollFactor.set(0, yScroll);
+	magenta.setGraphicSize(Std.int(magenta.width * 1.175));
+	magenta.updateHitbox();
+	magenta.screenCenter();
+	magenta.visible = false;
+	magenta.antialiasing = ClientPrefs.globalAntialiasing;
+	magenta.color = 0xFFfd719b;
+	add(magenta);
+
+	menuItems = createTypedGroup();
+	add(menuItems);
+
+	var scale:Float = 1;
+
+	for (i in 0...optionShit.length)
+	{
+		var offset:Float = 108 - (Math.max(optionShit.length, 4) - 4) * 80;
+		var menuItem:FlxSprite = new FlxSprite(0, (i * 140) + offset);
+		menuItem.scale.x = scale;
+		menuItem.scale.y = scale;
+		menuItem.frames = Paths.getSparrowAtlas('mainmenu/menu_' + optionShit[i]);
+		menuItem.animation.addByPrefix('idle', optionShit[i] + " basic", 24);
+		menuItem.animation.addByPrefix('selected', optionShit[i] + " white", 24);
+		menuItem.animation.play('idle');
+		menuItem.ID = i;
+		menuItem.screenCenter(FlxAxes.X);
+		menuItems.add(menuItem);
+		menuItem.scrollFactor.set(0, 0.7);
+		menuItem.antialiasing = ClientPrefs.globalAntialiasing;
+		menuItem.updateHitbox();
+	}
+
+	changeItem(0);
+	FlxG.camera.follow(camFollow, null, 0.15);
+
+	var synapseVersion:FlxText = new FlxText(12, FlxG.height - 44, 0, 'Synapse Engine v' + '0.1.0' + ' (Psych Engine v' + '0.6.3' + ')', 12);
+	synapseVersion.scrollFactor.set();
+	synapseVersion.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+	add(synapseVersion);
+	var funkinVersion:FlxText = new FlxText(12, FlxG.height - 24, 0, "Friday Night Funkin' v" + Application.current.meta.get('version'), 12);
+	funkinVersion.scrollFactor.set();
+	funkinVersion.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+	add(funkinVersion);
+
+	#if ACHIEVEMENTS_ALLOWED
+	Achievements.loadAchievements();
+	var leDate = Date.now();
+	if (leDate.getDay() == 5 && leDate.getHours() >= 18)
+	{
+		var achieveID:Int = Achievements.getAchievementIndex('friday_night_play');
+		if (!Achievements.isAchievementUnlocked(Achievements.achievementsStuff[achieveID][2]))
+		{ // It's a friday night. WEEEEEEEEEEEEEEEEEE
+			Achievements.achievementsMap.set(Achievements.achievementsStuff[achieveID][2], true);
+			giveAchievement();
+			ClientPrefs.saveSettings();
+		}
+	}
+	#end
 }
 
-function update(elapsed:Float) {
-    if (FlxG.keys.justPressed.ENTER) {
-        FlxG.switchState(new MainMenuState());
-    }
+#if ACHIEVEMENTS_ALLOWED
+// Unlocks "Freaky on a Friday Night" achievement
+function giveAchievement()
+{
+	add(new AchievementObject('friday_night_play', camAchievement));
+	FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
+	trace('Giving achievement "friday_night_play"');
+}
+#end
+
+var selectedSomethin:Bool = false;
+
+function update(elapsed:Float)
+{
+	if (FlxG.sound.music.volume < 0.8)
+	{
+		FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
+	}
+
+	if (!selectedSomethin)
+	{
+		if (FlxG.keys.justPressed.UP)
+		{
+			FlxG.sound.play(Paths.sound('scrollMenu'));
+			changeItem(-1);
+		}
+
+		if (FlxG.keys.justPressed.DOWN)
+		{
+			FlxG.sound.play(Paths.sound('scrollMenu'));
+			changeItem(1);
+		}
+
+		if (FlxG.keys.justPressed.ESCAPE)
+		{
+			selectedSomethin = true;
+			FlxG.sound.play(Paths.sound('cancelMenu'));
+			MusicBeatState.switchState(new TitleState());
+		}
+
+		if (FlxG.keys.justPressed.ENTER)
+		{
+			if (optionShit[curSelected] == 'donate')
+			{
+				CoolUtil.browserLoad('https://ninja-muffin24.itch.io/funkin');
+			}
+			else
+			{
+				selectedSomethin = true;
+				FlxG.sound.play(Paths.sound('confirmMenu'));
+
+				if (ClientPrefs.flashing)
+					FlxFlicker.flicker(magenta, 1.1, 0.15, false);
+
+				for (spr in menuItems)
+				{
+					if (curSelected != spr.ID)
+					{
+						FlxTween.tween(spr, {alpha: 0}, 0.4, {
+							ease: FlxEase.quadOut,
+							onComplete: function(twn:FlxTween)
+							{
+								spr.kill();
+							}
+						});
+					}
+					else
+					{
+						FlxFlicker.flicker(spr, 1, 0.06, false, false, function(flick:FlxFlicker)
+						{
+							switch (optionShit[curSelected])
+							{
+								case 'story_mode':
+									MusicBeatState.switchState(new states.StoryMenuState());
+								case 'freeplay':
+									MusicBeatState.switchState(new states.FreeplayState());
+								#if MODS_ALLOWED
+								case 'mods':
+									MusicBeatState.switchState(new states.ModsMenuState());
+								#end
+								case 'awards':
+									MusicBeatState.switchState(new states.AchievementsMenuState());
+								case 'credits':
+									MusicBeatState.switchState(new states.CreditsState());
+								case 'options':
+									LoadingState.loadAndSwitchState(new options.OptionsState());
+							}
+						});
+					}
+				}
+			}
+		}
+
+		#if desktop
+		if (FlxG.keys.anyJustPressed(debugKeys))
+		{
+			selectedSomethin = true;
+			MusicBeatState.switchState(new MasterEditorMenu());
+		}
+		#end
+	}
+}
+
+function changeItem(huh:Int)
+{
+	curSelected += huh;
+
+	if (curSelected >= menuItems.length)
+		curSelected = 0;
+	if (curSelected < 0)
+		curSelected = menuItems.length - 1;
+
+	var i:Int = 0;
+	for (spr in menuItems.members)
+	{
+		if (curSelected == i)
+		{
+			spr.animation.play("selected");
+			spr.centerOffsets();
+		}
+		else
+			spr.animation.play("idle");
+
+		spr.updateHitbox();
+		spr.screenCenter(FlxAxes.X);
+
+		i += 1;
+	}
+
+	camFollow.y = menuItems.members[curSelected].y;
 }

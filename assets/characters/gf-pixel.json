@@ -85,5 +85,6 @@
 		80
 	],
 	"sing_duration": 4,
-	"scale": 5.99999999999999
+	"scale": 5.99999999999999,
+	"flixel_trail": false
 }
