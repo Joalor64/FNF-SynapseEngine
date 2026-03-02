@@ -1,5 +1,7 @@
 package states;
 
+import backend.AutoUpdater;
+
 class PreloadState extends FlxState
 {
 	public static var muteKeys:Array<FlxKey> = [FlxKey.ZERO];
@@ -25,6 +27,10 @@ class PreloadState extends FlxState
 		ClientPrefs.loadPrefs();
 		Colorblind.updateFilter();
 
+		#if !debug
+		AutoUpdater.checkForUpdates();
+		#end
+
 		if (FlxG.save.data.weekCompleted != null)
 		{
 			StoryMenuState.weekCompleted = FlxG.save.data.weekCompleted;
@@ -37,13 +43,20 @@ class PreloadState extends FlxState
 			FlxG.fullscreen = FlxG.save.data.fullscreen;
 		}
 
-		if (FlxG.save.data.flashing == null && !FlashingState.leftState)
+		if (FlxG.save.data.flashing == null && !WarningState.leftState)
 		{
 			FlxTransitionableState.skipNextTransIn = true;
 			FlxTransitionableState.skipNextTransOut = true;
-			FlxG.switchState(new FlashingState());
+			FlxG.switchState(new WarningState('flashing'));
 		}
-		else
-			FlxG.switchState(new ScriptedState('TitleState', []));
+		else 
+		{
+			if (AutoUpdater.mustUpdate) {
+				FlxTransitionableState.skipNextTransIn = true;
+				FlxTransitionableState.skipNextTransOut = true;
+				FlxG.switchState(new WarningState('outdated'));
+			} else
+				FlxG.switchState(new ScriptedState('TitleState', []));
+		}
 	}
 }

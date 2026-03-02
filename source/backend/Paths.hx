@@ -21,7 +21,7 @@ class Paths
 	}
 
 	public static var dumpExclusions:Array<String> = [
-		'assets/freakyMenu.ogg',
+		'assets/music/freakyMenu.ogg',
 		'assets/music/breakfast.ogg',
 		'assets/music/tea-time.ogg',
 	];
