@@ -2,6 +2,7 @@ package scripts;
 
 import rulescript.*;
 import rulescript.parsers.*;
+import cutscenes.CutsceneHandler;
 
 class FunkinHScript extends FlxBasic
 {
@@ -298,8 +299,37 @@ class FunkinHScript extends FlxBasic
 		setVariable('members', FlxG.state.members);
 		setVariable('state', FlxG.state);
 
+		// Game Stuff
 		if (FlxG.state is PlayState && PlayState.instance != null)
 			setVariable('game', PlayState.instance);
+
+		setVariable('Achievements', Achievements);
+		setVariable('Alphabet', Alphabet);
+		setVariable('AttachedSprite', AttachedSprite);
+		setVariable('AttachedText', AttachedText);
+		setVariable('BGSprite', BGSprite);
+		setVariable('ClientPrefs', ClientPrefs);
+		setVariable('Conductor', Conductor);
+		setVariable('Constants', Constants);
+		setVariable('CoolUtil', CoolUtil);
+		setVariable('CutsceneHandler', CutsceneHandler);
+		#if DISCORD_ALLOWED
+		setVariable('DiscordClient', DiscordClient);
+		#end
+		#if LUA_ALLOWED
+		setVariable('FunkinLua', FunkinLua);
+		#end
+		#if MODS_ALLOWED
+		setVariable('Mods', Mods);
+		#end
+		setVariable('Main', Main);
+		setVariable('MusicBeatState', MusicBeatState);
+		setVariable('MusicBeatSubstate', MusicBeatSubstate);
+		setVariable('Note', Note);
+		setVariable('Paths', Paths);
+		setVariable('PlayState', PlayState);
+		setVariable('ScriptedState', ScriptedState);
+		setVariable('ScriptedSubState', ScriptedSubState);
 
 		if (execute && file != null)
 			this.execute(file);

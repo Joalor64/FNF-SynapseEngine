@@ -1,0 +1,27 @@
+// WORK IN PROGRESS!!
+
+import backend.MusicBeatState;
+import states.ScriptedState;
+import backend.Paths;
+
+var bg:FlxSprite;
+
+var data = Json.parse(Paths.getTextFromFile('data/credits.json')).categories;
+
+function create() {
+    trace(data);
+
+    bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+    bg.screenCenter();
+	add(bg);
+
+	var text:FlxText = new FlxText(0, 0, FlxG.width, "I am a custom state!", 48);
+	text.color = FlxColor.BLACK;
+	add(text);
+}
+
+function update(elapsed:Float) {
+    if (FlxG.keys.justPressed.ESCAPE) {
+        MusicBeatState.switchState(new ScriptedState('MainMenuState', []));
+    }
+}

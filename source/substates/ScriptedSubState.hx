@@ -1,6 +1,6 @@
 package substates;
 
-class ScriptedSubState extends MusicBeatSubState
+class ScriptedSubState extends MusicBeatSubstate
 {
 	public var path:String = '';
 	public var script:FunkinHScript = null;

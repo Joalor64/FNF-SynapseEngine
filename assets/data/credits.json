@@ -1,0 +1,47 @@
+{
+    "categories": [
+        {
+            "name": "Synapse Engine Crew",
+            "developers": [
+                {
+                    "name": "Joalor64",
+                    "icon": "joalor64",
+                    "link": "https://joalor64gh.github.io/",
+                    "description": "Creator/Main Programmer of Synapse Engine",
+                    "color": "00de26"
+                }
+            ]
+        },
+        {
+            "name": "Psych Engine Team",
+            "developers": [
+                {
+                    "name": "Shadow Mario",
+                    "icon": "shadowmario",
+                    "link": "https://twitter.com/Shadow_Mario_",
+                    "description": "Main Programmer of Psych Engine",
+                    "color": "444444"
+                },
+                {
+                    "name": "Riveren",
+                    "icon": "riveren",
+                    "link": "https://x.com/riverennn",
+                    "description": "Main Artist/Animator of Psych Engine",
+                    "color": "B42F71"
+                }
+            ]
+        },
+        {
+            "name": "Former Engine Members",
+            "developers": [
+                {
+                    "name": "bb-panzu",
+                    "icon": "bb",
+                    "link": "https://twitter.com/bbsub3",
+                    "description": "Ex-Programmer of Psych Engine",
+                    "color": "3E813A"
+                }
+            ]
+        }
+    ]
+}

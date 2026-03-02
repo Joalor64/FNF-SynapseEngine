@@ -1,12 +1,5 @@
-import backend.CoolUtil;
-import backend.Mods;
-import backend.Achievements;
-import backend.DiscordClient;
-import backend.MusicBeatState;
-import backend.ClientPrefs;
 import states.LoadingState;
 import states.editors.MasterEditorMenu;
-import backend.Paths;
 import flixel.effects.FlxFlicker;
 import lime.app.Application;
 
@@ -162,7 +155,7 @@ function update(elapsed:Float)
 		{
 			selectedSomethin = true;
 			FlxG.sound.play(Paths.sound('cancelMenu'));
-			MusicBeatState.switchState(new TitleState());
+			MusicBeatState.switchState(new ScriptedState('TitleState', []));
 		}
 
 		if (FlxG.keys.justPressed.ENTER)
@@ -208,7 +201,7 @@ function update(elapsed:Float)
 								case 'awards':
 									MusicBeatState.switchState(new states.AchievementsMenuState());
 								case 'credits':
-									MusicBeatState.switchState(new states.CreditsState());
+									MusicBeatState.switchState(new ScriptedState('CreditsState', []));
 								case 'options':
 									LoadingState.loadAndSwitchState(new options.OptionsState());
 							}

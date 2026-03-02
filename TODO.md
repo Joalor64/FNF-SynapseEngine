@@ -6,13 +6,13 @@
 * [X] New Events
 * [ ] Softcoding
     * [ ] Menu States
-        * [ ] Title
+        * [X] Title
         * [X] Main Menu
         * [ ] Story Mode
         * [ ] Freeplay
         * [ ] Awards
         * [ ] Credits
-        * [ ] Options(?)
+        * [ ] Options
     * [ ] Stages
         * [ ] Stage
         * [ ] Spooky

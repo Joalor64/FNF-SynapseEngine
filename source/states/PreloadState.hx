@@ -44,8 +44,6 @@ class PreloadState extends FlxState
 			FlxG.switchState(new FlashingState());
 		}
 		else
-			// i'll work on this later
-			// FlxG.switchState(new ScriptedState('TitleState', []));
-			FlxG.switchState(new TitleState());
+			FlxG.switchState(new ScriptedState('TitleState', []));
 	}
 }
