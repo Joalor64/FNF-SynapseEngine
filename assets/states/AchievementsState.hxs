@@ -1,22 +1,113 @@
-// WORK IN PROGRESS!!
-
 import backend.Achievements;
+import backend.Achievements.AttachedAchievement;
 import backend.MusicBeatState;
 import states.ScriptedState;
 import backend.Paths;
 
-function create() {
+#if ACHIEVEMENTS_ALLOWED
+var curSelected:Int = 0;
+
+var achievements:Array<String> = [];
+var achievementGrp:FlxTypedGroup<Alphabet>;
+var achievementArray:Array<AttachedAchievement> = [];
+var achievementIndex:Array<Int> = [];
+
+var descText:FlxText;
+
+function create()
+{
+    #if DISCORD_ALLOWED
+	DiscordClient.changePresence("Achievements Menu", null);
+	#end
+
     var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuBGBlue'));
+    bg.setGraphicSize(Std.int(bg.width * 1.1));
+    bg.updateHitbox();
     bg.screenCenter();
+    bg.antialiasing = ClientPrefs.globalAntialiasing;
 	add(bg);
 
-	var text:FlxText = new FlxText(0, 0, FlxG.width, "I am a custom state!", 48);
-	text.color = FlxColor.BLACK;
-	add(text);
+    achievementGrp = createTypedGroup();
+    add(achievementGrp);
+
+    Achievements.loadAchievements();
+	for (i in 0...Achievements.achievementsStuff.length)
+	{
+		if (!Achievements.achievementsStuff[i][3] || Achievements.achievementsMap.exists(Achievements.achievementsStuff[i][2]))
+		{
+			achievements.push(Achievements.achievementsStuff[i]);
+			achievementIndex.push(i);
+		}
+	}
+
+	for (i in 0...achievements.length)
+	{
+		var achieveName:String = Achievements.achievementsStuff[achievementIndex[i]][2];
+		var optionText:Alphabet = new Alphabet(280, 300,
+			Achievements.isAchievementUnlocked(achieveName) ? Achievements.achievementsStuff[achievementIndex[i]][0] : '?', false);
+		optionText.isMenuItem = true;
+		optionText.targetY = i - curSelected;
+		optionText.snapToPosition();
+		achievementGrp.add(optionText);
+
+		var icon:AttachedAchievement = new AttachedAchievement(optionText.x - 105, optionText.y, achieveName);
+		icon.sprTracker = optionText;
+		achievementArray.push(icon);
+		add(icon);
+	}
+
+	descText = new FlxText(150, 600, 980, "", 32);
+	descText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+	descText.scrollFactor.set();
+	descText.borderSize = 2.4;
+	add(descText);
+
+	changeSelection(0);
 }
 
-function update(elapsed:Float) {
-    if (FlxG.keys.justPressed.ESCAPE) {
+function update(elapsed:Float)
+{
+    if (FlxG.keys.justPressed.UP)
+        changeSelection(-1);
+
+    if (FlxG.keys.justPressed.DOWN)
+        changeSelection(1);
+
+    if (FlxG.keys.justPressed.ESCAPE)
+    {
+        FlxG.sound.play(Paths.sound('cancelMenu'));
         MusicBeatState.switchState(new ScriptedState('MainMenuState', []));
     }
 }
+
+function changeSelection(change:Int)
+{
+	curSelected += change;
+	if (curSelected < 0)
+		curSelected = achievements.length - 1;
+	if (curSelected >= achievements.length)
+		curSelected = 0;
+
+	var bullShit:Int = 0;
+
+	for (item in achievementGrp.members)
+	{
+		item.targetY = bullShit - curSelected;
+		bullShit++;
+
+		item.alpha = 0.6;
+		if (item.targetY == 0)
+			item.alpha = 1;
+	}
+
+	for (i in 0...achievementArray.length)
+	{
+		achievementArray[i].alpha = 0.6;
+		if (i == curSelected)
+			achievementArray[i].alpha = 1;
+	}
+
+	descText.text = Achievements.achievementsStuff[achievementIndex[curSelected]][1];
+	FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+}
+#end

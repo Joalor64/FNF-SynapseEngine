@@ -10,7 +10,7 @@
         * [X] Main Menu
         * [ ] Story Mode
         * [ ] Freeplay
-        * [ ] Awards
+        * [X] Awards
         * [X] Credits
         * [ ] Options
     * [ ] Stages
