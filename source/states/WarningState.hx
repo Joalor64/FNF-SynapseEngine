@@ -19,21 +19,21 @@ class WarningState extends MusicBeatState {
 
         switch (warnType) {
             case 'flashing':
-                warning = "WARNING!\n
-			        This mod contains some flashing lights!\n
-			        Would you like to keep them on anyways?\n
-			        ENTER - Yes | ESCAPE - No\n
-			        (You can change this later in the options menu!)";
+                warning = "WARNING!\n" +
+			        "This mod contains some flashing lights!\n" +
+			        "Would you like to keep them on anyways?\n" +
+			        "ENTER - Yes | ESCAPE - No\n" +
+			        "(You can change this later in the options menu!)";
             case 'outdated':
-                warning = "HEY YOU!\n
-                    You're running an outdated version of Synapse Engine!\n
-                    The current version is v" + Constants.SYNAPSE_ENGINE_VERSION + ",\n
-                    while the most recent version is" + AutoUpdater.latestVersion + "!\n
-                    It's highly recommended you update the game, but that's your choice!\n
-                    ENTER - Download Update | ESCAPE - Continue";
+                warning = "HEY YOU!\n" +
+                    "You're running an outdated version of Synapse Engine!\n" +
+                    "The current version is v" + Constants.SYNAPSE_ENGINE_VERSION + ",\n" +
+                    "while the most recent version is" + AutoUpdater.latestVersion + "!\n" +
+                    "It's highly recommended you update the game, but that's your choice!\n" +
+                    "ENTER - Download Update | ESCAPE - Continue";
         }
 
-        warnText = new FlxText(0, 0, FlxG.width, warning, 32);
+        warnText = new FlxText(0, 0, 0, warning, 32);
 		warnText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER);
 		warnText.screenCenter();
 		add(warnText);

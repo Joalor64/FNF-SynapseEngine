@@ -8,7 +8,7 @@
                     "icon": "joalor64",
                     "link": "https://joalor64gh.github.io/",
                     "description": "Creator/Main Programmer of Synapse Engine",
-                    "color": "00de26"
+                    "color": "00D2E6"
                 }
             ]
         },
@@ -27,7 +27,7 @@
                     "icon": "riveren",
                     "link": "https://x.com/riverennn",
                     "description": "Main Artist/Animator of Psych Engine",
-                    "color": "B42F71"
+                    "color": "14967B"
                 }
             ]
         },
@@ -40,6 +40,100 @@
                     "link": "https://twitter.com/bbsub3",
                     "description": "Ex-Programmer of Psych Engine",
                     "color": "3E813A"
+                }
+            ]
+        },
+        {
+            "name": "Engine Contributors",
+            "developers": [
+                {
+                    "name": "iFlicky",
+                    "icon": "flicky",
+                    "link": "https://x.com/flicky_i",
+                    "description": "Composer of Psync and Tea Time\nMade the Dialogue Sounds",
+                    "color": "9E29CF"
+                },
+                {
+                    "name": "SqirraRNG",
+                    "icon": "sqirra",
+                    "link": "https://x.com/gedehari",
+                    "description": "Crash Handler and Base code for\nChart Editor's Waveform",
+                    "color": "E1843A"
+                },
+                {
+                    "name": "EliteMasterEric",
+                    "icon": "mastereric",
+                    "link": "https://x.com/EliteMasterEric",
+                    "description": "Runtime Shaders Support",
+                    "color": "FFBD40"
+                },
+                {
+                    "name": "MAJigsaw77",
+                    "icon": "majigsaw",
+                    "link": "https://x.com/MAJigsaw77",
+                    "description": ".MP4 Video Loader Library (hxvlc)",
+                    "color": "5F5F5F"
+                },
+                {
+                    "name": "KadeDev",
+                    "icon": "kade",
+                    "link": "https://x.com/kade0912",
+                    "description": "Fixed Chart Editor and other PRs",
+                    "color": "64A250"
+                },
+                {
+                    "name": "Keoiki",
+                    "icon": "keoiki",
+                    "link": "https://x.com/Keoiki_",
+                    "description": "Note Splash Animations",
+                    "color": "D2D2D2"
+                },
+                {
+                    "name": "superpowers04",
+                    "icon": "superpowers04",
+                    "link": "https://x.com/superpowers04",
+                    "description": "LUA JIT Fork",
+                    "color": "B957ED"
+                },
+                {
+                    "name": "Smokey",
+                    "icon": "smokey",
+                    "link": "https://x.com/Smokey_5_",
+                    "description": "Sprite Atlas Support",
+                    "color": "483D92"
+                }
+            ]
+        },
+        {
+            "name": "The Funkin' Crew Inc",
+            "developers": [
+                {
+                    "name": "ninjamuffin99",
+                    "icon": "ninjamuffin99",
+                    "link": "https://twitter.com/ninja_muffin9",
+                    "description": "Programmer/Creator of Friday Night Funkin'",
+                    "color": "CF2D2D"
+                },
+                {
+                    "name": "PhantomArcade",
+                    "icon": "phantomarcade",
+                    "link": "https://x.com/PhantomArcade3K",
+                    "description": "Animator of Friday Night Funkin'",
+                    "color": "FADC45"
+                },
+                {
+                    "name": "evilsk8r",
+                    "icon": "evilsk8r",
+                    "link": "https://x.com/evilsk8r",
+                    "description": "Artist of Friday Night Funkin'",
+                    "color": "5ABD4B"
+                },
+                {
+                    "name": "kawaisprite",
+                    "icon": "kawaisprite",
+                    "link": "https://x.com/kawaisprite",
+                    "description": "Composer of Friday Night Funkin'",
+                    "color": "378FC7"
                 }
             ]
         }

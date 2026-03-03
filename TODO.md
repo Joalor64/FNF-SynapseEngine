@@ -11,7 +11,7 @@
         * [ ] Story Mode
         * [ ] Freeplay
         * [ ] Awards
-        * [ ] Credits
+        * [X] Credits
         * [ ] Options
     * [ ] Stages
         * [ ] Stage
