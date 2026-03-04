@@ -32,3 +32,4 @@
 * [ ] Potentially Backport Newer Psych Stuff
 * [ ] Custom Achievements
 * [ ] Support for more than 2 health icons
+* [ ] Modcharting Support

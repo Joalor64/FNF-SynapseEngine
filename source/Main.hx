@@ -9,6 +9,9 @@ import haxe.io.Path;
 import backend.DiscordClient;
 #end
 import debug.FPS;
+#if linux
+import hxgamemode.GamemodeClient;
+#end
 
 class Main extends Sprite
 {
@@ -25,26 +28,25 @@ class Main extends Sprite
 	public static function main():Void
 		Lib.current.addChild(new Main());
 
-	#if desktop
-	static function __init__():Void
+	private static function __init__():Void
 	{
-		var origin:String = #if hl Sys.getCwd() #else Sys.programPath() #end;
-
-		var configPath:String = Path.directory(Path.withoutExtension(origin));
-		#if windows
-		configPath += "/alsoft.ini";
-		#elseif mac
-		configPath = Path.directory(configPath) + "/Resources/alsoft.conf";
-		#else
-		configPath += "/alsoft.conf";
+		#if linux
+		if (GamemodeClient.request_start() != 0)
+		{
+			Sys.println('Failed to request gamemode start: ${GamemodeClient.error_string()}...');
+			System.exit(1);
+		} 
+		else
+		{
+			Sys.println('Succesfully requested gamemode to start...');
+		}
 		#end
-
-		Sys.putEnv("ALSOFT_CONF", configPath);
 	}
-	#end
 
 	public function new()
 	{
+		untyped __cpp__('', backend.ALSoft);
+
 		super();
 
 		#if CRASH_HANDLER
@@ -102,6 +104,21 @@ class Main extends Sprite
 		#if html5
 		FlxG.autoPause = FlxG.mouse.visible = false;
 		#end
+
+		Lib.current.stage.application.window.onClose.add(function()
+		{
+			#if linux
+			if (GamemodeClient.request_end() != 0) 
+			{
+				trace('Failed to request gamemode end: ${GamemodeClient.error_string()}...');
+				System.exit(1);
+			} 
+			else 
+			{
+				trace('Succesfully requested gamemode to end...');
+			}
+			#end
+		});
 	}
 
 	#if CRASH_HANDLER

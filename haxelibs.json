@@ -59,6 +59,10 @@
       "type": "haxelib"
     },
     {
+      "name": "hxgamemode",
+      "type": "haxelib"
+    },
+    {
       "name": "tjson",
       "type": "haxelib"
     }

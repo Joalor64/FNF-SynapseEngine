@@ -28,6 +28,7 @@
 	<define name="VIDEOS_ALLOWED" if="windows || linux || android || mac" unless="32bits" />
 	<define name="DISCORD_ALLOWED" if="desktop" />
 	<define name="CRASH_HANDLER" if="desktop release" />
+	<define name="CHECK_FOR_UPDATES" if="desktop release" />
 
 	<!-- _____________________________ Path Settings ____________________________ -->
 
@@ -52,6 +53,8 @@
 		<assets path="alsoft.ini" rename="alsoft.conf" unless="windows" />
 	</section>
 
+	<assets path="gamemode.ini" if="linux" />
+
 	<!-- _______________________________ Libraries ______________________________ -->
 
 	<haxelib name="flixel" />
@@ -66,6 +69,7 @@
 	<haxelib name="rulescript" if="HSCRIPT_ALLOWED" />
 	<haxelib name="linc_luajit" if="LUA_ALLOWED" />
 	<haxelib name="hxvlc" if="VIDEOS_ALLOWED" />
+	<haxelib name="hxgamemode" if="linux" />
 	<haxelib name="hxdiscord_rpc" if="DISCORD_ALLOWED" />
 	<haxelib name="hxcpp-debug-server" if="desktop debug" />
 

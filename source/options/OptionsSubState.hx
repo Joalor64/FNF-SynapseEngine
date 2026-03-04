@@ -499,6 +499,7 @@ class GameplaySubState extends BaseOptionsMenu
 		option.scrollSpeed = 15;
 		option.minValue = 15;
 		option.maxValue = 45;
+		windowOptions.push(option);
 		addOption(option);
 		option.onChange = onChangeHitWindow;
 
@@ -508,6 +509,7 @@ class GameplaySubState extends BaseOptionsMenu
 		option.scrollSpeed = 30;
 		option.minValue = 15;
 		option.maxValue = 90;
+		windowOptions.push(option);
 		addOption(option);
 		option.onChange = onChangeHitWindow;
 
@@ -516,6 +518,7 @@ class GameplaySubState extends BaseOptionsMenu
 		option.scrollSpeed = 60;
 		option.minValue = 15;
 		option.maxValue = 135;
+		windowOptions.push(option);
 		addOption(option);
 		option.onChange = onChangeHitWindow;
 
@@ -602,6 +605,15 @@ class MiscSubState extends BaseOptionsMenu
 			['None', 'Breakfast', 'Tea Time']);
 		addOption(option);
 		option.onChange = onChangePauseMusic;
+
+		#if CHECK_FOR_UPDATES
+		var option:Option = new Option('Check for Updates',
+			'On release builds, turn this on to check for updates when you start the game.',
+			'checkForUpdates',
+			'bool',
+			true);
+		addOption(option);
+		#end
 
 		super();
 	}
