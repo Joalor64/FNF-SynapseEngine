@@ -15,8 +15,9 @@
         * [ ] Options
     * [ ] Stages
 * [ ] Optimizations
-* [ ] RGB Notes
+* [ ] RGB Notes (Psych 0.7+)
 * [ ] Noteskins
+* [ ] Rewrite Controls
 * [X] FlxAnimate Support
 * [X] Source Code Reorganization
 * [X] Asset Reorganization
@@ -30,6 +31,7 @@
 * [ ] Weekend 1
 * [ ] Erect Mixes
 * [ ] Potentially Backport Newer Psych Stuff
+* [ ] Potentially Backport V-Slice Stuff
 * [ ] Custom Achievements
 * [ ] Support for more than 2 health icons
 * [ ] Modcharting Support
