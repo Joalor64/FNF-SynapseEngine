@@ -92,11 +92,7 @@ class ScriptedSubState extends MusicBeatSubstate
 	override public function update(elapsed:Float):Void
 	{
 		scriptExecute('update', [elapsed]);
-
 		super.update(elapsed);
-
-		if (FlxG.keys.justPressed.F4)
-			MusicBeatState.switchState(new ScriptedState('MainMenuState', []));
 	}
 
 	override public function beatHit():Void

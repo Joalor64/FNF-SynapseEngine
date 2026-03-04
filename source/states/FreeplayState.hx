@@ -47,6 +47,15 @@ class FreeplayState extends MusicBeatState
 		DiscordClient.changePresence("In the Menus", null);
 		#end
 
+		if (WeekData.weeksList.length < 1)
+		{
+			FlxTransitionableState.skipNextTransIn = true;
+			persistentUpdate = false;
+			MusicBeatState.switchState(new ErrorState("NO WEEKS ADDED FOR FREEPLAY\n\nPress ACCEPT to go to the Week Editor Menu.\nPress BACK to return to Main Menu.",
+				function() MusicBeatState.switchState(new WeekEditorState()), function() MusicBeatState.switchState(new ScriptedState('MainMenuState', []))));
+			return;
+		}
+
 		for (i in 0...WeekData.weeksList.length)
 		{
 			if (weekIsLocked(WeekData.weeksList[i]))
@@ -76,7 +85,7 @@ class FreeplayState extends MusicBeatState
 		Mods.loadTheFirstEnabledMod();
 
 		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
-		bg.antialiasing = ClientPrefs.globalAntialiasing;
+		bg.antialiasing = ClientPrefs.data.globalAntialiasing;
 		add(bg);
 		bg.screenCenter();
 
@@ -138,8 +147,9 @@ class FreeplayState extends MusicBeatState
 		textBG.alpha = 0.6;
 		add(textBG);
 
-		var text:FlxText = new FlxText(textBG.x, textBG.y + 4, FlxG.width, "Press CTRL to open the Gameplay Changers Menu / Press RESET to Reset your Score and Accuracy.", 18);
-		text.setFormat(Paths.font("vcr.ttf"), 18, FlxColor.WHITE, RIGHT);
+		var text:FlxText = new FlxText(textBG.x, textBG.y + 4, FlxG.width,
+			"Press CTRL to open the Gameplay Changers Menu / Press RESET to Reset your Score and Accuracy.", 18);
+		text.setFormat(Paths.font("vcr.ttf"), 18, FlxColor.WHITE, CENTER);
 		text.scrollFactor.set();
 		add(text);
 		super.create();

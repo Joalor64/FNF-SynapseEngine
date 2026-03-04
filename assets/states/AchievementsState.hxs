@@ -2,35 +2,34 @@ import backend.Achievements;
 import backend.Achievements.AttachedAchievement;
 import backend.MusicBeatState;
 import states.ScriptedState;
+import substates.Prompt;
 import backend.Paths;
 
 #if ACHIEVEMENTS_ALLOWED
 var curSelected:Int = 0;
-
 var achievements:Array<String> = [];
 var achievementGrp:FlxTypedGroup<Alphabet>;
 var achievementArray:Array<AttachedAchievement> = [];
 var achievementIndex:Array<Int> = [];
-
 var descText:FlxText;
 
 function create()
 {
-    #if DISCORD_ALLOWED
+	#if DISCORD_ALLOWED
 	DiscordClient.changePresence("Achievements Menu", null);
 	#end
 
-    var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuBGBlue'));
-    bg.setGraphicSize(Std.int(bg.width * 1.1));
-    bg.updateHitbox();
-    bg.screenCenter();
-    bg.antialiasing = ClientPrefs.globalAntialiasing;
+	var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuBGBlue'));
+	bg.setGraphicSize(Std.int(bg.width * 1.1));
+	bg.updateHitbox();
+	bg.screenCenter();
+	bg.antialiasing = ClientPrefs.data.globalAntialiasing;
 	add(bg);
 
-    achievementGrp = createTypedGroup();
-    add(achievementGrp);
+	achievementGrp = createTypedGroup();
+	add(achievementGrp);
 
-    Achievements.loadAchievements();
+	Achievements.loadAchievements();
 	for (i in 0...Achievements.achievementsStuff.length)
 	{
 		if (!Achievements.achievementsStuff[i][3] || Achievements.achievementsMap.exists(Achievements.achievementsStuff[i][2]))
@@ -62,22 +61,55 @@ function create()
 	descText.borderSize = 2.4;
 	add(descText);
 
+	var textBG:FlxSprite = new FlxSprite(0, FlxG.height - 26).makeGraphic(FlxG.width, 26, 0xFF000000);
+	textBG.alpha = 0.6;
+	add(textBG);
+
+	var text:FlxText = new FlxText(textBG.x, textBG.y + 4, FlxG.width,
+		"Press RESET to reset the currently selected achievement. / Press RESET + ALT to reset ALL achievements.", 18);
+	text.setFormat(Paths.font("vcr.ttf"), 18, FlxColor.WHITE, FlxTextAlign.CENTER);
+	text.scrollFactor.set();
+	add(text);
+
 	changeSelection(0);
 }
 
 function update(elapsed:Float)
 {
-    if (FlxG.keys.justPressed.UP)
-        changeSelection(-1);
+	if (FlxG.keys.justPressed.UP)
+		changeSelection(-1);
 
-    if (FlxG.keys.justPressed.DOWN)
-        changeSelection(1);
+	if (FlxG.keys.justPressed.DOWN)
+		changeSelection(1);
 
-    if (FlxG.keys.justPressed.ESCAPE)
-    {
-        FlxG.sound.play(Paths.sound('cancelMenu'));
-        MusicBeatState.switchState(new ScriptedState('MainMenuState', []));
-    }
+	if (FlxG.keys.justPressed.ESCAPE)
+	{
+		FlxG.sound.play(Paths.sound('cancelMenu'));
+		MusicBeatState.switchState(new ScriptedState('MainMenuState', []));
+	}
+
+	if (FlxG.keys.justPressed.R)
+	{
+		FlxG.mouse.visible = true;
+		var isAlt = FlxG.keys.pressed.ALT;
+		openSubState(new Prompt((isAlt ? 'Reset ALL achievements?' : 'Reset this achievement?') + "\nThis action is irreversible!", 0, function()
+		{
+			FlxG.mouse.visible = false;
+			if (isAlt)
+			{
+				for (i in 0...achievementArray.length)
+					achievementArray[i].forget();
+			}
+			else
+			{
+				achievementArray[curSelected].forget();
+			}
+			changeSelection();
+		}, function()
+		{
+			FlxG.mouse.visible = false;
+		}, false));
+	}
 }
 
 function changeSelection(change:Int)

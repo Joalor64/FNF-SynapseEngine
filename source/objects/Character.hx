@@ -87,7 +87,7 @@ class Character extends FlxSprite
 		animOffsets = new Map<String, Array<Dynamic>>();
 		curCharacter = character;
 		this.isPlayer = isPlayer;
-		antialiasing = ClientPrefs.globalAntialiasing;
+		antialiasing = ClientPrefs.data.globalAntialiasing;
 		switch (curCharacter)
 		{
 			// case 'your character name in case you want to hardcode them instead':
@@ -191,7 +191,7 @@ class Character extends FlxSprite
 					healthColorArray = json.healthbar_colors;
 
 				antialiasing = !noAntialiasing;
-				if (!ClientPrefs.globalAntialiasing)
+				if (!ClientPrefs.data.globalAntialiasing)
 					antialiasing = false;
 
 				animationsArray = json.animations;
@@ -374,7 +374,7 @@ class Character extends FlxSprite
 				animationNotes.push(songNotes);
 			}
 		}
-		TankmenBG.animationNotes = animationNotes;
+		states.stages.objects.TankmenBG.animationNotes = animationNotes;
 		animationNotes.sort(sortAnims);
 	}
 

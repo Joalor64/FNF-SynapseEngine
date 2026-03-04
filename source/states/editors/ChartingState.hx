@@ -200,6 +200,8 @@ class ChartingState extends MusicBeatState
 
 	override function create()
 	{
+		canSelectMods = false;
+
 		if (PlayState.SONG != null)
 			_song = PlayState.SONG;
 		else
@@ -3129,7 +3131,7 @@ class ChartingState extends MusicBeatState
 		{
 			PlayState.SONG = Song.loadFromJson(song.toLowerCase(), song.toLowerCase());
 		}
-		MusicBeatState.resetState();
+		FlxG.resetState();
 	}
 
 	function autosaveSong():Void

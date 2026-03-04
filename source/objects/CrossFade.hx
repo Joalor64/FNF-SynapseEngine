@@ -12,7 +12,7 @@ class CrossFade extends FlxSprite
 		updateHitbox();
 		flipX = character.flipX;
 		flipY = character.flipY;
-		var curCrossFadeMode:String = ClientPrefs.crossFadeMode;
+		var curCrossFadeMode:String = ClientPrefs.data.crossFadeMode;
 		switch (curCrossFadeMode)
 		{
 			case 'Mid-Fight Masses':
@@ -39,11 +39,11 @@ class CrossFade extends FlxSprite
 			{
 				case 'bf':
 					color = 0xFF1b008c;
-					antialiasing = ClientPrefs.globalAntialiasing;
+					antialiasing = ClientPrefs.data.globalAntialiasing;
 				default:
 					color = FlxColor.fromRGB(character.healthColorArray[0], character.healthColorArray[1], character.healthColorArray[2]);
 					color = FlxColor.subtract(color, 0x00333333);
-					antialiasing = ClientPrefs.globalAntialiasing;
+					antialiasing = ClientPrefs.data.globalAntialiasing;
 			}
 		}
 		else

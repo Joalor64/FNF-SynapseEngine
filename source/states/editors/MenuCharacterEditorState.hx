@@ -23,6 +23,8 @@ class MenuCharacterEditorState extends MusicBeatState
 
 	override function create()
 	{
+		canSelectMods = false;
+		
 		characterFile = {
 			image: 'Menu_Dad',
 			scale: 1,

@@ -58,6 +58,8 @@ class CharacterEditorState extends MusicBeatState
 
 	override function create()
 	{
+		canSelectMods = false;
+
 		camEditor = new FlxCamera();
 		camHUD = new FlxCamera();
 		camHUD.bgColor.alpha = 0;
@@ -139,9 +141,7 @@ class CharacterEditorState extends MusicBeatState
 
 		FlxG.camera.follow(camFollow);
 
-		var tabs = [
-			{name: 'Settings', label: 'Settings'},
-		];
+		var tabs = [{name: 'Settings', label: 'Settings'},];
 
 		UI_box = new FlxUITabMenu(null, tabs, true);
 		UI_box.cameras = [camMenu];
@@ -488,7 +488,7 @@ class CharacterEditorState extends MusicBeatState
 		noAntialiasingCheckBox.callback = function()
 		{
 			char.antialiasing = false;
-			if (!noAntialiasingCheckBox.checked && ClientPrefs.globalAntialiasing)
+			if (!noAntialiasingCheckBox.checked && ClientPrefs.data.globalAntialiasing)
 			{
 				char.antialiasing = true;
 			}

@@ -19,7 +19,7 @@ class Conductor
 	public static var lastSongPos:Float;
 	public static var offset:Float = 0;
 
-	public static var safeZoneOffset:Float = (ClientPrefs.safeFrames / 60) * 1000;
+	public static var safeZoneOffset:Float = (ClientPrefs.data.safeFrames / 60) * 1000;
 
 	public static var bpmChangeMap:Array<BPMChangeEvent> = [];
 
@@ -172,7 +172,7 @@ class Rating
 		this.name = name;
 		this.image = name;
 		this.counter = name + 's';
-		this.hitWindow = Reflect.field(ClientPrefs, name + 'Window');
+		this.hitWindow = Reflect.field(ClientPrefs.data, name + 'Window');
 		if (hitWindow == null)
 		{
 			hitWindow = 0;

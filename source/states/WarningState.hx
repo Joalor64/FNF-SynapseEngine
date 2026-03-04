@@ -63,7 +63,7 @@ class WarningState extends MusicBeatState {
 				    });
 
 				    if (!accept) {
-					    ClientPrefs.flashing = false;
+					    ClientPrefs.data.flashing = false;
 					    ClientPrefs.saveSettings();
 				    }
 			    }

@@ -49,7 +49,7 @@ function create()
 	bg.setGraphicSize(Std.int(bg.width * 1.175));
 	bg.updateHitbox();
 	bg.screenCenter();
-	bg.antialiasing = ClientPrefs.globalAntialiasing;
+	bg.antialiasing = ClientPrefs.data.globalAntialiasing;
 	add(bg);
 
 	camFollow = new FlxObject(0, 0, 1, 1);
@@ -62,7 +62,7 @@ function create()
 	magenta.updateHitbox();
 	magenta.screenCenter();
 	magenta.visible = false;
-	magenta.antialiasing = ClientPrefs.globalAntialiasing;
+	magenta.antialiasing = ClientPrefs.data.globalAntialiasing;
 	magenta.color = 0xFFfd719b;
 	add(magenta);
 
@@ -85,7 +85,7 @@ function create()
 		menuItem.screenCenter(FlxAxes.X);
 		menuItems.add(menuItem);
 		menuItem.scrollFactor.set(0, 0.7);
-		menuItem.antialiasing = ClientPrefs.globalAntialiasing;
+		menuItem.antialiasing = ClientPrefs.data.globalAntialiasing;
 		menuItem.updateHitbox();
 	}
 
@@ -168,7 +168,7 @@ function update(elapsed:Float)
 				selectedSomethin = true;
 				FlxG.sound.play(Paths.sound('confirmMenu'));
 
-				if (ClientPrefs.flashing)
+				if (ClientPrefs.data.flashing)
 					FlxFlicker.flicker(magenta, 1.1, 0.15, false);
 
 				for (spr in menuItems)

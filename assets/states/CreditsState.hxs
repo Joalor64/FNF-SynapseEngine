@@ -3,162 +3,153 @@ var grpCredits:FlxTypedGroup<Alphabet>;
 var iconArray:Array<FlxSprite> = [];
 var descText:FlxText;
 var descBox:AttachedSprite;
-
 var categories:Array<Dynamic> = [];
 var creditsStuff:Array<Array<String>> = [];
-
 var curSelected:Int = -1;
 var offsetThing:Float = -25;
-
 var data = Json.parse(Paths.getTextFromFile('data/credits.json'));
 
 function create()
 {
-    #if DISCORD_ALLOWED
+	#if DISCORD_ALLOWED
 	DiscordClient.changePresence("In the Menus", null);
 	#end
-    
-    categories = data.categories;
 
-    for (cat in categories)
-    {
-        creditsStuff.push([cat.name]);
+	categories = data.categories;
 
-        for (dev in cat.developers)
-        {
-            var link:String = dev.link != null ? dev.link : 'nolink';
-            var color:String = dev.color != null ? dev.color : '444444';
-            creditsStuff.push([
-                dev.name,
-                dev.icon,
-                dev.description,
-                link,
-                color
-            ]);
-        }
-        
-        creditsStuff.push(['']);
-    }
+	for (cat in categories)
+	{
+		creditsStuff.push([cat.name]);
 
-    bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
-    bg.screenCenter();
-    add(bg);
+		for (dev in cat.developers)
+		{
+			var link:String = dev.link != null ? dev.link : 'nolink';
+			var color:String = dev.color != null ? dev.color : '444444';
+			creditsStuff.push([dev.name, dev.icon, dev.description, link, color]);
+		}
 
-    grpCredits = createTypedGroup();
-    add(grpCredits);
+		creditsStuff.push(['']);
+	}
 
-    for (i in 0...creditsStuff.length)
-    {
-        var isSelectable:Bool = !unselectableCheck(i);
-        var optionText = new Alphabet(70, 300, creditsStuff[i][0], !isSelectable);
-        optionText.isMenuItem = true;
-        optionText.targetY = i;
-        optionText.changeX = false;
-        optionText.snapToPosition();
-        grpCredits.add(optionText);
-        
-        if (isSelectable)
-        {
-            var icon = new AttachedSprite('credits/' + creditsStuff[i][1]);
-            icon.xAdd = optionText.width + 10;
-            icon.sprTracker = optionText;
-            iconArray.push(icon);
-            add(icon);
-            
-            if (curSelected == -1)
-                curSelected = i;
-        }
-    }
+	bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+	bg.screenCenter();
+	add(bg);
 
-    descBox = new AttachedSprite();
-    descBox.makeGraphic(1, 1, FlxColor.BLACK);
-    descBox.xAdd = -10;
-    descBox.yAdd = -10;
-    descBox.alphaMult = 0.6;
-    descBox.alpha = 0.6;
-    add(descBox);
-    
-    descText = new FlxText(50, FlxG.height + offsetThing, 1180, "", 32);
-    descText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, FlxTextAlign.CENTER);
-    descText.scrollFactor.set();
-    descBox.sprTracker = descText;
-    add(descText);
+	grpCredits = createTypedGroup();
+	add(grpCredits);
 
-    bg.color = CoolUtil.colorFromString(creditsStuff[curSelected][4]);
-    changeSelection(0);
+	for (i in 0...creditsStuff.length)
+	{
+		var isSelectable:Bool = !unselectableCheck(i);
+		var optionText = new Alphabet(70, 300, creditsStuff[i][0], !isSelectable);
+		optionText.isMenuItem = true;
+		optionText.targetY = i;
+		optionText.changeX = false;
+		optionText.snapToPosition();
+		grpCredits.add(optionText);
+
+		if (isSelectable)
+		{
+			var icon = new AttachedSprite('credits/' + creditsStuff[i][1]);
+			icon.xAdd = optionText.width + 10;
+			icon.sprTracker = optionText;
+			iconArray.push(icon);
+			add(icon);
+
+			if (curSelected == -1)
+				curSelected = i;
+		}
+	}
+
+	descBox = new AttachedSprite();
+	descBox.makeGraphic(1, 1, FlxColor.BLACK);
+	descBox.xAdd = -10;
+	descBox.yAdd = -10;
+	descBox.alphaMult = 0.6;
+	descBox.alpha = 0.6;
+	add(descBox);
+
+	descText = new FlxText(50, FlxG.height + offsetThing, 1180, "", 32);
+	descText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, FlxTextAlign.CENTER);
+	descText.scrollFactor.set();
+	descBox.sprTracker = descText;
+	add(descText);
+
+	bg.color = CoolUtil.colorFromString(creditsStuff[curSelected][4]);
+	changeSelection(0);
 }
 
-function update(elapsed:Float) 
+function update(elapsed:Float)
 {
-    if (FlxG.keys.justPressed.UP)
-        changeSelection(-1);
+	if (FlxG.keys.justPressed.UP)
+		changeSelection(-1);
 
-    if (FlxG.keys.justPressed.DOWN)
-        changeSelection(1);
+	if (FlxG.keys.justPressed.DOWN)
+		changeSelection(1);
 
-    if (FlxG.keys.justPressed.ESCAPE)
-    {
-        FlxG.sound.play(Paths.sound('cancelMenu'));
-        MusicBeatState.switchState(new ScriptedState('MainMenuState', []));
-    }
+	if (FlxG.keys.justPressed.ESCAPE)
+	{
+		FlxG.sound.play(Paths.sound('cancelMenu'));
+		MusicBeatState.switchState(new ScriptedState('MainMenuState', []));
+	}
 
-    var noLink:Bool = creditsStuff[curSelected][3] == 'nolink';
-        
-    if (FlxG.keys.justPressed.ENTER)
-    {
-        if (creditsStuff[curSelected][3] != null || creditsStuff[curSelected][3].length > 0 || !noLink)
-            CoolUtil.browserLoad(creditsStuff[curSelected][3]);
-        else
-            FlxG.sound.play(Paths.sound('cancelMenu'));
-    }
+	var noLink:Bool = creditsStuff[curSelected][3] == 'nolink';
+
+	if (FlxG.keys.justPressed.ENTER)
+	{
+		if (creditsStuff[curSelected][3] != null || creditsStuff[curSelected][3].length > 0 || !noLink)
+			CoolUtil.browserLoad(creditsStuff[curSelected][3]);
+		else
+			FlxG.sound.play(Paths.sound('cancelMenu'));
+	}
 }
 
 function changeSelection(change:Int)
 {
-    FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
-    
-    curSelected += change;
-    if (curSelected < 0)
-        curSelected = creditsStuff.length - 1;
-    if (curSelected >= creditsStuff.length)
-        curSelected = 0;
-    
-    var safety:Int = 0;
-    while (unselectableCheck(curSelected) && safety < creditsStuff.length)
-    {
-        curSelected += change;
-        if (curSelected < 0)
-            curSelected = creditsStuff.length - 1;
-        if (curSelected >= creditsStuff.length)
-            curSelected = 0;
-        safety++;
-    }
-    
-    FlxTween.cancelTweensOf(bg);
-    FlxTween.color(bg, 2, bg.color, CoolUtil.colorFromString(creditsStuff[curSelected][4]), {ease: FlxEase.cubeOut});
-    
-    var bullShit:Int = 0;
-    for (item in grpCredits.members)
-    {
-        item.targetY = bullShit - curSelected;
-        bullShit++;
-        
-        if (!unselectableCheck(bullShit - 1))
-        {
-            item.alpha = 0.6;
-            if (item.targetY == 0)
-                item.alpha = 1;
-        }
-    }
-    
-    descText.text = creditsStuff[curSelected][2];
-    descText.y = FlxG.height - descText.height + offsetThing;
-    
-    descBox.setGraphicSize(Std.int(descText.width + 20), Std.int(descText.height + 25));
-    descBox.updateHitbox();
+	FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+
+	curSelected += change;
+	if (curSelected < 0)
+		curSelected = creditsStuff.length - 1;
+	if (curSelected >= creditsStuff.length)
+		curSelected = 0;
+
+	var safety:Int = 0;
+	while (unselectableCheck(curSelected) && safety < creditsStuff.length)
+	{
+		curSelected += change;
+		if (curSelected < 0)
+			curSelected = creditsStuff.length - 1;
+		if (curSelected >= creditsStuff.length)
+			curSelected = 0;
+		safety++;
+	}
+
+	FlxTween.cancelTweensOf(bg);
+	FlxTween.color(bg, 2, bg.color, CoolUtil.colorFromString(creditsStuff[curSelected][4]), {ease: FlxEase.cubeOut});
+
+	var bullShit:Int = 0;
+	for (item in grpCredits.members)
+	{
+		item.targetY = bullShit - curSelected;
+		bullShit++;
+
+		if (!unselectableCheck(bullShit - 1))
+		{
+			item.alpha = 0.6;
+			if (item.targetY == 0)
+				item.alpha = 1;
+		}
+	}
+
+	descText.text = creditsStuff[curSelected][2];
+	descText.y = FlxG.height - descText.height + offsetThing;
+
+	descBox.setGraphicSize(Std.int(descText.width + 20), Std.int(descText.height + 25));
+	descBox.updateHitbox();
 }
 
 function unselectableCheck(num:Int):Bool
 {
-    return creditsStuff[num].length <= 1;
+	return creditsStuff[num].length <= 1;
 }

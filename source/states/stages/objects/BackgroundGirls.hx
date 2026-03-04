@@ -1,4 +1,4 @@
-package objects;
+package states.stages.objects;
 
 class BackgroundGirls extends FlxSprite
 {
@@ -9,9 +9,11 @@ class BackgroundGirls extends FlxSprite
 		super(x, y);
 
 		frames = Paths.getSparrowAtlas('stages/school/weeb/bgFreaks');
-
+		antialiasing = false;
 		swapDanceType();
 
+		setGraphicSize(Std.int(width * PlayState.daPixelZoom));
+		updateHitbox();
 		animation.play('danceLeft');
 	}
 

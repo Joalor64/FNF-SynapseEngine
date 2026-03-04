@@ -4,6 +4,10 @@ import flixel.addons.ui.FlxUIState;
 
 class MusicBeatState extends FlxUIState
 {
+	public var canSelectMods:Bool = true;
+
+	public var stages:Array<BaseStage> = [];
+
 	private var curSection:Int = 0;
 	private var stepsToDo:Int = 0;
 
@@ -60,6 +64,14 @@ class MusicBeatState extends FlxUIState
 		if (FlxG.save.data != null)
 			FlxG.save.data.fullscreen = FlxG.fullscreen;
 
+		stagesFunc(function(stage:BaseStage)
+		{
+			stage.update(elapsed);
+		});
+
+		if (FlxG.keys.justPressed.TAB && canSelectMods)
+			MusicBeatState.switchState(new ModsMenuState());
+
 		super.update(elapsed);
 	}
 
@@ -110,7 +122,7 @@ class MusicBeatState extends FlxUIState
 	{
 		var lastChange = Conductor.getBPMFromSeconds(Conductor.songPosition);
 
-		var shit = ((Conductor.songPosition - ClientPrefs.noteOffset) - lastChange.songTime) / lastChange.stepCrochet;
+		var shit = ((Conductor.songPosition - ClientPrefs.data.noteOffset) - lastChange.songTime) / lastChange.stepCrochet;
 		curDecStep = lastChange.stepTime + shit;
 		curStep = lastChange.stepTime + Math.floor(shit);
 	}
@@ -160,16 +172,41 @@ class MusicBeatState extends FlxUIState
 
 	public function stepHit():Void
 	{
+		stagesFunc(function(stage:BaseStage)
+		{
+			stage.curStep = curStep;
+			stage.curDecStep = curDecStep;
+			stage.stepHit();
+		});
+
 		if (curStep % 4 == 0)
 			beatHit();
 	}
 
 	public function beatHit():Void
 	{
+		stagesFunc(function(stage:BaseStage)
+		{
+			stage.curBeat = curBeat;
+			stage.curDecBeat = curDecBeat;
+			stage.beatHit();
+		});
 	}
 
 	public function sectionHit():Void
 	{
+		stagesFunc(function(stage:BaseStage)
+		{
+			stage.curSection = curSection;
+			stage.sectionHit();
+		});
+	}
+
+	function stagesFunc(func:BaseStage->Void)
+	{
+		for (stage in stages)
+			if (stage != null && stage.exists && stage.active)
+				func(stage);
 	}
 
 	function getBeatsOnSection()

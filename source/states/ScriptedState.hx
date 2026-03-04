@@ -103,7 +103,6 @@ class ScriptedState extends MusicBeatState
 	override public function update(elapsed:Float):Void
 	{
 		scriptExecute('update', [elapsed]);
-
 		super.update(elapsed);
 	}
 

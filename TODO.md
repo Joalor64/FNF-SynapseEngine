@@ -14,15 +14,7 @@
         * [X] Credits
         * [ ] Options
     * [ ] Stages
-        * [ ] Stage
-        * [ ] Spooky
-        * [ ] Philly
-        * [ ] Limo
-        * [ ] Mall
-        * [ ] School
-        * [ ] Tank
 * [ ] Optimizations
-* [ ] Customizations
 * [ ] RGB Notes
 * [ ] Noteskins
 * [X] FlxAnimate Support

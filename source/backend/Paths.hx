@@ -292,7 +292,7 @@ class Paths
 			{
 				var st:String = '$i';
 				if (i == 0)
-					st = '1';
+					st = '';
 
 				if (!changedAtlasJson)
 				{
@@ -301,14 +301,14 @@ class Paths
 					{
 						changedImage = true;
 						changedAtlasJson = true;
-						folderOrImg = image('$originalPath/spritemap$st');
+						folderOrImg = Paths.image('$originalPath/spritemap$st');
 						break;
 					}
 				}
-				else if (fileExists('images/$originalPath/spritemap$st.png'))
+				else if (Paths.fileExists('images/$originalPath/spritemap$st.png'))
 				{
 					changedImage = true;
-					folderOrImg = image('$originalPath/spritemap$st');
+					folderOrImg = Paths.image('$originalPath/spritemap$st');
 					break;
 				}
 			}
@@ -316,7 +316,7 @@ class Paths
 			if (!changedImage)
 			{
 				changedImage = true;
-				folderOrImg = image(originalPath);
+				folderOrImg = Paths.image(originalPath);
 			}
 
 			if (!changedAnimJson)
@@ -325,7 +325,6 @@ class Paths
 				animationJson = getTextFromFile('images/$originalPath/Animation.json');
 			}
 		}
-
 		spr.loadAtlasEx(folderOrImg, spriteJson, animationJson);
 	}
 	#end

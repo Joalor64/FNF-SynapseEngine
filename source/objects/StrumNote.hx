@@ -96,7 +96,7 @@ class StrumNote extends FlxSprite
 			animation.addByPrefix('purple', 'arrowLEFT');
 			animation.addByPrefix('red', 'arrowRIGHT');
 
-			antialiasing = ClientPrefs.globalAntialiasing;
+			antialiasing = ClientPrefs.data.globalAntialiasing;
 			setGraphicSize(Std.int(width * 0.7));
 
 			switch (Math.abs(noteData) % 4)
@@ -170,17 +170,15 @@ class StrumNote extends FlxSprite
 		}
 		else
 		{
-			if (noteData > -1 && noteData < ClientPrefs.arrowHSV.length)
+			if (noteData > -1 && noteData < ClientPrefs.data.arrowHSV.length)
 			{
-				colorSwap.hue = ClientPrefs.arrowHSV[noteData][0] / 360;
-				colorSwap.saturation = ClientPrefs.arrowHSV[noteData][1] / 100;
-				colorSwap.brightness = ClientPrefs.arrowHSV[noteData][2] / 100;
+				colorSwap.hue = ClientPrefs.data.arrowHSV[noteData][0] / 360;
+				colorSwap.saturation = ClientPrefs.data.arrowHSV[noteData][1] / 100;
+				colorSwap.brightness = ClientPrefs.data.arrowHSV[noteData][2] / 100;
 			}
 
 			if (animation.curAnim.name == 'confirm' && !PlayState.isPixelStage)
-			{
 				centerOrigin();
-			}
 		}
 	}
 }

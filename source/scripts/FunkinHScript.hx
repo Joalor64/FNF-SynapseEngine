@@ -3,6 +3,9 @@ package scripts;
 import rulescript.*;
 import rulescript.parsers.*;
 import cutscenes.CutsceneHandler;
+#if VIDEOS_ALLOWED
+import hxvlc.flixel.FlxVideoSprite;
+#end
 
 class FunkinHScript extends FlxBasic
 {
@@ -315,6 +318,9 @@ class FunkinHScript extends FlxBasic
 		setVariable('CutsceneHandler', CutsceneHandler);
 		#if DISCORD_ALLOWED
 		setVariable('DiscordClient', DiscordClient);
+		#end
+		#if VIDEOS_ALLOWED
+		setVariable('FlxVideoSprite', FlxVideoSprite);
 		#end
 		#if LUA_ALLOWED
 		setVariable('FunkinLua', FunkinLua);

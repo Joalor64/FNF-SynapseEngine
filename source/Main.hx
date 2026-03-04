@@ -93,9 +93,7 @@ class Main extends Sprite
 		fpsVar = new FPS(10, 10, 0xFFFFFF);
 		addChild(fpsVar);
 		if (fpsVar != null)
-		{
-			fpsVar.visible = ClientPrefs.showFPS;
-		}
+			fpsVar.visible = ClientPrefs.data.showFPS;
 
 		#if (linux || mac)
 		Lib.current.stage.window.setIcon(lime.graphics.Image.fromFile("icon.png"));

@@ -136,11 +136,11 @@ class Note extends FlxSprite
 	private function set_noteType(value:String):String
 	{
 		noteSplashTexture = PlayState.SONG.splashSkin;
-		if (noteData > -1 && noteData < ClientPrefs.arrowHSV.length)
+		if (noteData > -1 && noteData < ClientPrefs.data.arrowHSV.length)
 		{
-			colorSwap.hue = ClientPrefs.arrowHSV[noteData][0] / 360;
-			colorSwap.saturation = ClientPrefs.arrowHSV[noteData][1] / 100;
-			colorSwap.brightness = ClientPrefs.arrowHSV[noteData][2] / 100;
+			colorSwap.hue = ClientPrefs.data.arrowHSV[noteData][0] / 360;
+			colorSwap.saturation = ClientPrefs.data.arrowHSV[noteData][1] / 100;
+			colorSwap.brightness = ClientPrefs.data.arrowHSV[noteData][2] / 100;
 		}
 
 		if (noteData > -1 && noteType != value)
@@ -194,12 +194,12 @@ class Note extends FlxSprite
 		isSustainNote = sustainNote;
 		this.inEditor = inEditor;
 
-		x += (ClientPrefs.middleScroll ? PlayState.STRUM_X_MIDDLESCROLL : PlayState.STRUM_X) + 50;
+		x += (ClientPrefs.data.middleScroll ? PlayState.STRUM_X_MIDDLESCROLL : PlayState.STRUM_X) + 50;
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
 		y -= 2000;
 		this.strumTime = strumTime;
 		if (!inEditor)
-			this.strumTime += ClientPrefs.noteOffset;
+			this.strumTime += ClientPrefs.data.noteOffset;
 
 		this.noteData = noteData;
 
@@ -228,7 +228,7 @@ class Note extends FlxSprite
 			alpha = 0.6;
 			multAlpha = 0.6;
 			hitsoundDisabled = true;
-			if (ClientPrefs.downScroll)
+			if (ClientPrefs.data.downScroll)
 				flipY = true;
 
 			offsetX += width / 2;
@@ -333,20 +333,13 @@ class Note extends FlxSprite
 				offsetX += lastNoteOffsetXForPixelAutoAdjusting;
 				lastNoteOffsetXForPixelAutoAdjusting = (width - 7) * (PlayState.daPixelZoom / 2);
 				offsetX -= lastNoteOffsetXForPixelAutoAdjusting;
-
-				/*if(animName != null && !animName.endsWith('end'))
-					{
-						lastScaleY /= lastNoteScaleToo;
-						lastNoteScaleToo = (6 / height);
-						lastScaleY *= lastNoteScaleToo;
-				}*/
 			}
 		}
 		else
 		{
 			frames = Paths.getSparrowAtlas(blahblah);
 			loadNoteAnims();
-			antialiasing = ClientPrefs.globalAntialiasing;
+			antialiasing = ClientPrefs.data.globalAntialiasing;
 		}
 		if (isSustainNote)
 		{
