@@ -24,6 +24,9 @@ import backend.StageData;
 import backend.WeekData;
 import scripts.FunkinLua;
 import scripts.FunkinHScript;
+import modcharting.ModchartFuncs;
+import modcharting.NoteMovement;
+import modcharting.PlayfieldRenderer;
 #if VIDEOS_ALLOWED
 import hxvlc.flixel.FlxVideoSprite;
 #end
@@ -759,6 +762,10 @@ class PlayState extends MusicBeatState
 
 		strumLineNotes = new FlxTypedGroup<StrumNote>();
 		add(strumLineNotes);
+
+		playfieldRenderer = new PlayfieldRenderer(strumLineNotes, notes, this);
+  		playfieldRenderer.cameras = [camHUD];
+  		add(playfieldRenderer);
 		add(grpNoteSplashes);
 
 		if (ClientPrefs.data.timeBarType == 'Song Name')
@@ -1039,6 +1046,8 @@ class PlayState extends MusicBeatState
 
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
+
+		ModchartFuncs.loadLuaFunctions();
 
 		callOnLuas('onCreatePost', []);
 		callOnScripts('createPost', []);
@@ -1593,6 +1602,9 @@ class PlayState extends MusicBeatState
 
 			generateStaticArrows(0);
 			generateStaticArrows(1);
+
+			NoteMovement.getDefaultStrumPos(this);
+			
 			for (i in 0...playerStrums.length)
 			{
 				setOnLuas('defaultPlayerStrumX' + i, playerStrums.members[i].x);

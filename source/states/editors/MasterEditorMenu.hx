@@ -109,6 +109,8 @@ class MasterEditorMenu extends MusicBeatState
 					LoadingState.loadAndSwitchState(new DialogueCharacterEditorState(), false);
 				case 'Dialogue Editor':
 					LoadingState.loadAndSwitchState(new DialogueEditorState(), false);
+				case 'Modchart Editor': // felt it would be cool maybe
+					LoadingState.loadAndSwitchState(new modcharting.ModchartEditorState(), false);
 				case 'Chart Editor': // felt it would be cool maybe
 					LoadingState.loadAndSwitchState(new ChartingState(), false);
 			}
