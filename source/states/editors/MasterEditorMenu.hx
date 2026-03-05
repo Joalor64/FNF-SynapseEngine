@@ -10,6 +10,7 @@ class MasterEditorMenu extends MusicBeatState
 		'Dialogue Editor',
 		'Dialogue Portrait Editor',
 		'Character Editor',
+		'Modchart Editor',
 		'Chart Editor'
 	];
 	private var grpTexts:FlxTypedGroup<Alphabet>;
