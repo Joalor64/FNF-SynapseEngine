@@ -973,7 +973,7 @@ class ChartingState extends MusicBeatState
 			key++;
 		}
 
-		#if LUA_ALLOWED
+		#if (LUA_ALLOWED || HSCRIPT_ALLOWED)
 		var directories:Array<String> = [];
 
 		#if MODS_ALLOWED
@@ -991,7 +991,7 @@ class ChartingState extends MusicBeatState
 				for (file in FileSystem.readDirectory(directory))
 				{
 					var path = haxe.io.Path.join([directory, file]);
-					if (!FileSystem.isDirectory(path) && file.endsWith('.lua'))
+					if (!FileSystem.isDirectory(path) && (file.endsWith('.lua') || Paths.validScriptType(file)))
 					{
 						var fileToCheck:String = file.substr(0, file.length - 4);
 						if (!noteTypeMap.exists(fileToCheck))
@@ -1042,7 +1042,7 @@ class ChartingState extends MusicBeatState
 		var tab_group_event = new FlxUI(null, UI_box);
 		tab_group_event.name = 'Events';
 
-		#if LUA_ALLOWED
+		#if (LUA_ALLOWED || HSCRIPT_ALLOWED)
 		var eventPushedMap:Map<String, Bool> = new Map<String, Bool>();
 		var directories:Array<String> = [];
 

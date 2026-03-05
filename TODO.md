@@ -20,6 +20,7 @@
 * [ ] RGB Notes (Psych 0.7+)
 * [ ] Noteskins
 * [ ] Rewrite Controls
+* [ ] Modcharting Support
 * [X] FlxAnimate Support
 * [X] Source Code Reorganization
 * [X] Asset Reorganization
@@ -36,4 +37,3 @@
 * [ ] Potentially Backport V-Slice Stuff
 * [ ] Custom Achievements
 * [ ] Support for more than 2 health icons
-* [ ] Modcharting Support
