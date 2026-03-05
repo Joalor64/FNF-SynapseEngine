@@ -24,6 +24,10 @@ class PreloadState extends FlxState
 
 		PlayerSettings.init();
 
+		#if ACHIEVEMENTS_ALLOWED
+		Achievements.loadAchievements();
+		#end
+
 		ClientPrefs.loadPrefs();
 		Colorblind.updateFilter();
 

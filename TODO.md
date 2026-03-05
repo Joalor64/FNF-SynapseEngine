@@ -9,11 +9,13 @@
         * [X] Title
         * [X] Main Menu
         * [ ] Story Mode
-        * [ ] Freeplay
+        * [X] Freeplay
         * [X] Awards
         * [X] Credits
         * [ ] Options
     * [ ] Stages
+    * [ ] Game Over
+    * [ ] Pause Menu
 * [ ] Optimizations
 * [ ] RGB Notes (Psych 0.7+)
 * [ ] Noteskins

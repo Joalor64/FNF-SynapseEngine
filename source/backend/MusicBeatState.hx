@@ -69,8 +69,10 @@ class MusicBeatState extends FlxUIState
 			stage.update(elapsed);
 		});
 
+		#if MODS_ALLOWED
 		if (FlxG.keys.justPressed.TAB && canSelectMods)
 			MusicBeatState.switchState(new ModsMenuState());
+		#end
 
 		super.update(elapsed);
 	}

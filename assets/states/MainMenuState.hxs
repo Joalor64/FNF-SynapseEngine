@@ -1,3 +1,4 @@
+import backend.Constants;
 import states.LoadingState;
 import states.editors.MasterEditorMenu;
 import flixel.effects.FlxFlicker;
@@ -11,7 +12,6 @@ var camAchievement:FlxCamera;
 var optionShit:Array<String> = [
 	'story_mode',
 	'freeplay',
-	#if MODS_ALLOWED 'mods', #end
 	#if ACHIEVEMENTS_ALLOWED 'awards', #end
 	'credits',
 	'donate',
@@ -92,7 +92,7 @@ function create()
 	changeItem(0);
 	FlxG.camera.follow(camFollow, null, 0.15);
 
-	var synapseVersion:FlxText = new FlxText(12, FlxG.height - 44, 0, 'Synapse Engine v' + '0.1.0' + ' (Psych Engine v' + '0.6.3' + ')', 12);
+	var synapseVersion:FlxText = new FlxText(12, FlxG.height - 44, 0, 'Synapse Engine v' + Constants.SYNAPSE_ENGINE_VERSION + ' (Psych Engine v' + Constants.PSYCH_ENGINE_VERSION + ')', 12);
 	synapseVersion.scrollFactor.set();
 	synapseVersion.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 	add(synapseVersion);
@@ -101,8 +101,15 @@ function create()
 	funkinVersion.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 	add(funkinVersion);
 
+	#if MODS_ALLOWED
+	var openModsTxt:FlxText = new FlxText(FlxG.width, FlxG.height - 24, 0, 'Press TAB to open the mods menu.', 12);
+	openModsTxt.scrollFactor.set();
+	openModsTxt.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, FlxTextAlign.RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+	openModsTxt.x -= openModsTxt.width;
+	add(openModsTxt);
+	#end
+
 	#if ACHIEVEMENTS_ALLOWED
-	Achievements.loadAchievements();
 	var leDate = Date.now();
 	if (leDate.getDay() == 5 && leDate.getHours() >= 18)
 	{
@@ -192,11 +199,7 @@ function update(elapsed:Float)
 								case 'story_mode':
 									MusicBeatState.switchState(new states.StoryMenuState());
 								case 'freeplay':
-									MusicBeatState.switchState(new states.FreeplayState());
-								#if MODS_ALLOWED
-								case 'mods':
-									MusicBeatState.switchState(new states.ModsMenuState());
-								#end
+									MusicBeatState.switchState(new ScriptedState('FreeplayState', []));
 								case 'awards':
 									MusicBeatState.switchState(new ScriptedState('AchievementsState', []));
 								case 'credits':
