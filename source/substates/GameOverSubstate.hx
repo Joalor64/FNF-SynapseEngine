@@ -96,6 +96,7 @@ class GameOverSubstate extends MusicBeatSubstate
 
 			FlxG.sound.playMusic(Paths.music('freakyMenu'));
 			PlayState.instance.callOnLuas('onGameOverConfirm', [false]);
+			PlayState.instance.callOnScripts('onGameOverConfirm', [false]);
 		}
 
 		if (boyfriend.animation.curAnim != null && boyfriend.animation.curAnim.name == 'firstDeath')
