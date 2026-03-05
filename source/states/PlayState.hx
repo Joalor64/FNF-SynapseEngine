@@ -2225,7 +2225,7 @@ class PlayState extends MusicBeatState
 	function eventNoteEarlyTrigger(event:EventNote):Float
 	{
 		var returnedValue:Float = callOnLuas('eventEarlyTrigger', [event.event]);
-		var returnedValu2:Float = callOnScripts('eventEarlyTrigger', [event.event]);
+		var returnedValue2:Float = callOnScripts('eventEarlyTrigger', [event.event]);
 		if (returnedValue != 0)
 		{
 			return returnedValue;
