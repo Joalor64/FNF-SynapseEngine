@@ -77,7 +77,7 @@ class Main extends Sprite
 			#end
 			FlxG.bitmap.clearUnused();
 
-			openfl.system.System.gc();
+			System.gc();
 		});
 
 		FlxG.signals.postStateSwitch.add(() ->{
@@ -85,7 +85,7 @@ class Main extends Sprite
 			cpp.NativeGc.run(false);
 			cpp.NativeGc.enable(false);
 			#end
-			openfl.system.System.gc();
+			System.gc();
 		});
 
 		ClientPrefs.loadDefaultKeys();
