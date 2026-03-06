@@ -763,11 +763,6 @@ class PlayState extends MusicBeatState
 		strumLineNotes = new FlxTypedGroup<StrumNote>();
 		add(strumLineNotes);
 
-		playfieldRenderer = new PlayfieldRenderer(strumLineNotes, notes, this);
-  		playfieldRenderer.cameras = [camHUD];
-  		add(playfieldRenderer);
-		add(grpNoteSplashes);
-
 		if (ClientPrefs.data.timeBarType == 'Song Name')
 		{
 			timeTxt.size = 24;
@@ -782,6 +777,11 @@ class PlayState extends MusicBeatState
 		playerStrums = new FlxTypedGroup<StrumNote>();
 
 		generateSong(SONG.song);
+
+		playfieldRenderer = new PlayfieldRenderer(strumLineNotes, notes, this);
+  		playfieldRenderer.cameras = [camHUD];
+  		add(playfieldRenderer);
+		add(grpNoteSplashes);
 
 		camFollow = new FlxPoint();
 		camFollowPos = new FlxObject(0, 0, 1, 1);
