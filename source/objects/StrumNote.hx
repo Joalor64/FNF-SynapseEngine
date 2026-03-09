@@ -168,7 +168,7 @@ class StrumNote extends FlxSprite
 		{
 			if (note == null)
 			{
-				var noteColor:Array<FlxColor> = PlayState.isPixelStage ? ClientPrefs.data.arrowRGBPixel : ClientPrefs.data.arrowRGB;
+				var noteColor:Array<<Array<FlxColor>> = PlayState.isPixelStage ? ClientPrefs.data.arrowRGBPixel : ClientPrefs.data.arrowRGB;
 
 				rgbShader.r = noteColor[noteData % 4][0];
 				rgbShader.g = noteColor[noteData % 4][1];

@@ -87,6 +87,30 @@ class PixelSplashShaderRef
 	public var shader:PixelSplashShader = new PixelSplashShader();
 	public var enabled(default, set):Bool = true;
 	public var pixelAmount(default, set):Float = 1;
+	public var r(default, set):FlxColor;
+    public var g(default, set):FlxColor;
+    public var b(default, set):FlxColor;
+
+    private function set_r(color:FlxColor)
+    {
+        r = color;
+        shader.r.value = [color.redFloat, color.greenFloat, color.blueFloat];
+        return color;
+    }
+
+    private function set_g(color:FlxColor)
+    {
+        g = color;
+        shader.g.value = [color.color.greenFloat, color.greenFloat, color.blueFloat];
+        return color;
+    }
+
+    private function set_b(color:FlxColor)
+    {
+        b = color;
+        shader.b.value = [color.redFloat, color.greenFloat, color.blueFloat];
+        return color;
+    }
 
 	public function copyValues(tempShader:RGBPalette)
 	{

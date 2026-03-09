@@ -175,13 +175,14 @@ class Note extends FlxSprite
 		return value;
 	}
 
-	var noteColor:Array<FlxColor> = PlayState.isPixelStage ? ClientPrefs.data.arrowRGBPixel : ClientPrefs.data.arrowRGB;
+	var noteColor:Array<Array<FlxColor>> = PlayState.isPixelStage ? ClientPrefs.data.arrowRGBPixel : ClientPrefs.data.arrowRGB;
 
 	public function updateColours()
 	{
-		rgbShader.r = noteColor[noteData % 4][0];
-		rgbShader.g = noteColor[noteData % 4][1];
-		rgbShader.b = noteColor[noteData % 4][2];
+		var colorArray:Array<FlxColor> = noteColor[noteData % 4];
+    	rgbShader.r = colorArray[0];
+    	rgbShader.g = colorArray[1];  
+    	rgbShader.b = colorArray[2];
 	}
 
 	public static function initializeGlobalRGBShader(idx:Int, aQuant:Bool)
@@ -191,7 +192,7 @@ class Note extends FlxSprite
 			var newRGB:RGBPalette = new RGBPalette();
 			globalRgbShaders[idx] = newRGB;
 
-			var arr:Array<FlxColor> = noteColor[idx];
+			var arr:Array<FlxColor> = (PlayState.isPixelStage ? ClientPrefs.data.arrowRGBPixel : ClientPrefs.data.arrowRGB)[idx];
 			newRGB.r = arr[0];
 			newRGB.g = arr[1];
 			newRGB.b = arr[2];
