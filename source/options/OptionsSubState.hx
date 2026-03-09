@@ -3,7 +3,6 @@ package options;
 import flixel.addons.display.shapes.FlxShapeCircle;
 import lime.system.Clipboard;
 import shaders.RGBPalette;
-import shaders.RGBPalette.RGBShaderReference;
 
 class ControlsSubState extends MusicBeatSubstate
 {
@@ -1080,7 +1079,7 @@ class NotesSubState extends MusicBeatSubstate
 			{
 				for (i in 0...3)
 				{
-					var strumRGB:RGBShaderReference = myNotes.members[curSelectedNote].rgbShader;
+					var strumRGB:RGBPalette = myNotes.members[curSelectedNote].rgbShader;
 					var color:FlxColor = !onPixel ? ClientPrefs.defaultData.arrowRGB[curSelectedNote][i] :
 													ClientPrefs.defaultData.arrowRGBPixel[curSelectedNote][i];
 					switch (i)
@@ -1283,7 +1282,7 @@ class NotesSubState extends MusicBeatSubstate
 		}
 		colorGradientSelector.y = colorGradient.y + colorGradient.height * (1 - color.brightness);
 
-		var strumRGB:RGBShaderReference = myNotes.members[curSelectedNote].rgbShader;
+		var strumRGB:RGBPalette = myNotes.members[curSelectedNote].rgbShader;
 		switch (curSelectedMode)
 		{
 			case 0:
