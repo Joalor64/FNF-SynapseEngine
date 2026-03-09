@@ -635,13 +635,6 @@ class MiscSubState extends BaseOptionsMenu
 
 class NotesSubState extends MusicBeatSubstate
 {
-	public var defaultColumnColors:Array<Array<Int>> = [
-		[0xC24B99, 0xFFFFFFFF, 0x3C1F56], // Left
-		[0x00FFFF, 0xFFFFFFFF, 0x004a54], // Down
-		[0x12FA05, 0xFFFFFFFF, 0x034415], // UP
-		[0xF9393F, 0xFFFFFFFF, 0x651038], // Right
-	];
-
 	var onModeColumn:Bool = true;
 	var curSelectedMode:Int = 0;
 	var curSelectedNote:Int = 0;
@@ -681,6 +674,8 @@ class NotesSubState extends MusicBeatSubstate
 		FlxG.cameras.add(daCam, false);
 
 		FlxG.mouse.visible = true;
+
+		onPixel = PlayState.isPixelStage;
 
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		bg.color = 0xFFea71fd;
@@ -839,10 +834,10 @@ class NotesSubState extends MusicBeatSubstate
 
 		if (FlxG.keys.justPressed.CONTROL)
 		{
-			// onPixel = !onPixel;
-			// spawnNotes();
-			// updateNotes(true);
-			// FlxG.sound.play(Paths.sound('scrollMenu'), 0.6);
+			onPixel = !onPixel;
+			spawnNotes();
+			updateNotes(true);
+			FlxG.sound.play(Paths.sound('scrollMenu'), 0.6);
 		}
 
 		if (hexTypeNum > -1)
@@ -1018,10 +1013,10 @@ class NotesSubState extends MusicBeatSubstate
 			}
 			else if (FlxG.mouse.overlaps(skinNote))
 			{
-				// onPixel = !onPixel;
-				// spawnNotes();
-				// updateNotes(true);
-				// FlxG.sound.play(Paths.sound('scrollMenu'), 0.6);
+				onPixel = !onPixel;
+				spawnNotes();
+				updateNotes(true);
+				FlxG.sound.play(Paths.sound('scrollMenu'), 0.6);
 			}
 			else if (FlxG.mouse.y >= hexTypeLine.y
 				&& FlxG.mouse.y < hexTypeLine.y + hexTypeLine.height
@@ -1085,7 +1080,8 @@ class NotesSubState extends MusicBeatSubstate
 				for (i in 0...3)
 				{
 					var strumRGB:RGBPalette = myNotes.members[curSelectedNote].rgbShader;
-					var color:FlxColor = defaultColumnColors[curSelectedNote][i];
+					var color:FlxColor = !onPixel ? ClientPrefs.defaultData.arrowRGB[curSelectedNote][i] :
+													ClientPrefs.defaultData.arrowRGBPixel[curSelectedNote][i];
 					switch (i)
 					{
 						case 0:
@@ -1098,7 +1094,7 @@ class NotesSubState extends MusicBeatSubstate
 					dataArray[curSelectedNote][i] = color;
 				}
 			}
-			setShaderColor(defaultColumnColors[curSelectedNote][curSelectedMode]);
+			setShaderColor(!onPixel ? ClientPrefs.defaultData.arrowRGB[curSelectedNote][curSelectedMode] : ClientPrefs.defaultData.arrowRGBPixel[curSelectedNote][curSelectedMode]);
 			FlxG.sound.play(Paths.sound('cancelMenu'), 0.6);
 			updateColors();
 		}
@@ -1168,7 +1164,7 @@ class NotesSubState extends MusicBeatSubstate
 
 	public function spawnNotes()
 	{
-		dataArray = ClientPrefs.data.arrowRGB;
+		dataArray = !onPixel ? ClientPrefs.data.arrowRGB : ClientPrefs.data.arrowRGBPixel;
 
 		modeNotes.forEachAlive(function(note:FlxSprite)
 		{

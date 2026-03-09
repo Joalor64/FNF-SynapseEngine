@@ -3596,6 +3596,9 @@ class PlayState extends MusicBeatState
 
 		for (rating in ratingsData)
 			Paths.image(pixelShitPart1 + rating.image + pixelShitPart2);
+
+		Paths.image(pixelShitPart1 + 'combo' + pixelShitPart2);
+		
 		for (i in 0...10)
 			Paths.image(pixelShitPart1 + 'num' + i + pixelShitPart2);
 	}
