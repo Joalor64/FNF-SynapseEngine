@@ -3,6 +3,7 @@ package options;
 import flixel.addons.display.shapes.FlxShapeCircle;
 import lime.system.Clipboard;
 import shaders.RGBPalette;
+import shaders.RGBPalette.RGBShaderReference;
 
 class ControlsSubState extends MusicBeatSubstate
 {
@@ -1079,7 +1080,7 @@ class NotesSubState extends MusicBeatSubstate
 			{
 				for (i in 0...3)
 				{
-					var strumRGB:RGBPalette = myNotes.members[curSelectedNote].rgbShader;
+					var strumRGB:RGBShaderReference = myNotes.members[curSelectedNote].rgbShader;
 					var color:FlxColor = !onPixel ? ClientPrefs.defaultData.arrowRGB[curSelectedNote][i] :
 													ClientPrefs.defaultData.arrowRGBPixel[curSelectedNote][i];
 					switch (i)
@@ -1165,6 +1166,7 @@ class NotesSubState extends MusicBeatSubstate
 	public function spawnNotes()
 	{
 		dataArray = !onPixel ? ClientPrefs.data.arrowRGB : ClientPrefs.data.arrowRGBPixel;
+		PlayState.isPixelStage = onPixel;
 
 		modeNotes.forEachAlive(function(note:FlxSprite)
 		{
@@ -1238,6 +1240,7 @@ class NotesSubState extends MusicBeatSubstate
 				bigNote.animation.add('note$i', [i + 4], 24, true);
 		}
 		insert(members.indexOf(myNotes) + 1, bigNote);
+		bigNote.shader = Note.globalRgbShaders[curSelectedNote].shader;
 		_storedColor = getShaderColor();
 	}
 
@@ -1280,7 +1283,7 @@ class NotesSubState extends MusicBeatSubstate
 		}
 		colorGradientSelector.y = colorGradient.y + colorGradient.height * (1 - color.brightness);
 
-		var strumRGB:RGBPalette = myNotes.members[curSelectedNote].rgbShader;
+		var strumRGB:RGBShaderReference = myNotes.members[curSelectedNote].rgbShader;
 		switch (curSelectedMode)
 		{
 			case 0:
