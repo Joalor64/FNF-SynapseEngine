@@ -101,7 +101,7 @@ class PixelSplashShaderRef
     private function set_g(color:FlxColor)
     {
         g = color;
-        shader.g.value = [color.color.greenFloat, color.greenFloat, color.blueFloat];
+        shader.g.value = [color.greenFloat, color.greenFloat, color.blueFloat];
         return color;
     }
 
