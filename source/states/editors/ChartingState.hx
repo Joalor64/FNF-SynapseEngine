@@ -3114,24 +3114,59 @@ class ChartingState extends MusicBeatState
 
 	function loadJson(song:String):Void
 	{
-		// shitty null fix, i fucking hate it when this happens
-		// make it look sexier if possible
-		if (CoolUtil.difficulties[PlayState.storyDifficulty] != CoolUtil.defaultDifficulty)
+		var songLowercase:String = _song.song;
+		var poop:String = Highscore.formatSong(songLowercase, PlayState.storyDifficulty);
+		function findAndLoadJson()
 		{
-			if (CoolUtil.difficulties[PlayState.storyDifficulty] == null)
+			if (CoolUtil.difficulties[PlayState.storyDifficulty] != CoolUtil.defaultDifficulty)
 			{
-				PlayState.SONG = Song.loadFromJson(song.toLowerCase(), song.toLowerCase());
+				if (CoolUtil.difficulties[PlayState.storyDifficulty] == null)
+				{
+					PlayState.SONG = Song.loadFromJson(song.toLowerCase(), song.toLowerCase());
+				}
+				else
+				{
+					PlayState.SONG = Song.loadFromJson(song.toLowerCase() + "-" + CoolUtil.difficulties[PlayState.storyDifficulty], song.toLowerCase());
+				}
 			}
 			else
 			{
-				PlayState.SONG = Song.loadFromJson(song.toLowerCase() + "-" + CoolUtil.difficulties[PlayState.storyDifficulty], song.toLowerCase());
+				PlayState.SONG = Song.loadFromJson(song.toLowerCase(), song.toLowerCase());
 			}
+			FlxG.resetState();
 		}
-		else
+
+		function invalidJson()
 		{
-			PlayState.SONG = Song.loadFromJson(song.toLowerCase(), song.toLowerCase());
+			trace(poop + '.json does not exist!');
+			FlxG.sound.play(Paths.sound('cancelMenu'));
+			FlxG.camera.shake(0.05, 0.05);
+			var funnyText:FlxText = new FlxText(12, FlxG.height - 24, 0, "Invalid JSON!\n" + poop + ".json");
+			funnyText.scrollFactor.set();
+			funnyText.screenCenter();
+			funnyText.x = 5;
+			funnyText.y = FlxG.height / 2 - 64;
+			funnyText.setFormat(Paths.font("vcr.ttf"), 64, FlxColor.RED, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			add(funnyText);
+			FlxTween.tween(funnyText, {alpha: 0}, 0.6, {
+				onComplete: _ -> {
+					remove(funnyText, true);
+					funnyText.destroy();
+				}
+			});
 		}
-		FlxG.resetState();
+		#if sys
+		if (FileSystem.exists(Paths.modsJson(songLowercase + '/' + poop))
+			|| FileSystem.exists(Paths.json(songLowercase + '/' + poop)))
+			findAndLoadJson();
+		else
+			invalidJson();
+		#else
+		if (Assets.exists(Paths.json(songLowercase + '/' + poop)))
+			findAndLoadJson();
+		else
+			invalidJson();
+		#end
 	}
 
 	function autosaveSong():Void

@@ -1,7 +1,5 @@
 package options;
 
-import flixel.addons.display.FlxBackdrop;
-import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.display.shapes.FlxShapeCircle;
 import lime.system.Clipboard;
 import shaders.RGBPalette;
@@ -41,7 +39,7 @@ class ControlsSubState extends MusicBeatSubstate
 		['DEBUG'],
 		['Key 1', 'debug_1'],
 		['Key 2', 'debug_2'],
-		['Key 2', 'debug_3']
+		['Key 3', 'debug_3']
 	];
 
 	private var grpOptions:FlxTypedGroup<Alphabet>;

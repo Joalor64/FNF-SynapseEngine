@@ -175,11 +175,13 @@ class Note extends FlxSprite
 		return value;
 	}
 
+	var noteColor:Array<FlxColor> = PlayState.isPixelStage ? ClientPrefs.data.arrowRGBPixel : ClientPrefs.data.arrowRGB;
+
 	public function updateColours()
 	{
-		rgbShader.r = ClientPrefs.data.arrowRGB[noteData % 4][0];
-		rgbShader.g = ClientPrefs.data.arrowRGB[noteData % 4][1];
-		rgbShader.b = ClientPrefs.data.arrowRGB[noteData % 4][2];
+		rgbShader.r = noteColor[noteData % 4][0];
+		rgbShader.g = noteColor[noteData % 4][1];
+		rgbShader.b = noteColor[noteData % 4][2];
 	}
 
 	public static function initializeGlobalRGBShader(idx:Int, aQuant:Bool)
@@ -189,7 +191,7 @@ class Note extends FlxSprite
 			var newRGB:RGBPalette = new RGBPalette();
 			globalRgbShaders[idx] = newRGB;
 
-			var arr:Array<FlxColor> = ClientPrefs.data.arrowRGB[idx];
+			var arr:Array<FlxColor> = noteColor[idx];
 			newRGB.r = arr[0];
 			newRGB.g = arr[1];
 			newRGB.b = arr[2];
@@ -302,7 +304,6 @@ class Note extends FlxSprite
 		var skin:String = texture;
 		if (texture.length < 1)
 		{
-			// Add a null check for PlayState.SONG here
 			if (PlayState.SONG != null && PlayState.SONG.arrowSkin != null && PlayState.SONG.arrowSkin.length > 1)
 				skin = PlayState.SONG.arrowSkin;
 			else
