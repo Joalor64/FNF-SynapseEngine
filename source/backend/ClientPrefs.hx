@@ -18,6 +18,12 @@ import backend.Controls;
 	public var hideHud:Bool = false;
 	public var noteOffset:Int = 0;
 	public var arrowHSV:Array<Array<Int>> = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]];
+	public var arrowRGB:Array<Array<Int>> = [
+		[0xC24B99, 0xFFFFFFFF, 0x3C1F56], // Left
+		[0x00FFFF, 0xFFFFFFFF, 0x004a54], // Down
+		[0x12FA05, 0xFFFFFFFF, 0x034415], // UP
+		[0xF9393F, 0xFFFFFFFF, 0x651038], // Right
+	];
 	public var ghostTapping:Bool = true;
 	public var timeBarType:String = 'Time Left';
 	public var scoreZoom:Bool = true;
@@ -88,16 +94,33 @@ class ClientPrefs
 		'accept' => [SPACE, ENTER],
 		'back' => [BACKSPACE, ESCAPE],
 		'pause' => [ENTER, ESCAPE],
-		'reset' => [R, NONE],
-		'volume_mute' => [ZERO, NONE],
+		'reset' => [R],
+		'volume_mute' => [ZERO],
 		'volume_up' => [NUMPADPLUS, PLUS],
 		'volume_down' => [NUMPADMINUS, MINUS],
-		'debug_1' => [SEVEN, NONE],
-		'debug_2' => [EIGHT, NONE]
+		'debug_1' => [SEVEN],
+		'debug_2' => [EIGHT],
+		'debug_3' => [NINE]
 	];
 	public static var defaultKeys:Map<String, Array<FlxKey>> = null;
 
-	public static function loadDefaultKeys()
+	public static function resetKeys()
+	{
+		for (key in keyBinds.keys())
+		{
+			if (defaultKeys.exists(key))
+				keyBinds.set(key, defaultKeys.get(key).copy());
+		}
+	}
+
+	public static function clearInvalidKeys(key:String)
+	{
+		var keyBind:Array<FlxKey> = keyBinds.get(key);
+		while (keyBind != null && keyBind.contains(NONE))
+			keyBind.remove(NONE);
+	}
+
+	inline public static function loadDefaultKeys()
 	{
 		defaultKeys = keyBinds.copy();
 	}
@@ -110,8 +133,8 @@ class ClientPrefs
 		FlxG.save.flush();
 
 		var save:FlxSave = new FlxSave();
-		save.bind('controls_v2', 'ninjamuffin99');
-		save.data.customControls = keyBinds;
+		save.bind('controls_v3', CoolUtil.getSavePath());
+		save.data.keyboard = keyBinds;
 		save.flush();
 		FlxG.log.add("Settings saved!");
 	}
@@ -154,49 +177,33 @@ class ClientPrefs
 			FlxG.sound.muted = FlxG.save.data.mute;
 
 		var save:FlxSave = new FlxSave();
-		save.bind('controls_v2', 'ninjamuffin99');
-		if (save != null && save.data.customControls != null)
+		save.bind('controls_v3', CoolUtil.getSavePath());
+		if (save != null)
 		{
-			var loadedControls:Map<String, Array<FlxKey>> = save.data.customControls;
-			for (control => keys in loadedControls)
-				keyBinds.set(control, keys);
-			reloadControls();
+			if (save.data.keyboard != null)
+			{
+				var loadedControls:Map<String, Array<FlxKey>> = save.data.keyboard;
+				for (control => keys in loadedControls)
+				{
+					if (keyBinds.exists(control))
+						keyBinds.set(control, keys);
+				}
+			}
+			toggleVolumeKeys(true);
 		}
 	}
 
-	inline public static function getGameplaySetting(name:String, defaultValue:Dynamic):Dynamic
+	inline public static function getGameplaySetting(name:String, defaultValue:Dynamic = null, ?customDefaultValue:Bool = false):Dynamic
 	{
+		if (!customDefaultValue)
+			defaultValue = defaultData.gameplaySettings.get(name);
 		return (data.gameplaySettings.exists(name) ? data.gameplaySettings.get(name) : defaultValue);
 	}
 
-	public static function reloadControls()
+	public static function toggleVolumeKeys(turnOn:Bool)
 	{
-		PlayerSettings.player1.controls.setKeyboardScheme(KeyboardScheme.Solo);
-
-		PreloadState.muteKeys = copyKey(keyBinds.get('volume_mute'));
-		PreloadState.volumeDownKeys = copyKey(keyBinds.get('volume_down'));
-		PreloadState.volumeUpKeys = copyKey(keyBinds.get('volume_up'));
-		FlxG.sound.muteKeys = PreloadState.muteKeys;
-		FlxG.sound.volumeDownKeys = PreloadState.volumeDownKeys;
-		FlxG.sound.volumeUpKeys = PreloadState.volumeUpKeys;
-	}
-
-	public static function copyKey(arrayToCopy:Array<FlxKey>):Array<FlxKey>
-	{
-		var copiedArray:Array<FlxKey> = arrayToCopy.copy();
-		var i:Int = 0;
-		var len:Int = copiedArray.length;
-
-		while (i < len)
-		{
-			if (copiedArray[i] == NONE)
-			{
-				copiedArray.remove(NONE);
-				--i;
-			}
-			i++;
-			len = copiedArray.length;
-		}
-		return copiedArray;
+		FlxG.sound.muteKeys = turnOn ? Main.muteKeys : [];
+		FlxG.sound.volumeDownKeys = turnOn ? Main.volumeDownKeys : [];
+		FlxG.sound.volumeUpKeys = turnOn ? Main.volumeUpKeys : [];
 	}
 }

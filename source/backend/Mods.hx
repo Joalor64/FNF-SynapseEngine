@@ -55,6 +55,7 @@ class Mods
 	inline public static function getModDirectories(inclMainFol:Bool = false):Array<String>
 	{
 		var list:Array<String> = [];
+		#if MODS_ALLOWED
 		if (inclMainFol)
 			list.push('');
 		var modsFolder:String = Paths.mods();
@@ -67,6 +68,7 @@ class Mods
 					list.push(folder);
 			}
 		}
+		#end
 		return list;
 	}
 
@@ -155,6 +157,7 @@ class Mods
 
 	public static function getPack(?folder:String = null):Dynamic
 	{
+		#if MODS_ALLOWED
 		if (folder == null)
 			folder = Mods.currentModDirectory;
 
@@ -176,6 +179,7 @@ class Mods
 				trace(e);
 			}
 		}
+		#end
 		return null;
 	}
 
@@ -187,6 +191,7 @@ class Mods
 			updateModList();
 		var list:ModsList = {enabled: [], disabled: [], all: []};
 
+		#if MODS_ALLOWED
 		try
 		{
 			for (mod in CoolUtil.coolTextFile('modsList.txt'))
@@ -206,11 +211,13 @@ class Mods
 		{
 			trace(e);
 		}
+		#end
 		return list;
 	}
 
 	private static function updateModList()
 	{
+		#if MODS_ALLOWED
 		var list:Array<Array<Dynamic>> = [];
 		var added:Array<String> = [];
 		try
@@ -257,6 +264,7 @@ class Mods
 
 		File.saveContent('modsList.txt', fileStr);
 		updatedOnState = true;
+		#end
 	}
 
 	public static function loadTheFirstEnabledMod()

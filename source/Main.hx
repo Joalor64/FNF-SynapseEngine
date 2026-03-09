@@ -5,9 +5,6 @@ import openfl.events.UncaughtErrorEvent;
 import haxe.CallStack;
 import haxe.io.Path;
 #end
-#if DISCORD_ALLOWED
-import backend.DiscordClient;
-#end
 import debug.FPS;
 #if linux
 import hxgamemode.GamemodeClient;
@@ -15,9 +12,13 @@ import hxgamemode.GamemodeClient;
 
 class Main extends Sprite
 {
+	public static var muteKeys:Array<FlxKey> = [FlxKey.ZERO];
+	public static var volumeDownKeys:Array<FlxKey> = [FlxKey.NUMPADMINUS, FlxKey.MINUS];
+	public static var volumeUpKeys:Array<FlxKey> = [FlxKey.NUMPADPLUS, FlxKey.PLUS];
+
 	public final config:Dynamic = {
 		gameDimensions: [1280, 720],
-		initialState: PreloadState,
+		initialState: InitState,
 		defaultFPS: 60,
 		skipSplash: true,
 		startFullscreen: false
@@ -35,7 +36,7 @@ class Main extends Sprite
 		{
 			Sys.println('Failed to request gamemode start: ${GamemodeClient.error_string()}...');
 			System.exit(1);
-		} 
+		}
 		else
 		{
 			Sys.println('Succesfully requested gamemode to start...');
@@ -56,18 +57,12 @@ class Main extends Sprite
 		#end
 		#end
 
-		FlxG.save.bind('funkin', 'ninjamuffin99');
-		Highscore.load();
-
 		#if VIDEOS_ALLOWED
 		hxvlc.util.Handle.init(#if (hxvlc >= "1.8.0") ['--no-lua'] #end);
 		#end
 
-		#if DISCORD_ALLOWED
-		DiscordClient.load();
-		#end
-
-		FlxG.signals.preStateSwitch.add(() ->{
+		FlxG.signals.preStateSwitch.add(() ->
+		{
 			#if cpp
 			cpp.NativeGc.run(true);
 			cpp.NativeGc.enable(true);
@@ -80,7 +75,8 @@ class Main extends Sprite
 			System.gc();
 		});
 
-		FlxG.signals.postStateSwitch.add(() ->{
+		FlxG.signals.postStateSwitch.add(() ->
+		{
 			#if cpp
 			cpp.NativeGc.run(false);
 			cpp.NativeGc.enable(false);
@@ -88,7 +84,6 @@ class Main extends Sprite
 			System.gc();
 		});
 
-		ClientPrefs.loadDefaultKeys();
 		addChild(new FlxGame(config.gameDimensions[0], config.gameDimensions[1], config.initialState, config.defaultFPS, config.defaultFPS, config.skipSplash,
 			config.startFullscreen));
 
@@ -108,12 +103,12 @@ class Main extends Sprite
 		Lib.current.stage.application.window.onClose.add(function()
 		{
 			#if linux
-			if (GamemodeClient.request_end() != 0) 
+			if (GamemodeClient.request_end() != 0)
 			{
 				trace('Failed to request gamemode end: ${GamemodeClient.error_string()}...');
 				System.exit(1);
-			} 
-			else 
+			}
+			else
 			{
 				trace('Succesfully requested gamemode to end...');
 			}

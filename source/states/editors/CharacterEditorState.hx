@@ -1146,9 +1146,9 @@ class CharacterEditorState extends MusicBeatState
 				return;
 			}
 		}
-		FlxG.sound.muteKeys = PreloadState.muteKeys;
-		FlxG.sound.volumeDownKeys = PreloadState.volumeDownKeys;
-		FlxG.sound.volumeUpKeys = PreloadState.volumeUpKeys;
+		FlxG.sound.muteKeys = Main.muteKeys;
+		FlxG.sound.volumeDownKeys = Main.volumeDownKeys;
+		FlxG.sound.volumeUpKeys = Main.volumeUpKeys;
 
 		if (!charDropDown.dropPanel.visible)
 		{

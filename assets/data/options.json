@@ -1,0 +1,121 @@
+{
+    "categories": [
+        {
+            "name": "Visuals and Graphics",
+            "options": [
+                {
+                    "name": "Low Quality",
+                    "description": "If checked, disables some background details, decreases loading times and improves performance.",
+                    "variable": "lowQuality",
+                    "type": "bool"
+                },
+                {
+                    "name": "Anti-Aliasing",
+                    "description": "If unchecked, disables anti-aliasing, increases performance at the cost of sharper visuals.",
+                    "variable": "globalAntialiasing",
+                    "type": "bool"
+                },
+                {
+                    "name": "Shaders",
+                    "description": "If unchecked, disables shaders.\nIt's used for some visual effects, and also CPU intensive for weaker PCs.",
+                    "variable": "shaders",
+                    "type": "bool"
+                },
+                {
+                    "name": "Colorblind Filter:",
+                    "description": "What type of colorblind are you?",
+                    "variable": "colorBlindFilter",
+                    "type": "string",
+                    "options": [
+                        "None",
+                        "Deuteranopia",
+                        "Protanopia",
+                        "Tritanopia"
+                    ]
+                },
+                {
+                    "name": "Crossfade Mode:",
+                    "description": "What mode should crossfades be in?",
+                    "variable": "crossFadeMode",
+                    "type": "string",
+                    "options": [
+                        "Mid-Fight Masses",
+                        "Static",
+                        "Eccentric",
+                        "None"
+                    ]
+                },
+                {
+                    "name": "BF Crossfade Limit:",
+                    "description": "Determines the maximium amount of frames of crossfades the player can have.",
+                    "variable": "boyfriendCrossFadeLimit",
+                    "type": "int",
+                    "minValue": 1,
+                    "maxValue": 10
+                },
+                {
+                    "name": "Opponent Crossfade Limit:",
+                    "description": "Determines the maximium amount of frames of crossfade the opponent can have.",
+                    "variable": "crossFadeLimit",
+                    "type": "int",
+                    "minValue": 1,
+                    "maxValue": 10
+                },
+                {
+                    "name": "Framerate:",
+                    "description": "Pretty self explanatory, isn't it?",
+                    "variable": "framerate",
+                    "type": "int",
+                    "minValue": 60,
+                    "maxValue": 240,
+                    "displayFormat": "%v FPS"
+                },
+                {
+                    "name": "Flashing Lights",
+                    "description": "Uncheck this if you're sensitive to flashing lights!",
+                    "variable": "flashing",
+                    "type": "bool"
+                },
+                {
+                    "name": "FPS Counter",
+                    "description": "If unchecked, hides FPS Counter.",
+                    "variable": "showFPS",
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "Gameplay",
+            "options": [
+                {
+                    "name": "Downscroll",
+                    "description": "If checked, notes go Down instead of Up, simple enough.",
+                    "variable": "downScroll",
+                    "type": "bool"
+                },
+                {
+                    "name": "Middlescroll",
+                    "description": "If checked, your notes get centered.",
+                    "variable": "middleScroll",
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "Miscellaneous",
+            "options": [
+                {
+                    "name": "Pause Screen Song:",
+                    "description": "What song do you prefer for the Pause Screen?",
+                    "variable": "pauseMusic",
+                    "type": "string",
+                    "options": [
+                        "None",
+                        "Breakfast",
+                        "Tea Time"
+                    ]
+                }
+            ]
+        }
+    ]
+}

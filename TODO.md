@@ -8,7 +8,7 @@
     * [ ] Menu States
         * [X] Title
         * [X] Main Menu
-        * [ ] Story Mode
+        * [X] Story Mode
         * [X] Freeplay
         * [X] Awards
         * [X] Credits
@@ -17,10 +17,11 @@
     * [ ] Game Over
     * [ ] Pause Menu
 * [ ] Optimizations
-* [ ] RGB Notes (Psych 0.7+)
+* [X] RGB Notes
+    * [ ] Add Pixel RGB Notes Stuff
 * [ ] Noteskins
-* [ ] Rewrite Controls
-* [ ] Modcharting Support
+* [X] Rewrite Controls
+* [X] Modcharting Support
 * [X] FlxAnimate Support
 * [X] Source Code Reorganization
 * [X] Asset Reorganization
@@ -37,3 +38,5 @@
 * [ ] Potentially Backport V-Slice Stuff
 * [ ] Custom Achievements
 * [ ] Support for more than 2 health icons
+* [ ] Controller Support
+* [ ] Time Signature Support

@@ -325,7 +325,7 @@ class DialogueBoxPsych extends FlxSpriteGroup
 			if (bgFade.alpha > 0.5)
 				bgFade.alpha = 0.5;
 
-			if (PlayerSettings.player1.controls.ACCEPT)
+			if (Controls.instance.ACCEPT)
 			{
 				if (!daText.finishedText)
 				{

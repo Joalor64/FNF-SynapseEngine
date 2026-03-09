@@ -9,7 +9,7 @@ import haxe.io.BytesOutput;
 
 /**
  * @author maybekoi
- * @see https://github.com/SynapseEngine-Dev/SynapseEngine-Legacy
+ * @see https://github.com/Moon4K-Dev/Moon4K-Legacy
  */
 class AutoUpdater {
 	private static inline var VERSION_URL = "https://raw.githubusercontent.com/Joalor64GH/FNF-SynapseEngine/refs/heads/main/gitVersion.txt";

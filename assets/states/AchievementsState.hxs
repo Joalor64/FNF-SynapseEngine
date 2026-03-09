@@ -1,3 +1,4 @@
+import backend.Controls;
 import backend.Achievements;
 import backend.Achievements.AttachedAchievement;
 import backend.MusicBeatState;
@@ -76,38 +77,44 @@ function create()
 
 function update(elapsed:Float)
 {
-	if (FlxG.keys.justPressed.UP)
+	if (Controls.instance.UI_UP_P)
 		changeSelection(-1);
 
-	if (FlxG.keys.justPressed.DOWN)
+	if (Controls.instance.UI_DOWN_P)
 		changeSelection(1);
 
-	if (FlxG.keys.justPressed.ESCAPE)
+	if (Controls.instance.BACK)
 	{
 		FlxG.sound.play(Paths.sound('cancelMenu'));
 		MusicBeatState.switchState(new ScriptedState('MainMenuState', []));
 	}
 
-	if (FlxG.keys.justPressed.R)
+	if (Controls.instance.RESET)
 	{
 		FlxG.mouse.visible = true;
 		var isAlt = FlxG.keys.pressed.ALT;
 		openSubState(new Prompt((isAlt ? 'Reset ALL achievements?' : 'Reset this achievement?') + "\nThis action is irreversible!", 0, function()
 		{
 			FlxG.mouse.visible = false;
+			FlxG.sound.play(Paths.sound('confirmMenu'));
 			if (isAlt)
 			{
 				for (i in 0...achievementArray.length)
+				{
 					achievementArray[i].forget();
+					grpOptions.members[i].text = '?';
+				}
 			}
 			else
 			{
 				achievementArray[curSelected].forget();
+				grpOptions.members[curSelected].text = '?';
 			}
-			changeSelection();
+			changeSelection(0);
 		}, function()
 		{
 			FlxG.mouse.visible = false;
+			FlxG.sound.play(Paths.sound('cancelMenu'));
 		}, false));
 	}
 }

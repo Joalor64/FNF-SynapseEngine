@@ -1,6 +1,8 @@
+import backend.Controls;
 import backend.Constants;
 import states.LoadingState;
 import states.editors.MasterEditorMenu;
+import backend.Achievements.AchievementObject;
 import flixel.effects.FlxFlicker;
 import lime.app.Application;
 
@@ -33,7 +35,7 @@ function create()
 	DiscordClient.changePresence("In the Menus", null);
 	#end
 
-	debugKeys = ClientPrefs.copyKey(ClientPrefs.keyBinds.get('debug_1'));
+	debugKeys = ClientPrefs.keyBinds.get('debug_1').copy();
 
 	camGame = new FlxCamera();
 	camAchievement = new FlxCamera();
@@ -92,14 +94,18 @@ function create()
 	changeItem(0);
 	FlxG.camera.follow(camFollow, null, 0.15);
 
-	var synapseVersion:FlxText = new FlxText(12, FlxG.height - 44, 0, 'Synapse Engine v' + Constants.SYNAPSE_ENGINE_VERSION + ' (Psych Engine v' + Constants.PSYCH_ENGINE_VERSION + ')', 12);
-	synapseVersion.scrollFactor.set();
-	synapseVersion.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-	add(synapseVersion);
-	var funkinVersion:FlxText = new FlxText(12, FlxG.height - 24, 0, "Friday Night Funkin' v" + Application.current.meta.get('version'), 12);
-	funkinVersion.scrollFactor.set();
-	funkinVersion.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-	add(funkinVersion);
+	var versionArray:Array<String> = [
+		'Synapse Engine v${Constants.SYNAPSE_ENGINE_VERSION}' #if debug + ' [${Constants.GIT_COMMIT_HASH}]' #end,
+		'Psych Engine v${Constants.PSYCH_ENGINE_VERSION}',
+		"Friday Night Funkin' v" + Application.current.meta.get('version')
+	];
+	versionArray.reverse();
+	for (i in 0...versionArray.length) {
+		var versionTxt:FlxText = new FlxText(12, (FlxG.height - 24) - (18 * i), 0, versionArray[i], 12);
+		versionTxt.scrollFactor.set();
+		versionTxt.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		add(versionTxt);
+	}
 
 	#if MODS_ALLOWED
 	var openModsTxt:FlxText = new FlxText(FlxG.width, FlxG.height - 24, 0, 'Press TAB to open the mods menu.', 12);
@@ -125,7 +131,6 @@ function create()
 }
 
 #if ACHIEVEMENTS_ALLOWED
-// Unlocks "Freaky on a Friday Night" achievement
 function giveAchievement()
 {
 	add(new AchievementObject('friday_night_play', camAchievement));
@@ -144,26 +149,26 @@ function update(elapsed:Float)
 
 	if (!selectedSomethin)
 	{
-		if (FlxG.keys.justPressed.UP)
+		if (Controls.instance.UI_UP_P)
 		{
 			FlxG.sound.play(Paths.sound('scrollMenu'));
 			changeItem(-1);
 		}
 
-		if (FlxG.keys.justPressed.DOWN)
+		if (Controls.instance.UI_DOWN_P)
 		{
 			FlxG.sound.play(Paths.sound('scrollMenu'));
 			changeItem(1);
 		}
 
-		if (FlxG.keys.justPressed.ESCAPE)
+		if (Controls.instance.BACK)
 		{
 			selectedSomethin = true;
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 			MusicBeatState.switchState(new ScriptedState('TitleState', []));
 		}
 
-		if (FlxG.keys.justPressed.ENTER)
+		if (Controls.instance.ACCEPT)
 		{
 			if (optionShit[curSelected] == 'donate')
 			{
@@ -196,7 +201,7 @@ function update(elapsed:Float)
 							switch (optionShit[curSelected])
 							{
 								case 'story_mode':
-									MusicBeatState.switchState(new states.StoryMenuState());
+									MusicBeatState.switchState(new ScriptedState('StoryMenuState', []));
 								case 'freeplay':
 									MusicBeatState.switchState(new ScriptedState('FreeplayState', []));
 								case 'awards':

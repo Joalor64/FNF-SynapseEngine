@@ -471,9 +471,9 @@ class WeekEditorState extends MusicBeatState
 
 		if (!blockInput)
 		{
-			FlxG.sound.muteKeys = PreloadState.muteKeys;
-			FlxG.sound.volumeDownKeys = PreloadState.volumeDownKeys;
-			FlxG.sound.volumeUpKeys = PreloadState.volumeUpKeys;
+			FlxG.sound.muteKeys = Main.muteKeys;
+			FlxG.sound.volumeDownKeys = Main.volumeDownKeys;
+			FlxG.sound.volumeUpKeys = Main.volumeUpKeys;
 			if (FlxG.keys.justPressed.ESCAPE)
 			{
 				MusicBeatState.switchState(new MasterEditorMenu());
@@ -867,9 +867,9 @@ class WeekEditorFreeplayState extends MusicBeatState
 		}
 		else
 		{
-			FlxG.sound.muteKeys = PreloadState.muteKeys;
-			FlxG.sound.volumeDownKeys = PreloadState.volumeDownKeys;
-			FlxG.sound.volumeUpKeys = PreloadState.volumeUpKeys;
+			FlxG.sound.muteKeys = Main.muteKeys;
+			FlxG.sound.volumeDownKeys = Main.volumeDownKeys;
+			FlxG.sound.volumeUpKeys = Main.volumeUpKeys;
 			if (FlxG.keys.justPressed.ESCAPE)
 			{
 				MusicBeatState.switchState(new MasterEditorMenu());

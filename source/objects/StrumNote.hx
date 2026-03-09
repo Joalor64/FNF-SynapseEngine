@@ -1,11 +1,11 @@
 package objects;
 
-import shaders.ColorSwap;
+import shaders.RGBPalette;
 import backend.animation.PsychAnimationController;
 
 class StrumNote extends FlxSprite
 {
-	private var colorSwap:ColorSwap;
+	public var rgbShader:RGBPalette;
 
 	public var resetAnim:Float = 0;
 
@@ -33,15 +33,15 @@ class StrumNote extends FlxSprite
 	{
 		animation = new PsychAnimationController(this);
 
-		colorSwap = new ColorSwap();
-		shader = colorSwap.shader;
+		rgbShader = new RGBPalette();
+		shader = rgbShader.shader;
 		noteData = leData;
 		this.player = player;
 		this.noteData = leData;
 		super(x, y);
 
 		var skin:String = 'NOTE_assets';
-		if (PlayState.SONG.arrowSkin != null && PlayState.SONG.arrowSkin.length > 1)
+		if (PlayState.SONG != null && PlayState.SONG.arrowSkin != null && PlayState.SONG.arrowSkin.length > 1)
 			skin = PlayState.SONG.arrowSkin;
 		texture = skin; // Load texture and anims
 
@@ -147,38 +147,39 @@ class StrumNote extends FlxSprite
 				resetAnim = 0;
 			}
 		}
-		// if(animation.curAnim != null){ //my bad i was upset
 		if (animation.curAnim.name == 'confirm' && !PlayState.isPixelStage)
-		{
 			centerOrigin();
-			// }
-		}
 
 		super.update(elapsed);
 	}
 
-	public function playAnim(anim:String, ?force:Bool = false)
+	public function playAnim(anim:String, ?force:Bool = false, ?note:Note)
 	{
 		animation.play(anim, force);
 		centerOffsets();
 		centerOrigin();
+		rgbShader.enabled = false;
+
 		if (animation.curAnim == null || animation.curAnim.name == 'static')
 		{
-			colorSwap.hue = 0;
-			colorSwap.saturation = 0;
-			colorSwap.brightness = 0;
+			rgbShader.enabled = false;
 		}
 		else
 		{
-			if (noteData > -1 && noteData < ClientPrefs.data.arrowHSV.length)
+			if (note == null)
 			{
-				colorSwap.hue = ClientPrefs.data.arrowHSV[noteData][0] / 360;
-				colorSwap.saturation = ClientPrefs.data.arrowHSV[noteData][1] / 100;
-				colorSwap.brightness = ClientPrefs.data.arrowHSV[noteData][2] / 100;
+				rgbShader.r = ClientPrefs.data.arrowRGB[noteData % 4][0];
+				rgbShader.g = ClientPrefs.data.arrowRGB[noteData % 4][1];
+				rgbShader.b = ClientPrefs.data.arrowRGB[noteData % 4][2];
+				rgbShader.enabled = true;
 			}
-
-			if (animation.curAnim.name == 'confirm' && !PlayState.isPixelStage)
-				centerOrigin();
+			else
+			{
+				rgbShader.enabled = true;
+				rgbShader.r = note.rgbShader.r;
+				rgbShader.g = note.rgbShader.g;
+				rgbShader.b = note.rgbShader.b;
+			}
 		}
 	}
 }

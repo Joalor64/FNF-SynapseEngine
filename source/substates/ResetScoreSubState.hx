@@ -20,6 +20,9 @@ class ResetScoreSubState extends MusicBeatSubstate
 		this.difficulty = difficulty;
 		this.week = week;
 
+		if (character == '' || character.length <= 0)
+			character = 'face';
+
 		super();
 
 		var name:String = song;
@@ -71,6 +74,7 @@ class ResetScoreSubState extends MusicBeatSubstate
 
 	override function update(elapsed:Float)
 	{
+		// i still don't understand why he didn't use tweens
 		bg.alpha += elapsed * 1.5;
 		if (bg.alpha > 0.6)
 			bg.alpha = 0.6;

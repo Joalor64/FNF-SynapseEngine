@@ -76,7 +76,7 @@ class Character extends FlxSprite
 
 	public var flixelTrail:Bool = false;
 
-	public static var DEFAULT_CHARACTER:String = 'bf'; // In case a character is missing, it will use BF on its place
+	public static inline final DEFAULT_CHARACTER:String = 'bf'; // In case a character is missing, it will use BF on its place
 
 	public function new(x:Float, y:Float, ?character:String = 'bf', ?isPlayer:Bool = false)
 	{
@@ -286,13 +286,13 @@ class Character extends FlxSprite
 						playAnim(animation.curAnim.name, false, false, animation.curAnim.frames.length - 3);
 			}
 
+			if (animation.curAnim.name.startsWith('sing'))
+				holdTimer += elapsed;
+			else if (isPlayer)
+				holdTimer = 0;
+
 			if (!isPlayer)
 			{
-				if (animation.curAnim.name.startsWith('sing'))
-				{
-					holdTimer += elapsed;
-				}
-
 				if (holdTimer >= Conductor.stepCrochet * (0.0011 #if FLX_PITCH / (FlxG.sound.music != null ? FlxG.sound.music.pitch : 1) #end) * singDuration)
 				{
 					dance();
@@ -301,9 +301,10 @@ class Character extends FlxSprite
 			}
 
 			if (animation.curAnim.finished && animation.getByName(animation.curAnim.name + '-loop') != null)
-			{
 				playAnim(animation.curAnim.name + '-loop');
-			}
+
+			if (animation.curAnim.name.endsWith('miss') && animation.curAnim.finished && !debugMode)
+				playAnim('idle', true, false, 10);
 		}
 		super.update(elapsed);
 	}
@@ -427,40 +428,5 @@ class Character extends FlxSprite
 		if (isAnimationNull())
 			return false;
 		return animation.curAnim.finished;
-	}
-}
-
-class Boyfriend extends Character
-{
-	public var startedDeath:Bool = false;
-
-	public function new(x:Float, y:Float, ?char:String = 'bf')
-	{
-		super(x, y, char, true);
-	}
-
-	override function update(elapsed:Float)
-	{
-		if (!debugMode && animation.curAnim != null)
-		{
-			if (animation.curAnim.name.startsWith('sing'))
-			{
-				holdTimer += elapsed;
-			}
-			else
-				holdTimer = 0;
-
-			if (animation.curAnim.name.endsWith('miss') && animation.curAnim.finished && !debugMode)
-			{
-				playAnim('idle', true, false, 10);
-			}
-
-			if (animation.curAnim.name == 'firstDeath' && animation.curAnim.finished && startedDeath)
-			{
-				playAnim('deathLoop');
-			}
-		}
-
-		super.update(elapsed);
 	}
 }

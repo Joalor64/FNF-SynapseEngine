@@ -11,28 +11,17 @@ class CoolUtil
 	inline public static function quantize(f:Float, snap:Float)
 	{
 		var m:Float = Math.fround(f * snap);
-		trace(snap);
 		return (m / snap);
 	}
 
-	public static function getDifficultyFilePath(num:Null<Int> = null)
+	public static inline function getDifficultyFilePath(num:Null<Int> = null)
 	{
 		if (num == null)
 			num = PlayState.storyDifficulty;
-
-		var fileSuffix:String = difficulties[num];
-		if (fileSuffix != defaultDifficulty)
-		{
-			fileSuffix = '-' + fileSuffix;
-		}
-		else
-		{
-			fileSuffix = '';
-		}
-		return Paths.formatToSongPath(fileSuffix);
+		return Paths.formatToSongPath((difficulties[num] != defaultDifficulty) ? '-' + difficulties[num] : '');
 	}
 
-	public static function difficultyString():String
+	public static inline function difficultyString():String
 	{
 		return difficulties[PlayState.storyDifficulty].toUpperCase();
 	}
@@ -86,20 +75,12 @@ class CoolUtil
 		return endResult;
 	}
 
-	public static function listFromString(string:String):Array<String>
+	public static inline function listFromString(string:String):Array<String>
 	{
-		var daList:Array<String> = [];
-		daList = string.trim().split('\n');
-
-		for (i in 0...daList.length)
-		{
-			daList[i] = daList[i].trim();
-		}
-
-		return daList;
+		return string.trim().split('\n').map(str -> str.trim());
 	}
 
-	public static function dominantColor(sprite:flixel.FlxSprite):Int
+	public static inline function dominantColor(sprite:flixel.FlxSprite):Int
 	{
 		var countByColor:Map<Int, Int> = [];
 		for (col in 0...sprite.frameWidth)
@@ -147,7 +128,7 @@ class CoolUtil
 		Paths.music(sound);
 	}
 
-	public static function browserLoad(site:String)
+	inline public static function browserLoad(site:String)
 	{
 		#if linux
 		var cmd = Sys.command("xdg-open", [url]);
@@ -157,5 +138,12 @@ class CoolUtil
 		#else
 		FlxG.openURL(site);
 		#end
+	}
+
+	@:access(flixel.util.FlxSave.validate)
+	inline public static function getSavePath():String
+	{
+		final company:String = FlxG.stage.application.meta.get('company');
+		return '${company}/${flixel.util.FlxSave.validate(FlxG.stage.application.meta.get('file'))}';
 	}
 }

@@ -29,14 +29,13 @@ class Option
 	public var description:String = '';
 	public var name:String = 'Unknown';
 
-	public function new(name:String, description:String = '', variable:String, type:String = 'bool', defaultValue:Dynamic = 'null variable value',
-			?options:Array<String> = null)
+	public function new(name:String, description:String = '', variable:String, type:String = 'bool', ?options:Array<String> = null)
 	{
 		this.name = name;
 		this.description = description;
 		this.variable = variable;
 		this.type = type;
-		this.defaultValue = defaultValue;
+		this.defaultValue = Reflect.field(ClientPrefs.defaultData, variable);
 		this.options = options;
 
 		if (defaultValue == 'null variable value')
@@ -93,12 +92,12 @@ class Option
 
 	public function getValue():Dynamic
 	{
-		return Reflect.getProperty(ClientPrefs.data, variable);
+		return Reflect.field(ClientPrefs.data, variable);
 	}
 
 	public function setValue(value:Dynamic)
 	{
-		Reflect.setProperty(ClientPrefs.data, variable, value);
+		Reflect.setField(ClientPrefs.data, variable, value);
 	}
 
 	public function setChild(child:Alphabet)

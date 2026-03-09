@@ -1,5 +1,11 @@
 package options;
 
+import flixel.addons.display.FlxBackdrop;
+import flixel.addons.display.FlxGridOverlay;
+import flixel.addons.display.shapes.FlxShapeCircle;
+import lime.system.Clipboard;
+import shaders.RGBPalette;
+
 class ControlsSubState extends MusicBeatSubstate
 {
 	private static var curSelected:Int = 1;
@@ -34,7 +40,8 @@ class ControlsSubState extends MusicBeatSubstate
 		[''],
 		['DEBUG'],
 		['Key 1', 'debug_1'],
-		['Key 2', 'debug_2']
+		['Key 2', 'debug_2'],
+		['Key 2', 'debug_3']
 	];
 
 	private var grpOptions:FlxTypedGroup<Alphabet>;
@@ -115,7 +122,6 @@ class ControlsSubState extends MusicBeatSubstate
 
 			if (controls.BACK)
 			{
-				ClientPrefs.reloadControls();
 				close();
 				FlxG.sound.play(Paths.sound('cancelMenu'));
 			}
@@ -410,29 +416,27 @@ class GameplaySubState extends BaseOptionsMenu
 		var option:Option = new Option('Downscroll', // Name
 			'If checked, notes go Down instead of Up, simple enough.', // Description
 			'downScroll', // Save data variable name
-			'bool', // Variable type
-			false); // Default value
+			'bool'); // Variable type
 		addOption(option);
 
-		var option:Option = new Option('Middlescroll', 'If checked, your notes get centered.', 'middleScroll', 'bool', false);
+		var option:Option = new Option('Middlescroll', 'If checked, your notes get centered.', 'middleScroll', 'bool');
 		addOption(option);
 
-		var option:Option = new Option('Opponent Notes', 'If unchecked, opponent notes get hidden.', 'opponentStrums', 'bool', true);
+		var option:Option = new Option('Opponent Notes', 'If unchecked, opponent notes get hidden.', 'opponentStrums', 'bool');
 		addOption(option);
 
 		var option:Option = new Option('Ghost Tapping', "If checked, you won't get misses from pressing keys\nwhile there are no notes able to be hit.",
-			'ghostTapping', 'bool', true);
+			'ghostTapping', 'bool');
 		addOption(option);
 
-		var option:Option = new Option('Ghost Tap Animation', 'If checked, plays player one\'s anim when ghost tapping is active.', 'ghostTapAnim', 'bool',
-			false);
+		var option:Option = new Option('Ghost Tap Animation', 'If checked, plays player one\'s anim when ghost tapping is active.', 'ghostTapAnim', 'bool');
 		addOption(option);
 
-		var option:Option = new Option('Camera Movement', 'If checked, move the camera depending the note that was hit.', 'cameraPanning', 'bool', true);
+		var option:Option = new Option('Camera Movement', 'If checked, move the camera depending the note that was hit.', 'cameraPanning', 'bool');
 		addOption(option);
 
 		var option:Option = new Option('Camera Pan Intensity:', // Name
-			'Changes how much the camera pans when Camera Movement is turned on.', 'panIntensity', 'float', 1);
+			'Changes how much the camera pans when Camera Movement is turned on.', 'panIntensity', 'float');
 		option.scrollSpeed = 2;
 		option.minValue = 0.01;
 		option.maxValue = 10;
@@ -440,10 +444,10 @@ class GameplaySubState extends BaseOptionsMenu
 		option.displayFormat = '%vX';
 		addOption(option);
 
-		var option:Option = new Option('Disable Reset Button', "If checked, pressing Reset won't do anything.", 'noReset', 'bool', false);
+		var option:Option = new Option('Disable Reset Button', "If checked, pressing Reset won't do anything.", 'noReset', 'bool');
 		addOption(option);
 
-		var option:Option = new Option('Hitsound Volume', 'Funny notes does \"Tick!\" when you hit them."', 'hitsoundVolume', 'percent', 0);
+		var option:Option = new Option('Hitsound Volume', 'Funny notes does \"Tick!\" when you hit them."', 'hitsoundVolume', 'percent');
 		addOption(option);
 		option.scrollSpeed = 1.6;
 		option.minValue = 0.0;
@@ -452,24 +456,24 @@ class GameplaySubState extends BaseOptionsMenu
 		option.decimals = 1;
 		option.onChange = onChangeHitsoundVolume;
 
-		var option:Option = new Option('Note Splashes', "If unchecked, hitting \"Sick!\" notes won't show particles.", 'noteSplashes', 'bool', true);
+		var option:Option = new Option('Note Splashes', "If unchecked, hitting \"Sick!\" notes won't show particles.", 'noteSplashes', 'bool');
 		addOption(option);
 
-		var option:Option = new Option('Hide HUD', 'If checked, hides most HUD elements.', 'hideHud', 'bool', false);
+		var option:Option = new Option('Hide HUD', 'If checked, hides most HUD elements.', 'hideHud', 'bool');
 		addOption(option);
 
-		var option:Option = new Option('Time Bar:', "What should the Time Bar display?", 'timeBarType', 'string', 'Time Left',
+		var option:Option = new Option('Time Bar:', "What should the Time Bar display?", 'timeBarType', 'string',
 			['Time Left', 'Time Elapsed', 'Song Name', 'Disabled']);
 		addOption(option);
 
-		var option:Option = new Option('Camera Zooms', "If unchecked, the camera won't zoom in on a beat hit.", 'camZooms', 'bool', true);
+		var option:Option = new Option('Camera Zooms', "If unchecked, the camera won't zoom in on a beat hit.", 'camZooms', 'bool');
 		addOption(option);
 
 		var option:Option = new Option('Score Text Zoom on Hit', "If unchecked, disables the Score text zooming\neverytime you hit a note.", 'scoreZoom',
-			'bool', true);
+			'bool');
 		addOption(option);
 
-		var option:Option = new Option('Health Bar Transparency', 'How much transparent should the health bar and icons be.', 'healthBarAlpha', 'percent', 1);
+		var option:Option = new Option('Health Bar Transparency', 'How much transparent should the health bar and icons be.', 'healthBarAlpha', 'percent');
 		option.scrollSpeed = 1.6;
 		option.minValue = 0.0;
 		option.maxValue = 1;
@@ -478,23 +482,21 @@ class GameplaySubState extends BaseOptionsMenu
 		addOption(option);
 
 		var option:Option = new Option('Combo Stacking',
-			"If unchecked, Ratings and Combo won't stack, saving on System Memory and making them easier to read", 'comboStacking', 'bool', true);
+			"If unchecked, Ratings and Combo won't stack, saving on System Memory and making them easier to read", 'comboStacking', 'bool');
 		addOption(option);
 
-		var option:Option = new Option('Display Milliseconds', 'If checked, displays your note hit offset in milliseconds.', 'displayMilliseconds', 'bool',
-			true);
+		var option:Option = new Option('Display Milliseconds', 'If checked, displays your note hit offset in milliseconds.', 'displayMilliseconds', 'bool');
 		addOption(option);
 
 		var option:Option = new Option('Rating Offset', 'Changes how late/early you have to hit for a "Sick!"\nHigher values mean you have to hit later.',
-			'ratingOffset', 'int', 0);
+			'ratingOffset', 'int');
 		option.displayFormat = '%vms';
 		option.scrollSpeed = 20;
 		option.minValue = -30;
 		option.maxValue = 30;
 		addOption(option);
 
-		var option:Option = new Option('Sick! Hit Window', 'Changes the amount of time you have\nfor hitting a "Sick!" in milliseconds.', 'sickWindow', 'int',
-			45);
+		var option:Option = new Option('Sick! Hit Window', 'Changes the amount of time you have\nfor hitting a "Sick!" in milliseconds.', 'sickWindow', 'int');
 		option.displayFormat = '%vms';
 		option.scrollSpeed = 15;
 		option.minValue = 15;
@@ -503,8 +505,7 @@ class GameplaySubState extends BaseOptionsMenu
 		addOption(option);
 		option.onChange = onChangeHitWindow;
 
-		var option:Option = new Option('Good Hit Window', 'Changes the amount of time you have\nfor hitting a "Good" in milliseconds.', 'goodWindow', 'int',
-			90);
+		var option:Option = new Option('Good Hit Window', 'Changes the amount of time you have\nfor hitting a "Good" in milliseconds.', 'goodWindow', 'int');
 		option.displayFormat = '%vms';
 		option.scrollSpeed = 30;
 		option.minValue = 15;
@@ -513,7 +514,7 @@ class GameplaySubState extends BaseOptionsMenu
 		addOption(option);
 		option.onChange = onChangeHitWindow;
 
-		var option:Option = new Option('Bad Hit Window', 'Changes the amount of time you have\nfor hitting a "Bad" in milliseconds.', 'badWindow', 'int', 135);
+		var option:Option = new Option('Bad Hit Window', 'Changes the amount of time you have\nfor hitting a "Bad" in milliseconds.', 'badWindow', 'int');
 		option.displayFormat = '%vms';
 		option.scrollSpeed = 60;
 		option.minValue = 15;
@@ -522,15 +523,14 @@ class GameplaySubState extends BaseOptionsMenu
 		addOption(option);
 		option.onChange = onChangeHitWindow;
 
-		var option:Option = new Option('Shit Hit Window', 'Changes the amount of time you have\nfor hitting a "Shit" in milliseconds.', 'shitWindow', 'int',
-			205);
+		var option:Option = new Option('Shit Hit Window', 'Changes the amount of time you have\nfor hitting a "Shit" in milliseconds.', 'shitWindow', 'int');
 		option.displayFormat = '%vms';
 		option.scrollSpeed = 60;
 		windowOptions.push(option);
 		addOption(option);
 		option.onChange = onChangeHitWindow;
 
-		var option:Option = new Option('Safe Frames', 'Changes how many frames you have for\nhitting a note earlier or late.', 'safeFrames', 'float', 10);
+		var option:Option = new Option('Safe Frames', 'Changes how many frames you have for\nhitting a note earlier or late.', 'safeFrames', 'float');
 		option.scrollSpeed = 5;
 		option.minValue = 2;
 		option.maxValue = 10;
@@ -601,17 +601,14 @@ class MiscSubState extends BaseOptionsMenu
 		title = 'Miscellaneous';
 		rpcTitle = 'Misc. Settings Menu'; // for Discord Rich Presence
 
-		var option:Option = new Option('Pause Screen Song:', "What song do you prefer for the Pause Screen?", 'pauseMusic', 'string', 'Tea Time',
+		var option:Option = new Option('Pause Screen Song:', "What song do you prefer for the Pause Screen?", 'pauseMusic', 'string',
 			['None', 'Breakfast', 'Tea Time']);
 		addOption(option);
 		option.onChange = onChangePauseMusic;
 
 		#if CHECK_FOR_UPDATES
-		var option:Option = new Option('Check for Updates',
-			'On release builds, turn this on to check for updates when you start the game.',
-			'checkForUpdates',
-			'bool',
-			true);
+		var option:Option = new Option('Check for Updates', 'On release builds, turn this on to check for updates when you start the game.',
+			'checkForUpdates', 'bool');
 		addOption(option);
 		#end
 
@@ -640,24 +637,52 @@ class MiscSubState extends BaseOptionsMenu
 
 class NotesSubState extends MusicBeatSubstate
 {
-	private static var curSelected:Int = 0;
-	private static var typeSelected:Int = 0;
+	public var defaultColumnColors:Array<Array<Int>> = [
+		[0xC24B99, 0xFFFFFFFF, 0x3C1F56], // Left
+		[0x00FFFF, 0xFFFFFFFF, 0x004a54], // Down
+		[0x12FA05, 0xFFFFFFFF, 0x034415], // UP
+		[0xF9393F, 0xFFFFFFFF, 0x651038], // Right
+	];
 
-	private var grpNumbers:FlxTypedGroup<Alphabet>;
-	private var grpNotes:FlxTypedGroup<FlxSprite>;
-	private var shaderArray:Array<ColorSwap> = [];
-	var curValue:Float = 0;
-	var holdTime:Float = 0;
-	var nextAccept:Int = 5;
+	var onModeColumn:Bool = true;
+	var curSelectedMode:Int = 0;
+	var curSelectedNote:Int = 0;
+	var onPixel:Bool = false;
+	var dataArray:Array<Array<FlxColor>>;
 
-	var blackBG:FlxSprite;
-	var hsbText:Alphabet;
+	var hexTypeLine:FlxSprite;
+	var hexTypeNum:Int = -1;
+	var hexTypeVisibleTimer:Float = 0;
 
-	var posX = 230;
+	var copyButton:FlxSprite;
+	var pasteButton:FlxSprite;
+
+	var colorGradient:FlxSprite;
+	var colorGradientSelector:FlxSprite;
+	var colorPalette:FlxSprite;
+	var colorWheel:FlxSprite;
+	var colorWheelSelector:FlxSprite;
+
+	var alphabetR:Alphabet;
+	var alphabetG:Alphabet;
+	var alphabetB:Alphabet;
+	var alphabetHex:Alphabet;
+
+	var modeBG:FlxSprite;
+	var notesBG:FlxSprite;
+
+	var daCam:FlxCamera;
+	var tipTxt:FlxText;
 
 	public function new()
 	{
 		super();
+
+		daCam = new FlxCamera();
+		daCam.bgColor.alpha = 0;
+		FlxG.cameras.add(daCam, false);
+
+		FlxG.mouse.visible = true;
 
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		bg.color = 0xFFea71fd;
@@ -665,305 +690,622 @@ class NotesSubState extends MusicBeatSubstate
 		bg.antialiasing = ClientPrefs.data.globalAntialiasing;
 		add(bg);
 
-		blackBG = new FlxSprite(posX - 25).makeGraphic(870, 200, FlxColor.BLACK);
-		blackBG.alpha = 0.4;
-		add(blackBG);
+		var grid:FlxBackdrop = new FlxBackdrop(FlxGridOverlay.createGrid(80, 80, 160, 160, true, 0x33FFFFFF, 0x0));
+		grid.velocity.set(40, 40);
+		grid.alpha = 0;
+		FlxTween.tween(grid, {alpha: 1}, 0.5, {ease: FlxEase.quadOut});
+		add(grid);
 
-		grpNotes = new FlxTypedGroup<FlxSprite>();
-		add(grpNotes);
-		grpNumbers = new FlxTypedGroup<Alphabet>();
-		add(grpNumbers);
+		modeBG = new FlxSprite(215, 85).makeGraphic(315, 115, FlxColor.BLACK);
+		modeBG.visible = false;
+		modeBG.alpha = 0.4;
+		add(modeBG);
 
-		for (i in 0...ClientPrefs.data.arrowHSV.length)
-		{
-			var yPos:Float = (165 * i) + 35;
-			for (j in 0...3)
-			{
-				var optionText:Alphabet = new Alphabet(posX + (225 * j) + 250, yPos + 60, Std.string(ClientPrefs.data.arrowHSV[i][j]), true);
-				grpNumbers.add(optionText);
-			}
+		notesBG = new FlxSprite(140, 190).makeGraphic(480, 125, FlxColor.BLACK);
+		notesBG.visible = false;
+		notesBG.alpha = 0.4;
+		add(notesBG);
 
-			var note:FlxSprite = new FlxSprite(posX, yPos);
-			note.frames = Paths.getSparrowAtlas('NOTE_assets');
-			var animations:Array<String> = ['purple0', 'blue0', 'green0', 'red0'];
-			note.animation.addByPrefix('idle', animations[i]);
-			note.animation.play('idle');
-			note.antialiasing = ClientPrefs.data.globalAntialiasing;
-			grpNotes.add(note);
+		modeNotes = new FlxTypedGroup<FlxSprite>();
+		add(modeNotes);
 
-			var newShader:ColorSwap = new ColorSwap();
-			note.shader = newShader.shader;
-			newShader.hue = ClientPrefs.data.arrowHSV[i][0] / 360;
-			newShader.saturation = ClientPrefs.data.arrowHSV[i][1] / 100;
-			newShader.brightness = ClientPrefs.data.arrowHSV[i][2] / 100;
-			shaderArray.push(newShader);
-		}
+		myNotes = new FlxTypedGroup<StrumNote>();
+		add(myNotes);
 
-		hsbText = new Alphabet(posX + 560, 0, "Hue    Saturation  Brightness", false);
-		hsbText.scaleX = 0.6;
-		hsbText.scaleY = 0.6;
-		add(hsbText);
+		var bg:FlxSprite = new FlxSprite(720).makeGraphic(FlxG.width - 720, FlxG.height, FlxColor.BLACK);
+		bg.alpha = 0.25;
+		add(bg);
+		var bg:FlxSprite = new FlxSprite(750, 160).makeGraphic(FlxG.width - 780, 540, FlxColor.BLACK);
+		bg.alpha = 0.25;
+		add(bg);
 
-		changeSelection();
+		var text:Alphabet = new Alphabet(84, 20, '', false);
+		text.alignment = CENTERED;
+		text.scaleX = 0.4;
+		text.scaleY = 0.4;
+		text.text = "CTRL";
+		add(text);
+
+		copyButton = new FlxSprite(760, 50).loadGraphic(Paths.image('noteColorMenu/copy'));
+		copyButton.alpha = 0.6;
+		add(copyButton);
+
+		pasteButton = new FlxSprite(1180, 50).loadGraphic(Paths.image('noteColorMenu/paste'));
+		pasteButton.alpha = 0.6;
+		add(pasteButton);
+
+		colorGradient = FlxGradient.createGradientFlxSprite(60, 360, [FlxColor.WHITE, FlxColor.BLACK]);
+		colorGradient.setPosition(780, 200);
+		add(colorGradient);
+
+		colorGradientSelector = new FlxSprite(770, 200).makeGraphic(80, 10, FlxColor.WHITE);
+		colorGradientSelector.offset.y = 5;
+		add(colorGradientSelector);
+
+		colorPalette = new FlxSprite(820, 580).loadGraphic(Paths.image('noteColorMenu/palette'));
+		colorPalette.scale.set(20, 20);
+		colorPalette.updateHitbox();
+		colorPalette.antialiasing = false;
+		add(colorPalette);
+
+		colorWheel = new FlxSprite(860, 200).loadGraphic(Paths.image('noteColorMenu/colorWheel'));
+		colorWheel.setGraphicSize(360, 360);
+		colorWheel.updateHitbox();
+		add(colorWheel);
+
+		colorWheelSelector = new FlxShapeCircle(0, 0, 8, {thickness: 0}, FlxColor.WHITE);
+		colorWheelSelector.offset.set(8, 8);
+		colorWheelSelector.alpha = 0.6;
+		add(colorWheelSelector);
+
+		alphabetR = makeColorAlphabet(900, 60);
+		add(alphabetR);
+		alphabetG = makeColorAlphabet(1000, 60);
+		add(alphabetG);
+		alphabetB = makeColorAlphabet(1100, 60);
+		add(alphabetB);
+		alphabetHex = makeColorAlphabet(1000, 5);
+		add(alphabetHex);
+
+		hexTypeLine = new FlxSprite(0, 20).makeGraphic(5, 62, FlxColor.WHITE);
+		hexTypeLine.visible = false;
+		add(hexTypeLine);
+
+		var tipX = 20;
+		var tipY = 660;
+		var tip:FlxText = new FlxText(tipX, tipY, 0, "Press RELOAD to Reset the selected Note Part.", 16);
+		tip.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		tip.borderSize = 2;
+		add(tip);
+
+		tipTxt = new FlxText(tipX, tipY + 24, 0, '', 16);
+		tipTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		tipTxt.borderSize = 2;
+		add(tipTxt);
+		updateTip();
+
+		spawnNotes();
+		updateNotes(true);
+		FlxG.sound.play(Paths.sound('scrollMenu'), 0.6);
+
+		cameras = [daCam];
 	}
 
+	function updateTip()
+	{
+		tipTxt.text = 'Hold Shift' + ' + Press RELOAD to fully reset the selected Note.';
+	}
+
+	var _storedColor:FlxColor;
 	var changingNote:Bool = false;
+	var holdingOnObj:FlxSprite;
+
+	var allowedTypeKeys:Map<FlxKey, String> = [
+		ZERO => '0',
+		ONE => '1',
+		TWO => '2',
+		THREE => '3',
+		FOUR => '4',
+		FIVE => '5',
+		SIX => '6',
+		SEVEN => '7',
+		EIGHT => '8',
+		NINE => '9',
+		NUMPADZERO => '0',
+		NUMPADONE => '1',
+		NUMPADTWO => '2',
+		NUMPADTHREE => '3',
+		NUMPADFOUR => '4',
+		NUMPADFIVE => '5',
+		NUMPADSIX => '6',
+		NUMPADSEVEN => '7',
+		NUMPADEIGHT => '8',
+		NUMPADNINE => '9',
+		A => 'A',
+		B => 'B',
+		C => 'C',
+		D => 'D',
+		E => 'E',
+		F => 'F'
+	];
 
 	override function update(elapsed:Float)
 	{
-		if (changingNote)
+		if (controls.BACK)
 		{
-			if (holdTime < 0.5)
+			FlxG.cameras.remove(daCam);
+			FlxG.sound.play(Paths.sound('cancelMenu'));
+			close();
+			return;
+		}
+
+		if (FlxG.keys.justPressed.CONTROL)
+		{
+			// onPixel = !onPixel;
+			// spawnNotes();
+			// updateNotes(true);
+			// FlxG.sound.play(Paths.sound('scrollMenu'), 0.6);
+		}
+
+		if (hexTypeNum > -1)
+		{
+			var keyPressed:FlxKey = cast(FlxG.keys.firstJustPressed(), FlxKey);
+			hexTypeVisibleTimer += elapsed;
+			var changed:Bool = false;
+			if (changed = FlxG.keys.justPressed.LEFT)
+				hexTypeNum--;
+			else if (changed = FlxG.keys.justPressed.RIGHT)
+				hexTypeNum++;
+			else if (allowedTypeKeys.exists(keyPressed))
 			{
-				if (controls.UI_LEFT_P)
-				{
-					updateValue(-1);
-					FlxG.sound.play(Paths.sound('scrollMenu'));
-				}
-				else if (controls.UI_RIGHT_P)
-				{
-					updateValue(1);
-					FlxG.sound.play(Paths.sound('scrollMenu'));
-				}
-				else if (controls.RESET)
-				{
-					resetValue(curSelected, typeSelected);
-					FlxG.sound.play(Paths.sound('scrollMenu'));
-				}
-				if (controls.UI_LEFT_R || controls.UI_RIGHT_R)
-				{
-					holdTime = 0;
-				}
-				else if (controls.UI_LEFT || controls.UI_RIGHT)
-				{
-					holdTime += elapsed;
-				}
+				var curColor:String = alphabetHex.text;
+				var newColor:String = curColor.substring(0, hexTypeNum) + allowedTypeKeys.get(keyPressed) + curColor.substring(hexTypeNum + 1);
+
+				var colorHex:FlxColor = FlxColor.fromString('#' + newColor);
+				setShaderColor(colorHex);
+				_storedColor = getShaderColor();
+				updateColors();
+
+				hexTypeNum++;
+				changed = true;
 			}
-			else
+			else if (FlxG.keys.justPressed.ENTER)
+				hexTypeNum = -1;
+
+			var end:Bool = false;
+			if (changed)
 			{
-				var add:Float = 90;
-				switch (typeSelected)
+				if (hexTypeNum > 5)
 				{
-					case 1 | 2:
-						add = 50;
+					hexTypeNum = -1;
+					end = true;
+					hexTypeLine.visible = false;
 				}
-				if (controls.UI_LEFT)
+				else
 				{
-					updateValue(elapsed * -add);
+					if (hexTypeNum < 0)
+						hexTypeNum = 0;
+					else if (hexTypeNum > 5)
+						hexTypeNum = 5;
+					centerHexTypeLine();
+					hexTypeLine.visible = true;
 				}
-				else if (controls.UI_RIGHT)
-				{
-					updateValue(elapsed * add);
-				}
-				if (controls.UI_LEFT_R || controls.UI_RIGHT_R)
-				{
-					FlxG.sound.play(Paths.sound('scrollMenu'));
-					holdTime = 0;
-				}
+				FlxG.sound.play(Paths.sound('scrollMenu'), 0.6);
 			}
+			if (!end)
+				hexTypeLine.visible = Math.floor(hexTypeVisibleTimer * 2) % 2 == 0;
 		}
 		else
 		{
-			if (controls.UI_UP_P)
-			{
-				changeSelection(-1);
-				FlxG.sound.play(Paths.sound('scrollMenu'));
-			}
-			if (controls.UI_DOWN_P)
-			{
-				changeSelection(1);
-				FlxG.sound.play(Paths.sound('scrollMenu'));
-			}
+			var add:Int = 0;
 			if (controls.UI_LEFT_P)
+				add = -1;
+			else if (controls.UI_RIGHT_P)
+				add = 1;
+			if (controls.UI_UP_P || controls.UI_DOWN_P)
 			{
-				changeType(-1);
-				FlxG.sound.play(Paths.sound('scrollMenu'));
+				onModeColumn = !onModeColumn;
+				modeBG.visible = onModeColumn;
+				notesBG.visible = !onModeColumn;
 			}
-			if (controls.UI_RIGHT_P)
+
+			if (add != 0)
 			{
-				changeType(1);
-				FlxG.sound.play(Paths.sound('scrollMenu'));
+				if (onModeColumn)
+					changeSelectionMode(add);
+				else
+					changeSelectionNote(add);
 			}
-			if (controls.RESET)
+			hexTypeLine.visible = false;
+		}
+
+		if (FlxG.mouse.justMoved)
+		{
+			copyButton.alpha = 0.6;
+			pasteButton.alpha = 0.6;
+		}
+		if (FlxG.mouse.overlaps(copyButton))
+		{
+			if (FlxG.mouse.justMoved)
+				copyButton.alpha = 1;
+
+			if (FlxG.mouse.justPressed)
+			{
+				if (FlxG.mouse.justPressed)
+					Clipboard.text = getShaderColor().toHexString(false, false);
+				FlxG.sound.play(Paths.sound('scrollMenu'), 0.6);
+			}
+
+			hexTypeNum = -1;
+		}
+		else if (FlxG.mouse.overlaps(pasteButton))
+		{
+			if (FlxG.mouse.justMoved)
+				pasteButton.alpha = 1;
+
+			if (FlxG.mouse.justPressed)
+			{
+				var formattedText = Clipboard.text.trim().toUpperCase().replace('#', '').replace('0x', '');
+				var newColor:Null<FlxColor> = FlxColor.fromString('#' + formattedText);
+				if (newColor != null && formattedText.length == 6)
+				{
+					setShaderColor(newColor);
+					FlxG.sound.play(Paths.sound('scrollMenu'), 0.6);
+					_storedColor = getShaderColor();
+					updateColors();
+				}
+				else
+					FlxG.sound.play(Paths.sound('cancelMenu'), 0.6);
+			}
+
+			hexTypeNum = -1;
+		}
+
+		var generalMoved:Bool = (FlxG.mouse.justMoved);
+		var generalPressed:Bool = (FlxG.mouse.justPressed);
+		if (generalMoved)
+		{
+			copyButton.alpha = 0.6;
+			pasteButton.alpha = 0.6;
+		}
+
+		if (FlxG.mouse.justPressed)
+		{
+			hexTypeNum = -1;
+			if (FlxG.mouse.overlaps(modeNotes))
+			{
+				modeNotes.forEachAlive(function(note:FlxSprite)
+				{
+					if (curSelectedMode != note.ID && FlxG.mouse.overlaps(note))
+					{
+						modeBG.visible = notesBG.visible = false;
+						curSelectedMode = note.ID;
+						onModeColumn = true;
+						updateNotes();
+						FlxG.sound.play(Paths.sound('scrollMenu'), 0.6);
+					}
+				});
+			}
+			else if (FlxG.mouse.overlaps(myNotes))
+			{
+				myNotes.forEachAlive(function(note:StrumNote)
+				{
+					if (curSelectedNote != note.ID && FlxG.mouse.overlaps(note))
+					{
+						modeBG.visible = notesBG.visible = false;
+						curSelectedNote = note.ID;
+						onModeColumn = false;
+						bigNote.shader = Note.globalRgbShaders[note.ID].shader;
+						updateNotes();
+						FlxG.sound.play(Paths.sound('scrollMenu'), 0.6);
+					}
+				});
+			}
+			else if (FlxG.mouse.overlaps(colorWheel))
+			{
+				_storedColor = getShaderColor();
+				holdingOnObj = colorWheel;
+			}
+			else if (FlxG.mouse.overlaps(colorGradient))
+			{
+				_storedColor = getShaderColor();
+				holdingOnObj = colorGradient;
+			}
+			else if (FlxG.mouse.overlaps(colorPalette))
+			{
+				setShaderColor(colorPalette.pixels.getPixel32(Std.int((FlxG.mouse.x - colorPalette.x) / colorPalette.scale.x),
+					Std.int((FlxG.mouse.y - colorPalette.y) / colorPalette.scale.y)));
+				FlxG.sound.play(Paths.sound('scrollMenu'), 0.6);
+				updateColors();
+			}
+			else if (FlxG.mouse.overlaps(skinNote))
+			{
+				// onPixel = !onPixel;
+				// spawnNotes();
+				// updateNotes(true);
+				// FlxG.sound.play(Paths.sound('scrollMenu'), 0.6);
+			}
+			else if (FlxG.mouse.y >= hexTypeLine.y
+				&& FlxG.mouse.y < hexTypeLine.y + hexTypeLine.height
+				&& Math.abs(FlxG.mouse.x - 1000) <= 84)
+			{
+				hexTypeNum = 0;
+				for (letter in alphabetHex.letters)
+				{
+					if (letter.x - letter.offset.x + letter.width <= FlxG.mouse.x)
+						hexTypeNum++;
+					else
+						break;
+				}
+				if (hexTypeNum > 5)
+					hexTypeNum = 5;
+				hexTypeLine.visible = true;
+				centerHexTypeLine();
+			}
+			else
+				holdingOnObj = null;
+		}
+		if (holdingOnObj != null)
+		{
+			if (FlxG.mouse.justReleased)
+			{
+				holdingOnObj = null;
+				_storedColor = getShaderColor();
+				updateColors();
+				FlxG.sound.play(Paths.sound('scrollMenu'), 0.6);
+			}
+			else if (generalMoved || generalPressed)
+			{
+				if (holdingOnObj == colorGradient)
+				{
+					var newBrightness = 1 - FlxMath.bound((FlxG.mouse.y - colorGradient.y) / colorGradient.height, 0, 1);
+					_storedColor.alpha = 1;
+					if (_storedColor.brightness == 0)
+						setShaderColor(FlxColor.fromRGBFloat(newBrightness, newBrightness, newBrightness));
+					else
+						setShaderColor(FlxColor.fromHSB(_storedColor.hue, _storedColor.saturation, newBrightness));
+					updateColors(_storedColor);
+				}
+				else if (holdingOnObj == colorWheel)
+				{
+					var center:FlxPoint = new FlxPoint(colorWheel.x + colorWheel.width / 2, colorWheel.y + colorWheel.height / 2);
+					var mouse:FlxPoint = FlxG.mouse.getScreenPosition();
+					var hue:Float = FlxMath.wrap(FlxMath.wrap(Std.int(mouse.degreesTo(center)), 0, 360) - 90, 0, 360);
+					var sat:Float = FlxMath.bound(mouse.dist(center) / colorWheel.width * 2, 0, 1);
+					if (sat != 0)
+						setShaderColor(FlxColor.fromHSB(hue, sat, _storedColor.brightness));
+					else
+						setShaderColor(FlxColor.fromRGBFloat(_storedColor.brightness, _storedColor.brightness, _storedColor.brightness));
+					updateColors();
+				}
+			}
+		}
+		else if (controls.RESET && hexTypeNum < 0)
+		{
+			if (FlxG.keys.pressed.SHIFT || FlxG.gamepads.anyJustPressed(LEFT_SHOULDER))
 			{
 				for (i in 0...3)
 				{
-					resetValue(curSelected, i);
-				}
-				FlxG.sound.play(Paths.sound('scrollMenu'));
-			}
-			if (controls.ACCEPT && nextAccept <= 0)
-			{
-				FlxG.sound.play(Paths.sound('scrollMenu'));
-				changingNote = true;
-				holdTime = 0;
-				for (i in 0...grpNumbers.length)
-				{
-					var item = grpNumbers.members[i];
-					item.alpha = 0;
-					if ((curSelected * 3) + typeSelected == i)
+					var strumRGB:RGBPalette = myNotes.members[curSelectedNote].rgbShader;
+					var color:FlxColor = defaultColumnColors[curSelectedNote][i];
+					switch (i)
 					{
-						item.alpha = 1;
+						case 0:
+							getShader().r = strumRGB.r = color;
+						case 1:
+							getShader().g = strumRGB.g = color;
+						case 2:
+							getShader().b = strumRGB.b = color;
 					}
+					dataArray[curSelectedNote][i] = color;
 				}
-				for (i in 0...grpNotes.length)
-				{
-					var item = grpNotes.members[i];
-					item.alpha = 0;
-					if (curSelected == i)
-					{
-						item.alpha = 1;
-					}
-				}
-				super.update(elapsed);
-				return;
 			}
-		}
-
-		if (controls.BACK || (changingNote && controls.ACCEPT))
-		{
-			if (!changingNote)
-			{
-				close();
-			}
-			else
-			{
-				changeSelection();
-			}
-			changingNote = false;
-			FlxG.sound.play(Paths.sound('cancelMenu'));
-		}
-
-		if (nextAccept > 0)
-		{
-			nextAccept -= 1;
+			setShaderColor(defaultColumnColors[curSelectedNote][curSelectedMode]);
+			FlxG.sound.play(Paths.sound('cancelMenu'), 0.6);
+			updateColors();
 		}
 		super.update(elapsed);
 	}
 
-	function changeSelection(change:Int = 0)
+	function centerHexTypeLine()
 	{
-		curSelected += change;
-		if (curSelected < 0)
-			curSelected = ClientPrefs.data.arrowHSV.length - 1;
-		if (curSelected >= ClientPrefs.data.arrowHSV.length)
-			curSelected = 0;
-
-		curValue = ClientPrefs.data.arrowHSV[curSelected][typeSelected];
-		updateValue();
-
-		for (i in 0...grpNumbers.length)
+		if (hexTypeNum > 0)
 		{
-			var item = grpNumbers.members[i];
-			item.alpha = 0.6;
-			if ((curSelected * 3) + typeSelected == i)
-			{
-				item.alpha = 1;
-			}
+			var letter = alphabetHex.letters[hexTypeNum - 1];
+			hexTypeLine.x = letter.x - letter.offset.x + letter.width;
 		}
-		for (i in 0...grpNotes.length)
+		else
 		{
-			var item = grpNotes.members[i];
-			item.alpha = 0.6;
-			item.scale.set(0.75, 0.75);
-			if (curSelected == i)
-			{
-				item.alpha = 1;
-				item.scale.set(1, 1);
-				hsbText.y = item.y - 70;
-				blackBG.y = item.y - 20;
-			}
+			var letter = alphabetHex.letters[0];
+			hexTypeLine.x = letter.x - letter.offset.x;
 		}
+		hexTypeLine.x += hexTypeLine.width;
+		hexTypeVisibleTimer = 0;
+	}
+
+	function changeSelectionMode(change:Int = 0)
+	{
+		curSelectedMode += change;
+		if (curSelectedMode < 0)
+			curSelectedMode = 2;
+		if (curSelectedMode >= 3)
+			curSelectedMode = 0;
+
+		modeBG.visible = true;
+		notesBG.visible = false;
+		updateNotes();
 		FlxG.sound.play(Paths.sound('scrollMenu'));
 	}
 
-	function changeType(change:Int = 0)
+	function changeSelectionNote(change:Int = 0)
 	{
-		typeSelected += change;
-		if (typeSelected < 0)
-			typeSelected = 2;
-		if (typeSelected > 2)
-			typeSelected = 0;
+		curSelectedNote += change;
+		if (curSelectedNote < 0)
+			curSelectedNote = dataArray.length - 1;
+		if (curSelectedNote >= dataArray.length)
+			curSelectedNote = 0;
 
-		curValue = ClientPrefs.data.arrowHSV[curSelected][typeSelected];
-		updateValue();
-
-		for (i in 0...grpNumbers.length)
-		{
-			var item = grpNumbers.members[i];
-			item.alpha = 0.6;
-			if ((curSelected * 3) + typeSelected == i)
-				item.alpha = 1;
-		}
+		modeBG.visible = false;
+		notesBG.visible = true;
+		bigNote.shader = Note.globalRgbShaders[curSelectedNote].shader;
+		updateNotes();
+		updateColors();
+		FlxG.sound.play(Paths.sound('scrollMenu'));
 	}
 
-	function resetValue(selected:Int, type:Int)
+	function makeColorAlphabet(x:Float = 0, y:Float = 0):Alphabet
 	{
-		curValue = 0;
-		ClientPrefs.data.arrowHSV[selected][type] = 0;
-		switch (type)
+		var text:Alphabet = new Alphabet(x, y, '', true);
+		text.alignment = CENTERED;
+		text.scaleX = 0.6;
+		text.scaleY = 0.6;
+		add(text);
+		return text;
+	}
+
+	var skinNote:FlxSprite;
+	var modeNotes:FlxTypedGroup<FlxSprite>;
+	var myNotes:FlxTypedGroup<StrumNote>;
+	var bigNote:Note;
+
+	public function spawnNotes()
+	{
+		dataArray = ClientPrefs.data.arrowRGB;
+
+		modeNotes.forEachAlive(function(note:FlxSprite)
+		{
+			note.kill();
+			note.destroy();
+		});
+		myNotes.forEachAlive(function(note:StrumNote)
+		{
+			note.kill();
+			note.destroy();
+		});
+		modeNotes.clear();
+		myNotes.clear();
+
+		if (skinNote != null)
+		{
+			remove(skinNote);
+			skinNote.destroy();
+		}
+		if (bigNote != null)
+		{
+			remove(bigNote);
+			bigNote.destroy();
+		}
+
+		var res:Int = onPixel ? 160 : 17;
+		skinNote = new FlxSprite(48, 24).loadGraphic(Paths.image('noteColorMenu/' + (onPixel ? 'note' : 'notePixel')), true, res, res);
+		skinNote.setGraphicSize(68);
+		skinNote.updateHitbox();
+		skinNote.animation.add('anim', [0], 24, true);
+		skinNote.animation.play('anim', true);
+		if (!onPixel)
+			skinNote.antialiasing = false;
+		add(skinNote);
+
+		var res:Int = !onPixel ? 160 : 17;
+		for (i in 0...3)
+		{
+			var newNote:FlxSprite = new FlxSprite(230 + (100 * i),
+				100).loadGraphic(Paths.image('noteColorMenu/' + (!onPixel ? 'note' : 'notePixel')), true, res, res);
+			newNote.setGraphicSize(85);
+			newNote.updateHitbox();
+			newNote.animation.add('anim', [i], 24, true);
+			newNote.animation.play('anim', true);
+			newNote.ID = i;
+			if (onPixel)
+				newNote.antialiasing = false;
+			modeNotes.add(newNote);
+		}
+
+		Note.globalRgbShaders = [];
+		for (i in 0...dataArray.length)
+		{
+			Note.initializeGlobalRGBShader(i, false);
+			var newNote:StrumNote = new StrumNote(150 + (480 / dataArray.length * i), 200, i, 0);
+			newNote.setGraphicSize(102);
+			newNote.updateHitbox();
+			newNote.ID = i;
+			myNotes.add(newNote);
+		}
+
+		bigNote = new Note(0, 0, false, true);
+		bigNote.setPosition(250, 325);
+		bigNote.setGraphicSize(250);
+		bigNote.updateHitbox();
+		for (i in 0...Note.colArray.length)
+		{
+			if (!onPixel)
+				bigNote.animation.addByPrefix('note$i', Note.colArray[i] + '0', 24, true);
+			else
+				bigNote.animation.add('note$i', [i + 4], 24, true);
+		}
+		insert(members.indexOf(myNotes) + 1, bigNote);
+		_storedColor = getShaderColor();
+	}
+
+	function updateNotes(?instant:Bool = false)
+	{
+		for (note in modeNotes)
+			note.alpha = (curSelectedMode == note.ID) ? 1 : 0.6;
+
+		for (note in myNotes)
+		{
+			var newAnim:String = curSelectedNote == note.ID ? 'confirm' : 'pressed';
+			note.alpha = (curSelectedNote == note.ID) ? 1 : 0.6;
+			if (note.animation.curAnim == null || note.animation.curAnim.name != newAnim)
+				note.playAnim(newAnim, true);
+			if (instant)
+				note.animation.curAnim.finish();
+		}
+		bigNote.animation.play('note$curSelectedNote', true);
+		updateColors();
+	}
+
+	function updateColors(specific:Null<FlxColor> = null)
+	{
+		var color:FlxColor = getShaderColor();
+		var wheelColor:FlxColor = specific == null ? getShaderColor() : specific;
+		alphabetR.text = Std.string(color.red);
+		alphabetG.text = Std.string(color.green);
+		alphabetB.text = Std.string(color.blue);
+		alphabetHex.text = color.toHexString(false, false);
+		for (letter in alphabetHex.letters)
+			letter.color = color;
+
+		colorWheel.color = FlxColor.fromHSB(0, 0, color.brightness);
+		colorWheelSelector.setPosition(colorWheel.x + colorWheel.width / 2, colorWheel.y + colorWheel.height / 2);
+		if (wheelColor.brightness != 0)
+		{
+			var hueWrap:Float = wheelColor.hue * Math.PI / 180;
+			colorWheelSelector.x += Math.sin(hueWrap) * colorWheel.width / 2 * wheelColor.saturation;
+			colorWheelSelector.y -= Math.cos(hueWrap) * colorWheel.height / 2 * wheelColor.saturation;
+		}
+		colorGradientSelector.y = colorGradient.y + colorGradient.height * (1 - color.brightness);
+
+		var strumRGB:RGBPalette = myNotes.members[curSelectedNote].rgbShader;
+		switch (curSelectedMode)
 		{
 			case 0:
-				shaderArray[selected].hue = 0;
+				getShader().r = strumRGB.r = color;
 			case 1:
-				shaderArray[selected].saturation = 0;
+				getShader().g = strumRGB.g = color;
 			case 2:
-				shaderArray[selected].brightness = 0;
-		}
-
-		var item = grpNumbers.members[(selected * 3) + type];
-		item.text = '0';
-
-		var add = (40 * (item.letters.length - 1)) / 2;
-		for (letter in item.letters)
-		{
-			letter.offset.x += add;
+				getShader().b = strumRGB.b = color;
 		}
 	}
 
-	function updateValue(change:Float = 0)
-	{
-		curValue += change;
-		var roundedValue:Int = Math.round(curValue);
-		var max:Float = 180;
-		switch (typeSelected)
-		{
-			case 1 | 2:
-				max = 100;
-		}
+	function setShaderColor(value:FlxColor)
+		dataArray[curSelectedNote][curSelectedMode] = value;
 
-		if (roundedValue < -max)
-		{
-			curValue = -max;
-		}
-		else if (roundedValue > max)
-		{
-			curValue = max;
-		}
-		roundedValue = Math.round(curValue);
-		ClientPrefs.data.arrowHSV[curSelected][typeSelected] = roundedValue;
+	function getShaderColor()
+		return dataArray[curSelectedNote][curSelectedMode];
 
-		switch (typeSelected)
-		{
-			case 0:
-				shaderArray[curSelected].hue = roundedValue / 360;
-			case 1:
-				shaderArray[curSelected].saturation = roundedValue / 100;
-			case 2:
-				shaderArray[curSelected].brightness = roundedValue / 100;
-		}
-
-		var item = grpNumbers.members[(curSelected * 3) + typeSelected];
-		item.text = Std.string(roundedValue);
-
-		var add = (40 * (item.letters.length - 1)) / 2;
-		for (letter in item.letters)
-		{
-			letter.offset.x += add;
-			if (roundedValue < 0)
-				letter.offset.x += 10;
-		}
-	}
+	function getShader()
+		return Note.globalRgbShaders[curSelectedNote];
 }
 
 class VisualsSubState extends BaseOptionsMenu
@@ -976,12 +1318,11 @@ class VisualsSubState extends BaseOptionsMenu
 		var option:Option = new Option('Low Quality', // Name
 			'If checked, disables some background details,\ndecreases loading times and improves performance.', // Description
 			'lowQuality', // Save data variable name
-			'bool', // Variable type
-			false); // Default value
+			'bool'); // Variable type
 		addOption(option);
 
 		var option:Option = new Option('Anti-Aliasing', 'If unchecked, disables anti-aliasing, increases performance\nat the cost of sharper visuals.',
-			'globalAntialiasing', 'bool', true);
+			'globalAntialiasing', 'bool');
 		option.showBoyfriend = true;
 		option.onChange = onChangeAntiAliasing; // Changing onChange is only needed if you want to make a special interaction after it changes the value
 		addOption(option);
@@ -989,35 +1330,34 @@ class VisualsSubState extends BaseOptionsMenu
 		var option:Option = new Option('Shaders', // Name
 			'If unchecked, disables shaders.\nIt\'s used for some visual effects, and also CPU intensive for weaker PCs.', // Description
 			'shaders', // Save data variable name
-			'bool', // Variable type
-			true); // Default value
+			'bool'); // Variable type
 		addOption(option);
 
-		var option:Option = new Option('Colorblind Filter:', "Filters for colorblind people.", 'colorBlindFilter', 'string', 'None',
+		var option:Option = new Option('Colorblind Filter:', "Filters for colorblind people.", 'colorBlindFilter', 'string',
 			['None', 'Deuteranopia', 'Protanopia', 'Tritanopia']);
 		addOption(option);
 		option.onChange = () -> Colorblind.updateFilter();
 
 		// credits to the denpa engine team
 		// don't support arcadia though
-		var option:Option = new Option('CrossFade Mode:', "What mode should CrossFade be in?", 'crossFadeMode', 'string', 'Mid-Fight Masses',
+		var option:Option = new Option('CrossFade Mode:', "What mode should CrossFade be in?", 'crossFadeMode', 'string',
 			['Mid-Fight Masses', 'Static', 'Eccentric', 'Off']);
 		addOption(option);
 
 		var option:Option = new Option('BF CrossFade Limit', "Determines the maximium amount of frames of CrossFade the player can have.",
-			'boyfriendCrossFadeLimit', 'int', 1);
+			'boyfriendCrossFadeLimit', 'int');
 		addOption(option);
 		option.minValue = 1;
 		option.maxValue = 10;
 
 		var option:Option = new Option('Opponent CrossFade Limit', "Determines the maximium amount of frames of CrossFade the opponent can have.",
-			'crossFadeLimit', 'int', 4);
+			'crossFadeLimit', 'int');
 		addOption(option);
 		option.minValue = 1;
 		option.maxValue = 10;
 
 		#if !html5 // Apparently other framerates isn't correctly supported on Browser? Probably it has some V-Sync shit enabled by default, idk
-		var option:Option = new Option('Framerate', "Pretty self explanatory, isn't it?", 'framerate', 'int', 60);
+		var option:Option = new Option('Framerate', "Pretty self explanatory, isn't it?", 'framerate', 'int');
 		addOption(option);
 
 		option.minValue = 60;
@@ -1026,10 +1366,10 @@ class VisualsSubState extends BaseOptionsMenu
 		option.onChange = onChangeFramerate;
 		#end
 
-		var option:Option = new Option('Flashing Lights', "Uncheck this if you're sensitive to flashing lights!", 'flashing', 'bool', true);
+		var option:Option = new Option('Flashing Lights', "Uncheck this if you're sensitive to flashing lights!", 'flashing', 'bool');
 		addOption(option);
 
-		var option:Option = new Option('FPS Counter', 'If unchecked, hides FPS Counter.', 'showFPS', 'bool', true);
+		var option:Option = new Option('FPS Counter', 'If unchecked, hides FPS Counter.', 'showFPS', 'bool');
 		addOption(option);
 		option.onChange = onChangeFPSCounter;
 

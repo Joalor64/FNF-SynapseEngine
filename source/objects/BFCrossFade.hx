@@ -4,7 +4,7 @@ import objects.Character;
 
 class BFCrossFade extends FlxSprite
 {
-	public function new(character:Boyfriend, group:FlxTypedGroup<BFCrossFade>, ?isDad:Bool = false)
+	public function new(character:Character, group:FlxTypedGroup<BFCrossFade>, ?isDad:Bool = false)
 	{
 		super();
 		frames = character.frames;

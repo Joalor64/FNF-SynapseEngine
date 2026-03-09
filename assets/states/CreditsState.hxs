@@ -1,12 +1,19 @@
+import backend.Controls;
+
 var bg:FlxSprite;
+
 var grpCredits:FlxTypedGroup<Alphabet>;
 var iconArray:Array<FlxSprite> = [];
+
 var descText:FlxText;
 var descBox:AttachedSprite;
+
 var categories:Array<Dynamic> = [];
 var creditsStuff:Array<Array<String>> = [];
+
 var curSelected:Int = -1;
 var offsetThing:Float = -25;
+
 var data = Json.parse(Paths.getTextFromFile('data/credits.json'));
 
 function create()
@@ -81,13 +88,13 @@ function create()
 
 function update(elapsed:Float)
 {
-	if (FlxG.keys.justPressed.UP)
+	if (Controls.instance.UI_UP_P)
 		changeSelection(-1);
 
-	if (FlxG.keys.justPressed.DOWN)
+	if (Controls.instance.UI_DOWN_P)
 		changeSelection(1);
 
-	if (FlxG.keys.justPressed.ESCAPE)
+	if (Controls.instance.BACK)
 	{
 		FlxG.sound.play(Paths.sound('cancelMenu'));
 		MusicBeatState.switchState(new ScriptedState('MainMenuState', []));
@@ -95,7 +102,7 @@ function update(elapsed:Float)
 
 	var noLink:Bool = creditsStuff[curSelected][3] == 'nolink';
 
-	if (FlxG.keys.justPressed.ENTER)
+	if (Controls.instance.ACCEPT)
 	{
 		if (creditsStuff[curSelected][3] != null || creditsStuff[curSelected][3].length > 0 || !noLink)
 			CoolUtil.browserLoad(creditsStuff[curSelected][3]);

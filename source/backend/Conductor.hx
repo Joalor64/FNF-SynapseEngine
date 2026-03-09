@@ -1,5 +1,6 @@
 package backend;
 
+import backend.Rating;
 import backend.Song.SwagSong;
 
 typedef BPMChangeEvent =
@@ -19,22 +20,21 @@ class Conductor
 	public static var lastSongPos:Float;
 	public static var offset:Float = 0;
 
-	public static var safeZoneOffset:Float = (ClientPrefs.data.safeFrames / 60) * 1000;
+	public static var safeZoneOffset:Float = 0;
 
 	public static var bpmChangeMap:Array<BPMChangeEvent> = [];
 
-	public function new() {}
-
-	public static function judgeNote(note:Note, diff:Float = 0):Rating
+	public function new()
 	{
-		var data:Array<Rating> = PlayState.instance.ratingsData;
-		for (i in 0...data.length - 1)
-		{
+	}
+
+	public static function judgeNote(arr:Array<Rating>, diff:Float = 0):Rating
+	{
+		var data:Array<Rating> = arr;
+		for (i in 0...data.length - 1) // skips last window (Shit)
 			if (diff <= data[i].hitWindow)
-			{
 				return data[i];
-			}
-		}
+
 		return data[data.length - 1];
 	}
 
@@ -82,8 +82,7 @@ class Conductor
 	{
 		var step = beat * 4;
 		var lastChange = getBPMFromStep(step);
-		return lastChange.songTime
-			+ ((step - lastChange.stepTime) / (lastChange.bpm / 60) / 4) * 1000;
+		return lastChange.songTime + ((step - lastChange.stepTime) / (lastChange.bpm / 60) / 4) * 1000;
 	}
 
 	public static function getStep(time:Float)
@@ -155,32 +154,13 @@ class Conductor
 		stepCrochet = crochet / 4;
 		return bpm = newBpm;
 	}
-}
 
-class Rating
-{
-	public var name:String = '';
-	public var image:String = '';
-	public var counter:String = '';
-	public var hitWindow:Null<Int> = 0;
-	public var ratingMod:Float = 1;
-	public var score:Int = 350;
-	public var noteSplash:Bool = true;
-
-	public function new(name:String)
+	@:deprecated("changeBPM is deprecated, please use Conductor.bpm = newBpm")
+	public static function changeBPM(newBpm:Float)
 	{
-		this.name = name;
-		this.image = name;
-		this.counter = name + 's';
-		this.hitWindow = Reflect.field(ClientPrefs.data, name + 'Window');
-		if (hitWindow == null)
-		{
-			hitWindow = 0;
-		}
-	}
+		bpm = newBpm;
 
-	inline public function increase(blah:Int = 1)
-	{
-		Reflect.setField(PlayState.instance, counter, Reflect.field(PlayState.instance, counter) + blah);
+		crochet = calculateCrochet(bpm);
+		stepCrochet = crochet / 4;
 	}
 }

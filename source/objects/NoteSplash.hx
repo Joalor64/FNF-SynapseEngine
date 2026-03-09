@@ -1,16 +1,16 @@
 package objects;
 
-import shaders.ColorSwap;
+import shaders.RGBPalette;
 import backend.animation.PsychAnimationController;
 
 class NoteSplash extends FlxSprite
 {
-	public var colorSwap:ColorSwap = null;
+	public var rgbShader:RGBPalette = null;
 
 	private var idleAnim:String;
 	private var textureLoaded:String = null;
 
-	public function new(x:Float = 0, y:Float = 0, ?note:Int = 0)
+	public function new(x:Float = 0, y:Float = 0, ?note:Int = 0, redColor:FlxColor = 0, greenColor:FlxColor = 0, blueColor:FlxColor = 0)
 	{
 		super(x, y);
 
@@ -22,16 +22,21 @@ class NoteSplash extends FlxSprite
 
 		loadAnims(skin);
 
-		colorSwap = new ColorSwap();
-		shader = colorSwap.shader;
+		rgbShader = new RGBPalette();
+		rgbShader.enabled = true;
 
-		setupNoteSplash(x, y, note);
+		setupNoteSplash(x, y, note, redColor, greenColor, blueColor);
 		antialiasing = ClientPrefs.data.globalAntialiasing;
 	}
 
-	public function setupNoteSplash(x:Float, y:Float, note:Int = 0, texture:String = null, hueColor:Float = 0, satColor:Float = 0, brtColor:Float = 0)
+	public function setupNoteSplash(x:Float, y:Float, note:Int = 0, texture:String = null, redColor:FlxColor = 0, greenColor:FlxColor = 0,
+			blueColor:FlxColor = 0)
 	{
 		setPosition(x - Note.swagWidth * 0.95, y - Note.swagWidth);
+		rgbShader.r = redColor;
+		rgbShader.g = greenColor;
+		rgbShader.b = blueColor;
+		shader = rgbShader.shader;
 		alpha = 0.6;
 
 		if (texture == null)
@@ -45,10 +50,8 @@ class NoteSplash extends FlxSprite
 		{
 			loadAnims(texture);
 		}
-		colorSwap.hue = hueColor;
-		colorSwap.saturation = satColor;
-		colorSwap.brightness = brtColor;
-		offset.set(10, 10);
+		
+		offset.set(-25, -10);
 
 		var animNum:Int = FlxG.random.int(1, 2);
 		animation.play('note' + note + '-' + animNum, true);

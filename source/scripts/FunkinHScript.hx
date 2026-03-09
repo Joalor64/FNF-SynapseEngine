@@ -38,7 +38,7 @@ class FunkinHScript extends FlxBasic
 
 		scriptPath = file;
 		script = new RuleScript(interp, parser);
-		
+
 		if (file != null)
 			script.scriptName = ~/\.(hx|hxs|hxc|hscript)$/.replace(file.split('/').pop(), '');
 
@@ -347,13 +347,13 @@ class FunkinHScript extends FlxBasic
 		{
 			var content = File.getContent(file);
 			var result = script.tryExecute(content);
-			
+
 			if (result == null)
 			{
 				trace('Script returned null: $file');
 				return;
 			}
-			
+
 			#if (rulescript >= "0.5.0")
 			if (result.error != null)
 			{
@@ -361,15 +361,15 @@ class FunkinHScript extends FlxBasic
 				return;
 			}
 			#end
-			
+
 			trace('Script Loaded Successfully: $file');
-			
+
 			if (executeCreate)
 				executeFunc('create', []);
 		}
 		catch (e:Dynamic)
 		{
-			trace('Fatal error executing script $file: $e');
+			Lib.application.window.alert(Std.string(e), 'Fatal error executing script $file');
 		}
 	}
 
@@ -381,7 +381,7 @@ class FunkinHScript extends FlxBasic
 		}
 		catch (e:Dynamic)
 		{
-			trace('Error executing string: $e');
+			Lib.application.window.alert(Std.string(e), 'Error executing string');
 			return null;
 		}
 	}
@@ -398,7 +398,7 @@ class FunkinHScript extends FlxBasic
 		}
 		catch (e:Dynamic)
 		{
-			trace('Error setting variable $name: $e');
+			Lib.application.window.alert(Std.string(e), 'Error setting variable $name');
 		}
 	}
 
@@ -413,7 +413,7 @@ class FunkinHScript extends FlxBasic
 		}
 		catch (e:Dynamic)
 		{
-			trace('Error getting variable $name: $e');
+			Lib.application.window.alert(Std.string(e), 'Error getting variable $name');
 		}
 		return null;
 	}
@@ -427,7 +427,7 @@ class FunkinHScript extends FlxBasic
 		}
 		catch (e:Dynamic)
 		{
-			trace('Error removing variable $name: $e');
+			Lib.application.window.alert(Std.string(e), 'Error removing variable $name');
 		}
 	}
 
@@ -440,7 +440,7 @@ class FunkinHScript extends FlxBasic
 		}
 		catch (e:Dynamic)
 		{
-			trace('Error checking variable $name: $e');
+			Lib.application.window.alert(Std.string(e), 'Error checking variable $name');
 		}
 		return false;
 	}
@@ -449,20 +449,20 @@ class FunkinHScript extends FlxBasic
 	{
 		if (!existsVariable(funcName))
 			return null;
-			
+
 		try
 		{
 			var func = getVariable(funcName);
 			if (func == null)
 				return null;
-				
+
 			return Reflect.callMethod(null, func, args == null ? [] : args);
 		}
 		catch (e:Dynamic)
 		{
-			trace('Error calling function $funcName: $e');
+			Lib.application.window.alert(Std.string(e), 'Error calling function $funcName');
 		}
-		
+
 		return null;
 	}
 
@@ -479,7 +479,7 @@ class FunkinHScript extends FlxBasic
 		}
 		catch (e:Dynamic)
 		{
-			trace('Error getting all variables: $e');
+			Lib.application.window.alert(Std.string(e), 'Error getting all variables');
 		}
 
 		return result;

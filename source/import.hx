@@ -51,10 +51,6 @@ import animateatlas.AtlasFrameMaker;
 import backend.DiscordClient;
 #end
 
-#if MODS_ALLOWED
-import backend.Mods;
-#end
-
 import backend.*;
 import backend.CoolUtil;
 import backend.Conductor;
@@ -63,9 +59,9 @@ import backend.BaseStage.Countdown;
 import backend.Controls;
 import backend.Section;
 import backend.Song;
+import backend.Mods;
 import backend.Paths;
 import backend.Highscore;
-import backend.PlayerSettings;
 import backend.MusicBeatState;
 import backend.MusicBeatSubstate;
 import objects.*;

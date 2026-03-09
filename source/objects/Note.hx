@@ -1,6 +1,7 @@
 package objects;
 
-import shaders.ColorSwap;
+import shaders.RGBPalette;
+import flixel.math.FlxRect;
 import backend.animation.PsychAnimationController;
 
 typedef EventNote =
@@ -14,7 +15,7 @@ typedef EventNote =
 class Note extends FlxSprite
 {
 	public var mesh:modcharting.SustainStrip = null;
-  	public var z:Float = 0;
+	public var z:Float = 0;
 
 	public var extraData:Map<String, Dynamic> = [];
 
@@ -44,7 +45,10 @@ class Note extends FlxSprite
 	public var eventVal1:String = '';
 	public var eventVal2:String = '';
 
-	public var colorSwap:ColorSwap;
+	public var rgbShader:RGBPalette;
+
+	public static var globalRgbShaders:Array<RGBPalette> = [];
+
 	public var inEditor:Bool = false;
 
 	public var animSuffix:String = '';
@@ -55,15 +59,13 @@ class Note extends FlxSprite
 
 	public static var swagWidth:Float = 160 * 0.7;
 
-	private var colArray:Array<String> = ['purple', 'blue', 'green', 'red'];
+	public static final colArray:Array<String> = ['purple', 'blue', 'green', 'red'];
+
 	private var pixelInt:Array<Int> = [0, 1, 2, 3];
 
 	// Lua shit
 	public var noteSplashDisabled:Bool = false;
 	public var noteSplashTexture:String = null;
-	public var noteSplashHue:Float = 0;
-	public var noteSplashSat:Float = 0;
-	public var noteSplashBrt:Float = 0;
 
 	public var offsetX:Float = 0;
 	public var offsetY:Float = 0;
@@ -92,7 +94,7 @@ class Note extends FlxSprite
 	public var hitsoundDisabled:Bool = false;
 
 	@:isVar
-	public var canBeHit(get, set):Bool = false;
+	public var canBeHit(get, default):Bool = false;
 
 	inline public function get_canBeHit()
 	{
@@ -101,19 +103,16 @@ class Note extends FlxSprite
 			+ Conductor.safeZoneOffset * earlyHitMult : false;
 	}
 
-	inline function set_canBeHit(b:Bool)
-	{
-		return canBeHit = b;
-	};
-
 	// a thing for modders
 	public var killNote:Bool = false;
+
+	var defaultWidth:Float = 0;
+	var defaultHeight:Float = 0;
 
 	private function set_multSpeed(value:Float):Float
 	{
 		resizeByRatio(value / multSpeed);
 		multSpeed = value;
-		// trace('fuck cock');
 		return value;
 	}
 
@@ -138,13 +137,10 @@ class Note extends FlxSprite
 
 	private function set_noteType(value:String):String
 	{
-		noteSplashTexture = PlayState.SONG.splashSkin;
-		if (noteData > -1 && noteData < ClientPrefs.data.arrowHSV.length)
-		{
-			colorSwap.hue = ClientPrefs.data.arrowHSV[noteData][0] / 360;
-			colorSwap.saturation = ClientPrefs.data.arrowHSV[noteData][1] / 100;
-			colorSwap.brightness = ClientPrefs.data.arrowHSV[noteData][2] / 100;
-		}
+		if (PlayState.SONG != null)
+			noteSplashTexture = PlayState.SONG.splashSkin;
+
+		updateColours();
 
 		if (noteData > -1 && noteType != value)
 		{
@@ -154,9 +150,7 @@ class Note extends FlxSprite
 					ignoreNote = mustPress;
 					reloadNote('HURT');
 					noteSplashTexture = 'HURTnoteSplashes';
-					colorSwap.hue = 0;
-					colorSwap.saturation = 0;
-					colorSwap.brightness = 0;
+					rgbShader.enabled = false;
 					lowPriority = true;
 
 					if (isSustainNote)
@@ -178,10 +172,29 @@ class Note extends FlxSprite
 			}
 			noteType = value;
 		}
-		noteSplashHue = colorSwap.hue;
-		noteSplashSat = colorSwap.saturation;
-		noteSplashBrt = colorSwap.brightness;
 		return value;
+	}
+
+	public function updateColours()
+	{
+		rgbShader.r = ClientPrefs.data.arrowRGB[noteData % 4][0];
+		rgbShader.g = ClientPrefs.data.arrowRGB[noteData % 4][1];
+		rgbShader.b = ClientPrefs.data.arrowRGB[noteData % 4][2];
+	}
+
+	public static function initializeGlobalRGBShader(idx:Int, aQuant:Bool)
+	{
+		if (globalRgbShaders[idx] == null)
+		{
+			var newRGB:RGBPalette = new RGBPalette();
+			globalRgbShaders[idx] = newRGB;
+
+			var arr:Array<FlxColor> = ClientPrefs.data.arrowRGB[idx];
+			newRGB.r = arr[0];
+			newRGB.g = arr[1];
+			newRGB.b = arr[2];
+		}
+		return globalRgbShaders[idx];
 	}
 
 	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inEditor:Bool = false)
@@ -209,8 +222,8 @@ class Note extends FlxSprite
 		if (noteData > -1)
 		{
 			texture = '';
-			colorSwap = new ColorSwap();
-			shader = colorSwap.shader;
+			rgbShader = new RGBPalette();
+			shader = rgbShader.shader;
 
 			x += swagWidth * (noteData);
 			if (!isSustainNote && noteData > -1 && noteData < 4)
@@ -220,8 +233,6 @@ class Note extends FlxSprite
 				animation.play(animToPlay + 'Scroll');
 			}
 		}
-
-		// trace(prevNote);
 
 		if (prevNote != null)
 			prevNote.nextNote = this;
@@ -262,7 +273,6 @@ class Note extends FlxSprite
 					prevNote.scale.y *= (6 / height); // Auto adjust note size
 				}
 				prevNote.updateHitbox();
-				// prevNote.setGraphicSize();
 			}
 
 			if (PlayState.isPixelStage)
@@ -273,7 +283,7 @@ class Note extends FlxSprite
 		}
 		else if (!isSustainNote)
 		{
-			earlyHitMult = 1;
+			earlyHitMult = 1.2;
 		}
 		x += offsetX;
 	}
@@ -292,11 +302,11 @@ class Note extends FlxSprite
 		var skin:String = texture;
 		if (texture.length < 1)
 		{
-			skin = PlayState.SONG.arrowSkin;
-			if (skin == null || skin.length < 1)
-			{
+			// Add a null check for PlayState.SONG here
+			if (PlayState.SONG != null && PlayState.SONG.arrowSkin != null && PlayState.SONG.arrowSkin.length > 1)
+				skin = PlayState.SONG.arrowSkin;
+			else
 				skin = 'NOTE_assets';
-			}
 		}
 
 		var animName:String = null;
@@ -310,6 +320,10 @@ class Note extends FlxSprite
 
 		var lastScaleY:Float = scale.y;
 		var blahblah:String = arraySkin.join('/');
+
+		defaultWidth = 157;
+		defaultHeight = 154;
+
 		if (PlayState.isPixelStage)
 		{
 			if (isSustainNote)
@@ -327,6 +341,7 @@ class Note extends FlxSprite
 				height = height / 5;
 				loadGraphic(Paths.image('pixelUI/' + blahblah), true, Math.floor(width), Math.floor(height));
 			}
+			defaultWidth = width;
 			setGraphicSize(Std.int(width * PlayState.daPixelZoom));
 			loadPixelNoteAnims();
 			antialiasing = false;
@@ -371,7 +386,7 @@ class Note extends FlxSprite
 			animation.addByPrefix(colArray[noteData] + 'hold', colArray[noteData] + ' hold piece');
 		}
 
-		setGraphicSize(Std.int(width * 0.7));
+		setGraphicSize(Std.int(defaultWidth * 0.7), (isSustainNote ? Std.int(defaultHeight * 0.7) : 0));
 		updateHitbox();
 	}
 
@@ -395,24 +410,27 @@ class Note extends FlxSprite
 		if (killNote)
 			this.kill();
 
-		if (mustPress)
-		{
-			if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset && !wasGoodHit)
-				tooLate = true;
-		}
-		else
-		{
-			if (strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * earlyHitMult))
-			{
-				if ((isSustainNote && prevNote.wasGoodHit) || strumTime <= Conductor.songPosition)
-					wasGoodHit = true;
-			}
-		}
+		if (mustPress && strumTime < Conductor.songPosition - Conductor.safeZoneOffset && !wasGoodHit && canBeHit)
+			tooLate = true;
+
+		if (!mustPress && strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * earlyHitMult))
+			if ((isSustainNote && prevNote.wasGoodHit) || strumTime <= Conductor.songPosition)
+				wasGoodHit = true;
 
 		if (tooLate && !inEditor)
 		{
 			if (alpha > 0.3)
 				alpha = 0.3;
 		}
+	}
+
+	@:noCompletion override function set_clipRect(rect:FlxRect):FlxRect
+	{
+		clipRect = rect;
+
+		if (frames != null)
+			frame = frames.frames[animation.frameIndex];
+
+		return rect;
 	}
 }

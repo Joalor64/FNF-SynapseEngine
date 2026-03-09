@@ -17,7 +17,6 @@ class PauseSubState extends MusicBeatSubstate
 	var curTime:Float = Math.max(0, Conductor.songPosition);
 
 	public static var songName:String = '';
-	public static var fromPlayState:Bool = false;
 
 	public function new(x:Float, y:Float)
 	{
@@ -226,7 +225,7 @@ class PauseSubState extends MusicBeatSubstate
 							Mods.loadTheFirstEnabledMod();
 							if (PlayState.isStoryMode)
 							{
-								MusicBeatState.switchState(new StoryMenuState());
+								MusicBeatState.switchState(new ScriptedState('StoryMenuState', []));
 							}
 							else
 							{
@@ -291,7 +290,7 @@ class PauseSubState extends MusicBeatSubstate
 					MusicBeatState.switchState(new options.OptionsState());
 					FlxG.sound.playMusic(Paths.music('freakyMenu'));
 					PlayState.cancelMusicFadeTween();
-					fromPlayState = true;
+					PlayState.fromPlayState = true;
 				case "Exit":
 					menuItems = exitChoices;
 					deleteSkipTimeText();
