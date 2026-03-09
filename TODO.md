@@ -18,7 +18,6 @@
     * [ ] Pause Menu
 * [ ] Optimizations
 * [X] RGB Notes
-    * [ ] Add Pixel RGB Notes Stuff
 * [ ] Noteskins
 * [X] Rewrite Controls
 * [X] Modcharting Support

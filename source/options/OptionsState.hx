@@ -1,5 +1,6 @@
 package options;
 
+// maybe add an option to reset options??
 class OptionsState extends MusicBeatState
 {
 	var options:Array<String> = ['Note Colors', 'Controls', 'Offsets', 'Visuals', 'Gameplay', 'Miscellaneous'];
