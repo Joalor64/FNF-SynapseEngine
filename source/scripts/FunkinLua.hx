@@ -3470,7 +3470,7 @@ class FunkinLua
 			trace(e);
 		}
 		#end
-		return Function_Continue;
+		return Globals.Function_Continue;
 	}
 
 	static function addAnimByIndices(obj:String, name:String, prefix:String, indices:String, framerate:Int = 24, loop:Bool = false)
