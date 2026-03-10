@@ -35,7 +35,9 @@
 * [ ] Erect Mixes
 * [ ] Potentially Backport Newer Psych Stuff
 * [ ] Potentially Backport V-Slice Stuff
+* [ ] MAYBE Forwards Compatibility?
 * [ ] Custom Achievements
 * [ ] Support for more than 2 health icons
 * [ ] Controller Support
 * [ ] Time Signature Support
+* [ ] In-Game Crash Handler
