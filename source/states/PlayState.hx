@@ -23,6 +23,7 @@ import backend.Song.SwagSong;
 import backend.Achievements;
 import backend.StageData;
 import backend.WeekData;
+import scripts.Globals;
 import scripts.FunkinLua;
 import scripts.FunkinHScript;
 import modcharting.ModchartFuncs;
@@ -1579,7 +1580,7 @@ class PlayState extends MusicBeatState
 		inCutscene = false;
 		var ret:Dynamic = callOnLuas('onStartCountdown', [], false);
 		var ret2:Dynamic = callOnScripts('startCountdown', []);
-		if (ret != FunkinLua.Function_Stop || ret2 != FunkinHScript.Function_Stop)
+		if (ret != Globals.Function_Stop || ret2 != Globals.Function_Stop)
 		{
 			if (skipCountdown || startOnTime > 0)
 				skipArrowStartTween = true;
@@ -2522,7 +2523,7 @@ class PlayState extends MusicBeatState
 		{
 			var ret:Dynamic = callOnLuas('onPause', [], false);
 			var ret2:Dynamic = callOnScripts('pause', []);
-			if (ret != FunkinLua.Function_Stop || ret2 != FunkinHScript.Function_Stop)
+			if (ret != Globals.Function_Stop || ret2 != Globals.Function_Stop)
 			{
 				openPauseMenu();
 			}
@@ -2910,7 +2911,7 @@ class PlayState extends MusicBeatState
 		{
 			var ret:Dynamic = callOnLuas('onGameOver', [], false);
 			var ret2:Dynamic = callOnScripts('gameOver', []);
-			if (ret != FunkinLua.Function_Stop || ret2 != FunkinHScript.Function_Stop)
+			if (ret != Globals.Function_Stop || ret2 != Globals.Function_Stop)
 			{
 				boyfriend.stunned = true;
 				deathCounter++;
@@ -3470,7 +3471,7 @@ class PlayState extends MusicBeatState
 		var ret:Dynamic = callOnLuas('onEndSong', [], false);
 		var ret2:Dynamic = callOnScripts('endSong', []);
 
-		if ((ret != FunkinLua.Function_Stop || ret2 != FunkinHScript.Function_Stop) && !transitioning)
+		if ((ret != Globals.Function_Stop || ret2 != Globals.Function_Stop) && !transitioning)
 		{
 			var percent:Float = ratingPercent;
 			if (Math.isNaN(percent))
@@ -4445,13 +4446,13 @@ class PlayState extends MusicBeatState
 
 	public function callOnScripts(funcName:String, args:Array<Dynamic>):Dynamic
 	{
-		var value:Dynamic = FunkinHScript.Function_Continue;
+		var value:Dynamic = Globals.Function_Continue;
 
 		#if HSCRIPT_ALLOWED
 		for (i in 0...scriptArray.length)
 		{
 			final call:Dynamic = scriptArray[i].executeFunc(funcName, args);
-			final bool:Bool = call == FunkinHScript.Function_Continue;
+			final bool:Bool = call == Globals.Function_Continue;
 			if (!bool && call != null)
 				value = call;
 		}
@@ -4581,7 +4582,7 @@ class PlayState extends MusicBeatState
 
 	public function callOnLuas(event:String, args:Array<Dynamic>, ignoreStops = true, exclusions:Array<String> = null):Dynamic
 	{
-		var returnVal:Dynamic = FunkinLua.Function_Continue;
+		var returnVal:Dynamic = Globals.Function_Continue;
 		#if LUA_ALLOWED
 		if (exclusions == null)
 			exclusions = [];
@@ -4591,11 +4592,11 @@ class PlayState extends MusicBeatState
 				continue;
 
 			var ret:Dynamic = script.call(event, args);
-			if (ret == FunkinLua.Function_StopLua && !ignoreStops)
+			if (ret == Globals.Function_Halt && !ignoreStops)
 				break;
 
 			// had to do this because there is a bug in haxe where Stop != Continue doesnt work
-			var bool:Bool = ret == FunkinLua.Function_Continue;
+			var bool:Bool = ret == Globals.Function_Continue;
 			if (!bool && ret != 0)
 			{
 				returnVal = cast ret;
@@ -4652,7 +4653,7 @@ class PlayState extends MusicBeatState
 
 		var ret:Dynamic = callOnLuas('onRecalculateRating', [], false);
 		var ret2:Dynamic = callOnScripts('recalculateRating', []);
-		if (ret != FunkinLua.Function_Stop || ret2 != FunkinHScript.Function_Stop)
+		if (ret != Globals.Function_Stop || ret2 != Globals.Function_Stop)
 		{
 			if (totalPlayed < 1) // Prevent divide by 0
 				ratingName = '?';

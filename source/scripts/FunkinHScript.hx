@@ -23,9 +23,6 @@ class FunkinHScript extends FlxBasic
 		return interp.locals = local;
 	}
 
-	public static var Function_Stop:Dynamic = 1;
-	public static var Function_Continue:Dynamic = 0;
-
 	public var parser:HxParser = new HxParser();
 	public var interp:RuleScriptInterp = new RuleScriptInterp();
 
@@ -46,8 +43,9 @@ class FunkinHScript extends FlxBasic
 		parser.preprocesorValues = macros.Macros.getDefines();
 
 		setVariable('this', this);
-		setVariable('Function_Stop', Function_Stop);
-		setVariable('Function_Continue', Function_Continue);
+		setVariable('Function_Stop', Globals.Function_Stop);
+		setVariable('Function_Continue', Globals.Function_Continue);
+		setVariable('Function_Halt', Globals.Function_Halt);
 		setVariable('version', Lib.application.meta.get('version'));
 
 		setVariable('trace', function(value:Dynamic)

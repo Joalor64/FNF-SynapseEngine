@@ -29,6 +29,8 @@ class Option
 	public var description:String = '';
 	public var name:String = 'Unknown';
 
+	public var callback:Void->Void = null;
+
 	public function new(name:String, description:String = '', variable:String, type:String = 'bool', ?options:Array<String> = null)
 	{
 		this.name = name;
@@ -42,6 +44,8 @@ class Option
 		{
 			switch (type)
 			{
+				case 'button' | 'label':
+					defaultValue = '';
 				case 'bool':
 					defaultValue = false;
 				case 'int' | 'float':
@@ -136,6 +140,10 @@ class Option
 				newValue = 'string';
 			case 'fl':
 				newValue = 'float';
+			case 'button': 
+				newValue = 'button';
+			case 'label': 
+				'label';
 		}
 		type = newValue;
 		return type;

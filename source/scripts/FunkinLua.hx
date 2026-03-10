@@ -13,10 +13,6 @@ import scripts.FunkinHScript;
 
 class FunkinLua
 {
-	public static var Function_Stop:Dynamic = 1;
-	public static var Function_Continue:Dynamic = 0;
-	public static var Function_StopLua:Dynamic = 2;
-
 	#if LUA_ALLOWED
 	public var lua:State = null;
 	#end
@@ -76,9 +72,9 @@ class FunkinLua
 		}
 
 		// Lua shit
-		set('Function_StopLua', Function_StopLua);
-		set('Function_Stop', Function_Stop);
-		set('Function_Continue', Function_Continue);
+		set('Function_StopLua', Globals.Function_Halt);
+		set('Function_Stop', Globals.Function_Stop);
+		set('Function_Continue', Globals.Function_Continue);
 		set('luaDebugMode', false);
 		set('luaDeprecatedWarnings', true);
 		set('inChartEditor', false);
@@ -957,7 +953,7 @@ class FunkinLua
 			if (killMe.length > 1)
 				result = getVarInArray(getPropertyLoopThingWhatever(killMe), killMe[killMe.length - 1]);
 			else
-				result = getVarInArray(getInstance(), variable);
+				result = getVarInArray(Globals.getInstance(), variable);
 
 			if (result == null)
 				Lua.pushnil(lua);
@@ -971,13 +967,13 @@ class FunkinLua
 				setVarInArray(getPropertyLoopThingWhatever(killMe), killMe[killMe.length - 1], value);
 				return true;
 			}
-			setVarInArray(getInstance(), variable, value);
+			setVarInArray(Globals.getInstance(), variable, value);
 			return true;
 		});
 		Lua_helper.add_callback(lua, "getPropertyFromGroup", function(obj:String, index:Int, variable:Dynamic)
 		{
 			var shitMyPants:Array<String> = obj.split('.');
-			var realObject:Dynamic = Reflect.getProperty(getInstance(), obj);
+			var realObject:Dynamic = Reflect.getProperty(Globals.getInstance(), obj);
 			if (shitMyPants.length > 1)
 				realObject = getPropertyLoopThingWhatever(shitMyPants, true, false);
 
@@ -1009,7 +1005,7 @@ class FunkinLua
 		Lua_helper.add_callback(lua, "setPropertyFromGroup", function(obj:String, index:Int, variable:Dynamic, value:Dynamic)
 		{
 			var shitMyPants:Array<String> = obj.split('.');
-			var realObject:Dynamic = Reflect.getProperty(getInstance(), obj);
+			var realObject:Dynamic = Reflect.getProperty(Globals.getInstance(), obj);
 			if (shitMyPants.length > 1)
 				realObject = getPropertyLoopThingWhatever(shitMyPants, true, false);
 
@@ -1032,17 +1028,17 @@ class FunkinLua
 		});
 		Lua_helper.add_callback(lua, "removeFromGroup", function(obj:String, index:Int, dontDestroy:Bool = false)
 		{
-			if (Std.isOfType(Reflect.getProperty(getInstance(), obj), FlxTypedGroup))
+			if (Std.isOfType(Reflect.getProperty(Globals.getInstance(), obj), FlxTypedGroup))
 			{
-				var sex = Reflect.getProperty(getInstance(), obj).members[index];
+				var sex = Reflect.getProperty(Globals.getInstance(), obj).members[index];
 				if (!dontDestroy)
 					sex.kill();
-				Reflect.getProperty(getInstance(), obj).remove(sex, true);
+				Reflect.getProperty(Globals.getInstance(), obj).remove(sex, true);
 				if (!dontDestroy)
 					sex.destroy();
 				return;
 			}
-			Reflect.getProperty(getInstance(), obj).remove(Reflect.getProperty(getInstance(), obj)[index]);
+			Reflect.getProperty(Globals.getInstance(), obj).remove(Reflect.getProperty(Globals.getInstance(), obj)[index]);
 		});
 
 		Lua_helper.add_callback(lua, "getPropertyFromClass", function(classVar:String, variable:String)
@@ -1090,7 +1086,7 @@ class FunkinLua
 
 			if (leObj != null)
 			{
-				return getInstance().members.indexOf(leObj);
+				return Globals.getInstance().members.indexOf(leObj);
 			}
 			LuaUtils.luaTrace(lua, "getObjectOrder: Object " + obj + " doesn't exist!", false, false, FlxColor.RED);
 			return -1;
@@ -1106,8 +1102,8 @@ class FunkinLua
 
 			if (leObj != null)
 			{
-				getInstance().remove(leObj, true);
-				getInstance().insert(position, leObj);
+				Globals.getInstance().remove(leObj, true);
+				Globals.getInstance().insert(position, leObj);
 				return;
 			}
 			LuaUtils.luaTrace(lua, "setObjectOrder: Object " + obj + " doesn't exist!", false, false, FlxColor.RED);
@@ -1906,7 +1902,7 @@ class FunkinLua
 				return;
 			}
 
-			var object:FlxSprite = Reflect.getProperty(getInstance(), obj);
+			var object:FlxSprite = Reflect.getProperty(Globals.getInstance(), obj);
 			if (object != null)
 			{
 				object.makeGraphic(width, height, CoolUtil.colorFromString(color));
@@ -1925,7 +1921,7 @@ class FunkinLua
 				return;
 			}
 
-			var cock:FlxSprite = Reflect.getProperty(getInstance(), obj);
+			var cock:FlxSprite = Reflect.getProperty(Globals.getInstance(), obj);
 			if (cock != null)
 			{
 				cock.animation.addByPrefix(name, prefix, framerate, loop);
@@ -1949,7 +1945,7 @@ class FunkinLua
 				return;
 			}
 
-			var cock:FlxSprite = Reflect.getProperty(getInstance(), obj);
+			var cock:FlxSprite = Reflect.getProperty(Globals.getInstance(), obj);
 			if (cock != null)
 			{
 				cock.animation.add(name, frames, framerate, loop);
@@ -1993,7 +1989,7 @@ class FunkinLua
 				return true;
 			}
 
-			var spr:FlxSprite = Reflect.getProperty(getInstance(), obj);
+			var spr:FlxSprite = Reflect.getProperty(Globals.getInstance(), obj);
 			if (spr != null)
 			{
 				if (spr.animation.getByName(name) != null)
@@ -2020,7 +2016,7 @@ class FunkinLua
 				return true;
 			}
 
-			var char:Character = Reflect.getProperty(getInstance(), obj);
+			var char:Character = Reflect.getProperty(Globals.getInstance(), obj);
 			if (char != null)
 			{
 				char.addOffset(anim, x, y);
@@ -2037,7 +2033,7 @@ class FunkinLua
 				return;
 			}
 
-			var object:FlxObject = Reflect.getProperty(getInstance(), obj);
+			var object:FlxObject = Reflect.getProperty(Globals.getInstance(), obj);
 			if (object != null)
 			{
 				object.scrollFactor.set(scrollX, scrollY);
@@ -2052,7 +2048,7 @@ class FunkinLua
 				{
 					if (front)
 					{
-						getInstance().add(shit);
+						Globals.getInstance().add(shit);
 					}
 					else
 					{
@@ -2141,7 +2137,7 @@ class FunkinLua
 				return;
 			}
 
-			var poop:FlxSprite = Reflect.getProperty(getInstance(), obj);
+			var poop:FlxSprite = Reflect.getProperty(Globals.getInstance(), obj);
 			if (poop != null)
 			{
 				poop.updateHitbox();
@@ -2151,12 +2147,12 @@ class FunkinLua
 		});
 		Lua_helper.add_callback(lua, "updateHitboxFromGroup", function(group:String, index:Int)
 		{
-			if (Std.isOfType(Reflect.getProperty(getInstance(), group), FlxTypedGroup))
+			if (Std.isOfType(Reflect.getProperty(Globals.getInstance(), group), FlxTypedGroup))
 			{
-				Reflect.getProperty(getInstance(), group).members[index].updateHitbox();
+				Reflect.getProperty(Globals.getInstance(), group).members[index].updateHitbox();
 				return;
 			}
-			Reflect.getProperty(getInstance(), group)[index].updateHitbox();
+			Reflect.getProperty(Globals.getInstance(), group)[index].updateHitbox();
 		});
 
 		Lua_helper.add_callback(lua, "removeLuaSprite", function(tag:String, destroy:Bool = true)
@@ -2174,7 +2170,7 @@ class FunkinLua
 
 			if (pee.wasAdded)
 			{
-				getInstance().remove(pee, true);
+				Globals.getInstance().remove(pee, true);
 				pee.wasAdded = false;
 			}
 
@@ -2305,7 +2301,7 @@ class FunkinLua
 				}
 				else
 				{
-					objectsArray.push(Reflect.getProperty(getInstance(), namesArray[i]));
+					objectsArray.push(Reflect.getProperty(Globals.getInstance(), namesArray[i]));
 				}
 			}
 
@@ -2768,7 +2764,7 @@ class FunkinLua
 				var shit:ModchartText = PlayState.instance.modchartTexts.get(tag);
 				if (!shit.wasAdded)
 				{
-					getInstance().add(shit);
+					Globals.getInstance().add(shit);
 					shit.wasAdded = true;
 				}
 			}
@@ -2788,7 +2784,7 @@ class FunkinLua
 
 			if (pee.wasAdded)
 			{
-				getInstance().remove(pee, true);
+				Globals.getInstance().remove(pee, true);
 				pee.wasAdded = false;
 			}
 
@@ -2922,7 +2918,7 @@ class FunkinLua
 				return true;
 			}
 
-			var spr:FlxSprite = Reflect.getProperty(getInstance(), obj);
+			var spr:FlxSprite = Reflect.getProperty(Globals.getInstance(), obj);
 			if (spr != null)
 			{
 				spr.animation.play(name, forced, false, startFrame);
@@ -3497,7 +3493,7 @@ class FunkinLua
 			return true;
 		}
 
-		var pussy:FlxSprite = Reflect.getProperty(getInstance(), obj);
+		var pussy:FlxSprite = Reflect.getProperty(Globals.getInstance(), obj);
 		if (pussy != null)
 		{
 			pussy.animation.addByIndices(name, prefix, die, '', framerate, loop);
@@ -3528,7 +3524,7 @@ class FunkinLua
 	{
 		var coverMeInPiss:Dynamic = PlayState.instance.getLuaObject(objectName, checkForTextsToo);
 		if (coverMeInPiss == null)
-			coverMeInPiss = getVarInArray(getInstance(), objectName);
+			coverMeInPiss = getVarInArray(Globals.getInstance(), objectName);
 
 		return coverMeInPiss;
 	}
@@ -3579,11 +3575,6 @@ class FunkinLua
 		Lua.close(lua);
 		lua = null;
 		#end
-	}
-
-	public static inline function getInstance()
-	{
-		return PlayState.instance.isDead ? GameOverSubstate.instance : PlayState.instance;
 	}
 }
 

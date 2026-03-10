@@ -68,8 +68,6 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		{
 			var optionText:Alphabet = new Alphabet(290, 260, optionsArray[i].name, false);
 			optionText.isMenuItem = true;
-			/*optionText.forceX = 300;
-				optionText.yMult = 90; */
 			optionText.targetY = i;
 			grpOptions.add(optionText);
 
@@ -80,11 +78,10 @@ class BaseOptionsMenu extends MusicBeatSubstate
 				checkbox.ID = i;
 				checkboxGroup.add(checkbox);
 			}
-			else
+			else if (optionsArray[i].type != 'button' && optionsArray[i].type != 'label')
 			{
 				optionText.x -= 80;
 				optionText.startPosition.x -= 80;
-				// optionText.xAdd -= 80;
 				var valueText:AttachedText = new AttachedText('' + optionsArray[i].getValue(), optionText.width + 80);
 				valueText.sprTracker = optionText;
 				valueText.copyAlpha = true;
@@ -151,7 +148,12 @@ class BaseOptionsMenu extends MusicBeatSubstate
 					reloadCheckboxes();
 				}
 			}
-			else
+			else if (curOption.type == 'button')
+			{
+				if (controls.ACCEPT)
+					curOption.callback();
+			}
+			else if (curOption.type != 'label')
 			{
 				if (controls.UI_LEFT || controls.UI_RIGHT)
 				{
@@ -204,7 +206,6 @@ class BaseOptionsMenu extends MusicBeatSubstate
 
 									curOption.curOption = num;
 									curOption.setValue(curOption.options[num]); // lol
-									// trace(curOption.options[num]);
 							}
 							updateTextFrom(curOption);
 							curOption.change();
@@ -247,16 +248,19 @@ class BaseOptionsMenu extends MusicBeatSubstate
 				for (i in 0...optionsArray.length)
 				{
 					var leOption:Option = optionsArray[i];
-					leOption.setValue(leOption.defaultValue);
-					if (leOption.type != 'bool')
+					if (leOption.type != 'button' && leOption.type != 'label')
 					{
-						if (leOption.type == 'string')
+						leOption.setValue(leOption.defaultValue);
+						if (leOption.type != 'bool')
 						{
-							leOption.curOption = leOption.options.indexOf(leOption.getValue());
+							if (leOption.type == 'string')
+							{
+								leOption.curOption = leOption.options.indexOf(leOption.getValue());
+							}
+							updateTextFrom(leOption);
 						}
-						updateTextFrom(leOption);
+						leOption.change();
 					}
-					leOption.change();
 				}
 				FlxG.sound.play(Paths.sound('cancelMenu'));
 				reloadCheckboxes();

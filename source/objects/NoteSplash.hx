@@ -4,6 +4,7 @@ import shaders.RGBPalette;
 import flixel.system.FlxAssets.FlxShader;
 import backend.animation.PsychAnimationController;
 
+// TO-DO: fix offsets idk
 class NoteSplash extends FlxSprite
 {
 	public var rgbShader:PixelSplashShaderRef;
