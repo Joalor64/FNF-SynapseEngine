@@ -3425,13 +3425,13 @@ class FunkinLua
 	{
 		#if LUA_ALLOWED
 		if (closed)
-			return Function_Continue;
+			return Globals.Function_Continue;
 
 		lastCalledFunction = func;
 		try
 		{
 			if (lua == null)
-				return Function_Continue;
+				return Globals.Function_Continue;
 
 			Lua.getglobal(lua, func);
 			var type:Int = Lua.type(lua, -1);
@@ -3442,7 +3442,7 @@ class FunkinLua
 					LuaUtils.luaTrace(lua, "ERROR (" + func + "): attempt to call a " + typeToString(type) + " value", false, false, FlxColor.RED);
 
 				Lua.pop(lua, 1);
-				return Function_Continue;
+				return Globals.Function_Continue;
 			}
 
 			for (arg in args)
@@ -3454,13 +3454,13 @@ class FunkinLua
 			{
 				var error:String = LuaUtils.getErrorMessage(lua, status);
 				LuaUtils.luaTrace(lua, "ERROR (" + func + "): " + error, false, false, FlxColor.RED);
-				return Function_Continue;
+				return Globals.Function_Continue;
 			}
 
 			// If successful, pass and then return the result.
 			var result:Dynamic = cast Convert.fromLua(lua, -1);
 			if (result == null)
-				result = Function_Continue;
+				result = Globals.Function_Continue;
 
 			Lua.pop(lua, 1);
 			return result;
