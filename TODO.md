@@ -31,6 +31,7 @@
 ### Low Priority
 * [ ] Noteskins
 * [ ] Hold Note Cover
+* [ ] Switch Project.xml to project.hxp
 
 ## V0.2.0
 ### High Priority
