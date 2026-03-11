@@ -26,9 +26,6 @@ import backend.WeekData;
 import scripts.Globals;
 import scripts.FunkinLua;
 import scripts.FunkinHScript;
-import modcharting.ModchartFuncs;
-import modcharting.NoteMovement;
-import modcharting.PlayfieldRenderer;
 #if VIDEOS_ALLOWED
 import hxvlc.flixel.FlxVideoSprite;
 #end
@@ -265,7 +262,6 @@ class PlayState extends MusicBeatState
 	// Debug buttons
 	private var debugKeysChart:Array<FlxKey>;
 	private var debugKeysCharacter:Array<FlxKey>;
-	private var debugModchartKey:Array<FlxKey>;
 
 	// Less laggy controls
 	private var keysArray:Array<Dynamic>;
@@ -304,7 +300,6 @@ class PlayState extends MusicBeatState
 
 		debugKeysChart = ClientPrefs.keyBinds.get('debug_1').copy();
 		debugKeysCharacter = ClientPrefs.keyBinds.get('debug_2').copy();
-		debugModchartKey = ClientPrefs.keyBinds.get('debug_3').copy();
 		PauseSubState.songName = null; // Reset to default
 		playbackRate = ClientPrefs.getGameplaySetting('songspeed', 1);
 
@@ -329,7 +324,15 @@ class PlayState extends MusicBeatState
 			}
 			else if (songMisses >= 100)
 			{
-				ratingFC = "WTF"; // 100+ misses
+				ratingFC = "TDCB"; // 100+ misses
+			}
+			else if (songMisses >= 1000)
+			{
+				ratingFC = "QDCB"; // 1000+ misses
+			}
+			else if (songMisses >= 9999)
+			{
+				ratingFC = "WTF";
 			}
 			// these should be self-explanatory
 			else if (cpuControlled)
@@ -750,6 +753,8 @@ class PlayState extends MusicBeatState
 		strumLineNotes = new FlxTypedGroup<StrumNote>();
 		add(strumLineNotes);
 
+		add(grpNoteSplashes);
+
 		if (ClientPrefs.data.timeBarType == 'Song Name')
 		{
 			timeTxt.size = 24;
@@ -764,11 +769,6 @@ class PlayState extends MusicBeatState
 		playerStrums = new FlxTypedGroup<StrumNote>();
 
 		generateSong(SONG.song);
-
-		playfieldRenderer = new PlayfieldRenderer(strumLineNotes, notes, this);
-  		playfieldRenderer.cameras = [camHUD];
-  		add(playfieldRenderer);
-		add(grpNoteSplashes);
 
 		camFollow = new FlxPoint();
 		camFollowPos = new FlxObject(0, 0, 1, 1);
@@ -1029,9 +1029,6 @@ class PlayState extends MusicBeatState
 
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
-
-		ModchartFuncs.loadLuaFunctions();
-
 		callOnLuas('onCreatePost', []);
 		callOnScripts('createPost', []);
 
@@ -2534,11 +2531,6 @@ class PlayState extends MusicBeatState
 			openChartEditor();
 		}
 
-		if (FlxG.keys.anyJustPressed(debugModchartKey) && !endingSong && !inCutscene)
-		{
-			openModchartEditor();
-		}
-
 		iconP1.setGraphicSize(Std.int(FlxMath.lerp(iconP1.width, 150, 0.09)));
 		iconP2.setGraphicSize(Std.int(FlxMath.lerp(iconP2.width, 150, 0.09)));
 
@@ -2887,19 +2879,6 @@ class PlayState extends MusicBeatState
 
 		#if DISCORD_ALLOWED
 		DiscordClient.changePresence("Chart Editor", null, null, true);
-		#end
-	}
-
-	function openModchartEditor()
-	{
-		persistentUpdate = false;
-		paused = true;
-		cancelMusicFadeTween();
-		MusicBeatState.switchState(new modcharting.ModchartEditorState());
-		chartingMode = true;
-
-		#if DISCORD_ALLOWED
-		DiscordClient.changePresence("Modchart Editor", null, null, true);
 		#end
 	}
 

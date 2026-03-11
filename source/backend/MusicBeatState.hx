@@ -1,6 +1,8 @@
 package backend;
 
-class MusicBeatState extends modcharting.ModchartMusicBeatState
+import flixel.addons.ui.FlxUIState;
+
+class MusicBeatState extends FlxUIState
 {
 	public var canSelectMods:Bool = true;
 

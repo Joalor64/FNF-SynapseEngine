@@ -20,7 +20,6 @@
 * [ ] Optimizations
 * [X] RGB Notes
 * [X] Rewrite Controls
-* [X] Modcharting Support
 * [X] FlxAnimate Support
 * [X] Source Code Reorganization
 * [X] Asset Reorganization
@@ -31,6 +30,7 @@
 
 ### Low Priority
 * [ ] Noteskins
+* [ ] Hold Note Cover
 
 ## V0.2.0
 ### High Priority
