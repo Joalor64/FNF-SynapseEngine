@@ -363,12 +363,6 @@ class Note extends FlxSprite
 
 		if (animName != null)
 			animation.play(animName, true);
-
-		if (inEditor)
-		{
-			setGraphicSize(ChartingState.GRID_SIZE, ChartingState.GRID_SIZE);
-			updateHitbox();
-		}
 	}
 
 	public static function getNoteSkinPostfix()

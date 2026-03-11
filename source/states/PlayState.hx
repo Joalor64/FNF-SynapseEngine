@@ -2080,16 +2080,15 @@ class PlayState extends MusicBeatState
 
 				unspawnNotes.push(swagNote);
 
-				var floorSus:Int = Math.floor(susLength);
+				final susLength:Float = swagNote.sustainLength / Conductor.stepCrochet;
+				final floorSus:Int = Math.floor(susLength);
+
 				if (floorSus > 0)
 				{
 					for (susNote in 0...floorSus + 1)
 					{
 						oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
-						var sustainNote:Note = new Note(daStrumTime
-							+ (Conductor.stepCrochet * susNote)
-							+ (Conductor.stepCrochet / FlxMath.roundDecimal(songSpeed, 2)), daNoteData, oldNote,
-							true);
+						var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote), daNoteData, oldNote, true);
 						sustainNote.mustPress = gottaHitNote;
 						sustainNote.gfNote = (section.gfSection && (songNotes[1]<4));
 						sustainNote.noteType = swagNote.noteType;
@@ -2716,15 +2715,10 @@ class PlayState extends MusicBeatState
 								daNote.y -= 46 * (1 - (fakeCrochet / 600)) * songSpeed;
 								if (PlayState.isPixelStage)
 								{
-									daNote.y += 8 + (6 - daNote.originalHeight) * PlayState.daPixelZoom;
-								}
-								else
-								{
-									daNote.y -= 19;
+									daNote.y -= PlayState.daPixelZoom * 9.5;
 								}
 							}
-							daNote.y += (Note.swagWidth / 2) - (60.5 * (songSpeed - 1));
-							daNote.y += 27.5 * ((SONG.bpm / 100) - 1) * (songSpeed - 1);
+							daNote.y -= (daNote.frameHeight * daNote.scale.y) - (Note.swagWidth / 2);
 						}
 					}
 
