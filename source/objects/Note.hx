@@ -141,19 +141,17 @@ class Note extends FlxSprite
 			{
 				case 'Hurt Note':
 					ignoreNote = mustPress;
-					reloadNote('HURT');
-					noteSplashTexture = 'HURTnoteSplashes';
-					rgbShader.enabled = false;
-					lowPriority = true;
+					// reloadNote('HURT');
+					rgbShader.r = 0xFF101010;
+					rgbShader.g = 0xFFFF0000;
+					rgbShader.b = 0xFF990022;
 
-					if (isSustainNote)
-					{
-						missHealth = 0.1;
-					}
-					else
-					{
-						missHealth = 0.3;
-					}
+					noteSplashData.r = 0xFFFF0000;
+					noteSplashData.g = 0xFF101010;
+					noteSplashData.texture = 'noteSplashes/noteSplashes-electric';
+					noteSplashTexture = 'HURTnoteSplashes';
+					lowPriority = true;
+					missHealth = isSustainNote ? 0.25 : 0.1;
 					hitCausesMiss = true;
 				case 'Alt Animation':
 					animSuffix = '-alt';
@@ -172,7 +170,7 @@ class Note extends FlxSprite
 
 	public function updateColours()
 	{
-		var colorArray:Array<FlxColor> = noteColor[noteData % 4];
+		var colorArray:Array<FlxColor> = noteColor[noteData % colArray.length];
     	rgbShader.r = colorArray[0];
     	rgbShader.g = colorArray[1];  
     	rgbShader.b = colorArray[2];
@@ -222,10 +220,10 @@ class Note extends FlxSprite
 			shader = rgbShader.shader;
 
 			x += swagWidth * (noteData);
-			if (!isSustainNote && noteData > -1 && noteData < 4)
+			if (!isSustainNote && noteData > -1 && noteData < colArray.length)
 			{ // Doing this 'if' check to fix the warnings on Senpai songs
 				var animToPlay:String = '';
-				animToPlay = colArray[noteData % 4];
+				animToPlay = colArray[noteData % colArray.length];
 				animation.play(animToPlay + 'Scroll');
 			}
 		}
@@ -244,7 +242,7 @@ class Note extends FlxSprite
 			offsetX += width / 2;
 			copyAngle = false;
 
-			animation.play(colArray[noteData % 4] + 'holdend');
+			animation.play(colArray[noteData % colArray.length] + 'holdend');
 
 			updateHitbox();
 
@@ -255,7 +253,7 @@ class Note extends FlxSprite
 
 			if (prevNote.isSustainNote)
 			{
-				prevNote.animation.play(colArray[prevNote.noteData % 4] + 'hold');
+				prevNote.animation.play(colArray[prevNote.noteData % colArray.length] + 'hold');
 
 				prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.05;
 				if (PlayState.instance != null)
@@ -276,10 +274,12 @@ class Note extends FlxSprite
 				scale.y *= PlayState.daPixelZoom;
 				updateHitbox();
 			}
+			earlyHitMult = 0;
 		}
 		else if (!isSustainNote)
 		{
-			earlyHitMult = 1.2;
+			centerOffsets();
+			centerOrigin();
 		}
 		x += offsetX;
 	}
@@ -363,6 +363,12 @@ class Note extends FlxSprite
 
 		if (animName != null)
 			animation.play(animName, true);
+
+		if (inEditor)
+		{
+			setGraphicSize(ChartingState.GRID_SIZE, ChartingState.GRID_SIZE);
+			updateHitbox();
+		}
 	}
 
 	public static function getNoteSkinPostfix()
@@ -377,7 +383,7 @@ class Note extends FlxSprite
 	{
 		if (isSustainNote)
 		{
-			attemptToAddAnimationByPrefix('purpleholdend', 'purple end hold', 24, true); // this fixes some retarded typo from the original note .FLA
+			attemptToAddAnimationByPrefix('purpleholdend', 'pruple end hold', 24, true); // this fixes some retarded typo from the original note .FLA
 			animation.addByPrefix(colArray[noteData] + 'holdend', colArray[noteData] + ' hold end', 24, true);
 			animation.addByPrefix(colArray[noteData] + 'hold', colArray[noteData] + ' hold piece', 24, true);
 		}
