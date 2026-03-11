@@ -343,6 +343,10 @@ class Note extends FlxSprite
 		{
 			frames = Paths.getSparrowAtlas(skin);
 			loadNoteAnims();
+
+			if (animName != null)
+				animation.play(animName, true);
+			
 			if (!isSustainNote)
 			{
 				centerOffsets();
@@ -354,9 +358,6 @@ class Note extends FlxSprite
 			scale.y = lastScaleY;
 		}
 		updateHitbox();
-
-		if (animName != null)
-			animation.play(animName, true);
 
 		if (inEditor)
 		{
