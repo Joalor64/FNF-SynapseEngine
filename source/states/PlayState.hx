@@ -690,13 +690,13 @@ class PlayState extends MusicBeatState
 		dialogueJson = loadPsychDialogue(songName);
 		dialogueEndJson = loadPsychDialogue(songName, '-end');
 
-		var file:String = Paths.json(songName + '/dialogue'); // Checks for json/Psych Engine dialogue
+		var file:String = Paths.json('songs/' + songName + '/dialogue'); // Checks for json/Psych Engine dialogue
 		if (Assets.exists(file))
 		{
 			dialogueJson = DialogueBoxPsych.parseDialogue(file);
 		}
 
-		var file:String = Paths.txt(songName + '/' + songName + 'Dialogue'); // Checks for vanilla/Senpai dialogue
+		var file:String = Paths.txt('songs/' + songName + '/' + songName + 'Dialogue'); // Checks for vanilla/Senpai dialogue
 		if (Assets.exists(file))
 		{
 			dialogue = CoolUtil.coolTextFile(file);
@@ -974,7 +974,7 @@ class PlayState extends MusicBeatState
 		eventsPushed = null;
 
 		// SONG SPECIFIC SCRIPTS
-		var foldersToCheck:Array<String> = Mods.directoriesWithFile(Paths.getPreloadPath(), 'data/' + songName + '/');
+		var foldersToCheck:Array<String> = Mods.directoriesWithFile(Paths.getPreloadPath(), 'songs/' + songName + '/');
 		for (folder in foldersToCheck)
 		{
 			for (file in FileSystem.readDirectory(folder))
@@ -1068,9 +1068,9 @@ class PlayState extends MusicBeatState
 
 		#if (desktop && MODS_ALLOWED)
 		var paths:Array<String> = [
-			'mods/' + Mods.currentModDirectory + '/data/$songName/$file.json',
-			'mods/data/$songName/$file.json',
-			Paths.json(songName + '/$file')
+			'mods/' + Mods.currentModDirectory + '/songs/$songName/$file.json',
+			'mods/songs/$songName/$file.json',
+			Paths.json('songs/' + songName + '/$file')
 		];
 		for (path in paths)
 		{
@@ -1081,7 +1081,7 @@ class PlayState extends MusicBeatState
 			}
 		}
 		#else
-		var paths:Array<String> = [Paths.json(songName + '/$file')];
+		var paths:Array<String> = [Paths.json('songs/' + songName + '/$file')];
 		for (path in paths)
 		{
 			if (Assets.exists(path))
@@ -1989,9 +1989,9 @@ class PlayState extends MusicBeatState
 		noteData = songData.notes;
 
 		var songName:String = Paths.formatToSongPath(SONG.song);
-		var file:String = Paths.json(songName + '/events');
+		var file:String = Paths.json('songs/' + songName + '/events');
 		#if MODS_ALLOWED
-		if (FileSystem.exists(Paths.modsJson(songName + '/events')) || FileSystem.exists(file))
+		if (FileSystem.exists(Paths.modsJson('songs/' + songName + '/events')) || FileSystem.exists(file))
 		{
 		#else
 		if (Assets.exists(file))

@@ -6,7 +6,7 @@ import backend.Paths;
 
 var fromPlayState:Bool = false;
 
-var data = Json.parse(Paths.getTextFromFile('data/options.json'));
+var data = Json.parse(Paths.getTextFromFile('options.json'));
 
 function new(?playState:Bool) {
     fromPlayState = playState;

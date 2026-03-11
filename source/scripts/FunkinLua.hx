@@ -2356,10 +2356,10 @@ class FunkinLua
 		{
 			var path:String;
 			#if MODS_ALLOWED
-			path = Paths.modsJson(Paths.formatToSongPath(PlayState.SONG.song) + '/' + dialogueFile);
+			path = Paths.modsJson('songs/' + Paths.formatToSongPath(PlayState.SONG.song) + '/' + dialogueFile);
 			if (!FileSystem.exists(path))
 			#end
-			path = Paths.json(Paths.formatToSongPath(PlayState.SONG.song) + '/' + dialogueFile);
+			path = Paths.json('songs/' + Paths.formatToSongPath(PlayState.SONG.song) + '/' + dialogueFile);
 
 			LuaUtils.luaTrace(lua, 'startDialogue: Trying to load dialogue: ' + path);
 

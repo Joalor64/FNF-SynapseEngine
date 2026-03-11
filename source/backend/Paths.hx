@@ -109,13 +109,13 @@ class Paths
 		return 'assets/$file';
 
 	inline static public function txt(key:String)
-		return getPath('data/$key.txt');
+		return getPath('$key.txt');
 
 	inline static public function xml(key:String)
-		return getPath('data/$key.xml');
+		return getPath('$key.xml');
 
 	inline static public function json(key:String)
-		return getPath('data/$key.json');
+		return getPath('$key.json');
 
 	inline static public function shaderFragment(key:String)
 		return getPath('shaders/$key.frag');
@@ -427,7 +427,7 @@ class Paths
 		return modFolders('fonts/$key');
 
 	inline static public function modsJson(key:String)
-		return modFolders('data/$key.json');
+		return modFolders('$key.json');
 
 	inline static public function modsVideo(key:String)
 		return modFolders('videos/$key.mp4');

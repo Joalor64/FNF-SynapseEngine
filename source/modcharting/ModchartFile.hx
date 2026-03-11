@@ -74,7 +74,7 @@ class ModchartFile
 		var folderShit:String = "";
 		#if sys
 		#if PSYCH
-		var moddyFile:String = Paths.modsJson(Paths.formatToSongPath(folder) + '/modchart');
+		var moddyFile:String = Paths.modsJson('songs/' + Paths.formatToSongPath(folder) + '/modchart');
 		if (FileSystem.exists(moddyFile))
 		{
 			rawJson = File.getContent(moddyFile).trim();
@@ -88,7 +88,7 @@ class ModchartFile
 			var filePath = Paths.json("song data/" + folder + '/modchart');
 			folderShit = PolymodAssets.getPath(filePath.replace("modchart.json", "customMods/"));
 			#else
-			var filePath = Paths.json(folder + '/modchart');
+			var filePath = Paths.json('songs/' + folder + '/modchart');
 			folderShit = filePath.replace("modchart.json", "customMods/");
 			#end
 

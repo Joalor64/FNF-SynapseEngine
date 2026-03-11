@@ -87,7 +87,7 @@ class SchoolEvil extends BaseStage
 
 	function initDoof()
 	{
-		var file:String = Paths.txt(songName + '/' + songName + 'Dialogue'); // Checks for vanilla/Senpai dialogue
+		var file:String = Paths.txt('songs/' + songName + '/' + songName + 'Dialogue'); // Checks for vanilla/Senpai dialogue
 		#if MODS_ALLOWED
 		if (!FileSystem.exists(file))
 		#else

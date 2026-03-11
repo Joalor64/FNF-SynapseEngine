@@ -437,9 +437,9 @@ class ChartingState extends MusicBeatState
 		var loadEventJson:FlxButton = new FlxButton(loadAutosaveBtn.x, loadAutosaveBtn.y + 30, 'Load Events', function()
 		{
 			var songName:String = Paths.formatToSongPath(_song.song);
-			var file:String = Paths.json(songName + '/events');
+			var file:String = Paths.json('songs/' + songName + '/events');
 			#if sys
-			if (#if MODS_ALLOWED FileSystem.exists(Paths.modsJson(songName + '/events')) || #end FileSystem.exists(file))
+			if (#if MODS_ALLOWED FileSystem.exists(Paths.modsJson('songs/' + songName + '/events')) || #end FileSystem.exists(file))
 			#else
 			if (Assets.exists(file))
 			#end
@@ -3156,13 +3156,13 @@ class ChartingState extends MusicBeatState
 			});
 		}
 		#if sys
-		if (FileSystem.exists(Paths.modsJson(songLowercase + '/' + poop))
-			|| FileSystem.exists(Paths.json(songLowercase + '/' + poop)))
+		if (FileSystem.exists(Paths.modsJson('songs/' + songLowercase + '/' + poop))
+			|| FileSystem.exists(Paths.json('songs/' + songLowercase + '/' + poop)))
 			findAndLoadJson();
 		else
 			invalidJson();
 		#else
-		if (Assets.exists(Paths.json(songLowercase + '/' + poop)))
+		if (Assets.exists(Paths.json('songs/' + songLowercase + '/' + poop)))
 			findAndLoadJson();
 		else
 			invalidJson();

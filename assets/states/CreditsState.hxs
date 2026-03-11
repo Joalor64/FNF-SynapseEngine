@@ -14,7 +14,7 @@ var creditsStuff:Array<Array<String>> = [];
 var curSelected:Int = -1;
 var offsetThing:Float = -25;
 
-var data = Json.parse(Paths.getTextFromFile('data/credits.json'));
+var data = Json.parse(Paths.getTextFromFile('credits.json'));
 
 function create()
 {
