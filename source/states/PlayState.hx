@@ -4366,10 +4366,6 @@ class PlayState extends MusicBeatState
 
 	public function spawnNoteSplash(x:Float, y:Float, data:Int, ?note:Note = null)
 	{
-		var skin:String = 'noteSplashes';
-		if (PlayState.SONG.splashSkin != null && PlayState.SONG.splashSkin.length > 0)
-			skin = PlayState.SONG.splashSkin;
-
 		var r:FlxColor = 0;
 		var g:FlxColor = 0;
 		var b:FlxColor = 0;
@@ -4382,7 +4378,7 @@ class PlayState extends MusicBeatState
 		}
 
 		var splash:NoteSplash = grpNoteSplashes.recycle(NoteSplash);
-		splash.setupNoteSplash(x, y, data, skin, r, g, b);
+		splash.setupNoteSplash(x, y, data, r, g, b);
 		grpNoteSplashes.add(splash);
 	}
 

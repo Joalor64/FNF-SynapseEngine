@@ -31,6 +31,7 @@ import backend.Controls;
 	];
 	public var noteSkin:String = 'Default';
 	public var splashSkin:String = 'Psych';
+	public var splashAlpha:Float = 0.6;
 	public var ghostTapping:Bool = true;
 	public var timeBarType:String = 'Time Left';
 	public var scoreZoom:Bool = true;

@@ -210,6 +210,12 @@ function update(elapsed:Float)
 									MusicBeatState.switchState(new ScriptedState('CreditsState', []));
 								case 'options':
 									LoadingState.loadAndSwitchState(new options.OptionsState());
+									if (PlayState.SONG != null)
+									{
+										PlayState.SONG.arrowSkin = null;
+										PlayState.SONG.splashSkin = null;
+										PlayState.isPixelStage = false;
+									}
 							}
 						});
 					}
