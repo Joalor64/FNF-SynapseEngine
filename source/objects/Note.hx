@@ -288,9 +288,9 @@ class Note extends FlxSprite
 	static var _lastValidChecked:String; // optimization
 	public var originalHeight:Float = 6;
 	public var correctionOffset:Float = 0; // dont mess with this
-	public function reloadNote(texture:String = '', suffix:String = '')
+	public function reloadNote(texture:String = '', postfix:String = '')
 	{
-		for (e in [texture, suffix])
+		for (e in [texture, postfix])
 			if (e == null)
 				e = '';
 

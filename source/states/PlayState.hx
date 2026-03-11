@@ -2716,7 +2716,7 @@ class PlayState extends MusicBeatState
 								daNote.y -= 46 * (1 - (fakeCrochet / 600)) * songSpeed;
 								if (PlayState.isPixelStage)
 								{
-									daNote.y += 8 + (6 - daNote.originalHeightForCalcs) * PlayState.daPixelZoom;
+									daNote.y += 8 + (6 - daNote.originalHeight) * PlayState.daPixelZoom;
 								}
 								else
 								{
