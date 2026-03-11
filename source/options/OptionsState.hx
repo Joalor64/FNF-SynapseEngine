@@ -4,9 +4,9 @@ package options;
 class OptionsState extends MusicBeatState
 {
 	var options:Array<String> = ['Note Colors', 'Controls', 'Offsets', 'Visuals', 'Gameplay', 'Miscellaneous'];
-	private var grpOptions:FlxTypedGroup<Alphabet>;
+	var grpOptions:FlxTypedGroup<Alphabet>;
 
-	private static var curSelected:Int = 0;
+	var curSelected:Int = 0;
 
 	function openSelectedSubstate(label:String)
 	{
@@ -35,6 +35,8 @@ class OptionsState extends MusicBeatState
 	var camMain:FlxCamera;
 	var camSub:FlxCamera;
 
+	var bg:FlxSprite;
+
 	override function create()
 	{
 		#if DISCORD_ALLOWED
@@ -58,7 +60,7 @@ class OptionsState extends MusicBeatState
 		FlxG.camera.follow(camFollowPos, null, 1);
 
 		var yScroll:Float = Math.max(0.25 - (0.05 * (options.length - 4)), 0.1);
-		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		bg.color = 0xFFea71fd;
 		bg.updateHitbox();
 		bg.screenCenter();
