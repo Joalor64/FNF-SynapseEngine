@@ -254,7 +254,7 @@ class FunkinSoundTray extends flixel.system.ui.FlxSoundTray
 		super();
 		removeChildren();
 
-		var bg:Bitmap = new Bitmap(Assets.getBitmapData(Paths.image("soundtray/volumebox")));
+		var bg:Bitmap = new Bitmap(Assets.getBitmapData("assets/images/soundtray/volumebox.png"));
 		bg.scaleX = graphicScale;
 		bg.scaleY = graphicScale;
 		bg.smoothing = true;
@@ -263,7 +263,7 @@ class FunkinSoundTray extends flixel.system.ui.FlxSoundTray
 		y = -height;
 		visible = false;
 
-		var backingBar:Bitmap = new Bitmap(Assets.getBitmapData(Paths.image("soundtray/bars_10")));
+		var backingBar:Bitmap = new Bitmap(Assets.getBitmapData("assets/images/soundtray/bars_10.png"));
 		backingBar.x = 9;
 		backingBar.y = 5;
 		backingBar.scaleX = graphicScale;
@@ -276,7 +276,7 @@ class FunkinSoundTray extends flixel.system.ui.FlxSoundTray
 
 		for (i in 1...11)
 		{
-			var bar:Bitmap = new Bitmap(Assets.getBitmapData(Paths.image("soundtray/bars_" + i)));
+			var bar:Bitmap = new Bitmap(Assets.getBitmapData("assets/images/soundtray/bars_" + i + ".png"));
 			bar.x = 9;
 			bar.y = 5;
 			bar.scaleX = graphicScale;
@@ -289,9 +289,9 @@ class FunkinSoundTray extends flixel.system.ui.FlxSoundTray
 		screenCenter();
 		y = -height - 10;
 
-		volumeUpSound = Paths.sound("soundtray/Volup");
-		volumeDownSound = Paths.sound("soundtray/Voldown");
-		volumeMaxSound = Paths.sound("soundtray/VolMAX");
+		volumeUpSound = 'assets/sounds/soundtray/Volup.ogg';
+		volumeDownSound = 'assets/sounds/soundtray/Voldown.ogg';
+		volumeMaxSound = 'assets/sounds/soundtray/VolMAX.ogg';
 	}
 
 	override public function update(ms:Float):Void
@@ -364,7 +364,7 @@ class FunkinSoundTray extends flixel.system.ui.FlxSoundTray
 
 	function updateBars():Void
 	{
-		var globalVolume:Int = FlxG.sound.muted || FlxG.sound.volume == 0 ? 0 : Math.round(FlxG.sound.logToLinear(FlxG.sound.volume) * 10);
+		var globalVolume:Int = FlxG.sound.muted || FlxG.sound.volume == 0 ? 0 : Math.round(FlxG.sound.volume * 10);
 
 		for (i in 0..._bars.length)
 			_bars[i].visible = i < globalVolume;
