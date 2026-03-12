@@ -2091,12 +2091,31 @@ class PlayState extends MusicBeatState
 							+ (Conductor.stepCrochet / FlxMath.roundDecimal(songSpeed, 2)), daNoteData, oldNote,
 							true);
 						sustainNote.mustPress = gottaHitNote;
-						sustainNote.gfNote = (section.gfSection && (songNotes[1]<4));
+						sustainNote.gfNote = (section.gfSection && (songNotes[1] < 4));
 						sustainNote.noteType = swagNote.noteType;
 						sustainNote.scrollFactor.set();
-						swagNote.tail.push(sustainNote);
 						sustainNote.parent = swagNote;
 						unspawnNotes.push(sustainNote);
+						swagNote.tail.push(sustainNote);
+
+						sustainNote.correctionOffset = swagNote.height / 2;
+						if (!PlayState.isPixelStage)
+						{
+							if (oldNote.isSustainNote)
+							{
+								oldNote.scale.y *= Note.SUSTAIN_SIZE / oldNote.frameHeight;
+								oldNote.scale.y /= playbackRate;
+								oldNote.updateHitbox();
+							}
+
+							if (ClientPrefs.data.downScroll)
+								sustainNote.correctionOffset = 0;
+						}
+						else if (oldNote.isSustainNote)
+						{
+							oldNote.scale.y /= playbackRate;
+							oldNote.updateHitbox();
+						}
 
 						if (sustainNote.mustPress)
 							sustainNote.x += FlxG.width / 2;

@@ -5,7 +5,7 @@ class PauseSubState extends MusicBeatSubstate
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 
 	var menuItems:Array<String> = [];
-	var menuItemsOG:Array<String> = ['Resume', 'Restart', 'Options', 'Exit'];
+	var menuItemsOG:Array<String> = ['Resume', 'Restart Song', 'Options', 'Exit'];
 	var exitChoices = ['Exit to Freeplay', 'Exit to Menu', 'Exit Game', 'Back'];
 	var difficultyChoices = [];
 	var curSelected:Int = 0;
@@ -325,7 +325,7 @@ class PauseSubState extends MusicBeatSubstate
 		}
 		else
 		{
-			FlxG.resetState();
+			MusicBeatState.resetState();
 		}
 	}
 

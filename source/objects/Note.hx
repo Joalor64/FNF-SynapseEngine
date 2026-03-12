@@ -35,7 +35,6 @@ class Note extends FlxSprite
 
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
-	public var isSustainEnd:Bool = false;
 	public var noteType(default, set):String = null;
 
 	public var eventName:String = '';
@@ -55,6 +54,7 @@ class Note extends FlxSprite
 	public var lateHitMult:Float = 1;
 	public var lowPriority:Bool = false;
 
+	public static var SUSTAIN_SIZE:Int = 44;
 	public static var swagWidth:Float = 160 * 0.7;
 
 	public static var colArray:Array<String> = ['purple', 'blue', 'green', 'red'];
@@ -264,19 +264,15 @@ class Note extends FlxSprite
 				prevNote.updateHitbox();
 			}
 
-			isSustainEnd = true;
-
 			if (PlayState.isPixelStage)
 			{
 				scale.y *= PlayState.daPixelZoom;
 				updateHitbox();
 			}
-			earlyHitMult = 0;
 		}
 		else if (!isSustainNote)
 		{
-			centerOffsets();
-			centerOrigin();
+			earlyHitMult = 1.2;
 		}
 		x += offsetX;
 	}
@@ -346,13 +342,6 @@ class Note extends FlxSprite
 		{
 			frames = Paths.getSparrowAtlas(skin);
 			loadNoteAnims();
-
-			if (isSustainNote)
-    		{
-        		offsetX += width / 2;
-        		copyAngle = false;
-    		}
-			
 			if (!isSustainNote)
 			{
 				centerOffsets();
@@ -362,34 +351,11 @@ class Note extends FlxSprite
 		if (isSustainNote)
 		{
 			scale.y = lastScaleY;
-
-			if (!PlayState.isPixelStage)
-    		{
-        		offsetX -= width / 2;
-    		}
 		}
 		updateHitbox();
 
 		if (animName != null)
-    	{
-        	if (isSustainNote)
-        	{
-            	if (isSustainEnd)
-                	animation.play(colArray[noteData % colArray.length] + 'holdend', true);
-            	else
-                	animation.play(colArray[noteData % colArray.length] + 'hold', true);
-        	}
-        	else
-        	{
-            	animation.play(animName, true);
-        	}
-    	}
-
-		if (inEditor)
-		{
-			setGraphicSize(ChartingState.GRID_SIZE, ChartingState.GRID_SIZE);
-			updateHitbox();
-		}
+			animation.play(animName, true);
 	}
 
 	public static function getNoteSkinPostfix()
@@ -405,11 +371,11 @@ class Note extends FlxSprite
 		if (isSustainNote)
 		{
 			attemptToAddAnimationByPrefix('purpleholdend', 'pruple end hold', 24, true); // this fixes some retarded typo from the original note .FLA
-			animation.addByPrefix(colArray[noteData % colArray.length] + 'holdend', colArray[noteData % colArray.length] + ' hold end', 24, true);
-			animation.addByPrefix(colArray[noteData % colArray.length] + 'hold', colArray[noteData % colArray.length] + ' hold piece', 24, true);
+			animation.addByPrefix(colArray[noteData] + 'holdend', colArray[noteData] + ' hold end', 24, true);
+			animation.addByPrefix(colArray[noteData] + 'hold', colArray[noteData] + ' hold piece', 24, true);
 		}
 		else
-			animation.addByPrefix(colArray[noteData % colArray.length] + 'Scroll', colArray[noteData % colArray.length] + '0');
+			animation.addByPrefix(colArray[noteData] + 'Scroll', colArray[noteData] + '0');
 
 		setGraphicSize(Std.int(width * 0.7));
 		updateHitbox();
