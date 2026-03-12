@@ -36,6 +36,8 @@ class NoteSplashEditorState extends MusicBeatState
 
 	override function create()
 	{
+		FlxG.mouse.visible = true;
+
 		FlxG.camera.bgColor = FlxColor.fromHSL(0, 0, 0.5);
 		selection = new FlxSprite(0, 270).makeGraphic(150, 150, FlxColor.BLACK);
 		selection.alpha = 0.4;
@@ -77,7 +79,7 @@ class NoteSplashEditorState extends MusicBeatState
 		imageInputText = new FlxInputText(txtx, txty - 100, 360, defaultTexture, 16);
 		imageInputText.callback = function(text:String, action:String)
 		{
-			switch(action)
+			switch (action)
 			{
 				case 'enter':
 					imageInputText.hasFocus = false;
@@ -185,7 +187,6 @@ class NoteSplashEditorState extends MusicBeatState
 		loadFrames();
 		changeSelection();
 		super.create();
-		FlxG.mouse.visible = true;
 	}
 
 	var curAnim:Int = 1;
@@ -197,6 +198,14 @@ class NoteSplashEditorState extends MusicBeatState
 		cast(stepperMinFps.text_field, FlxInputText).hasFocus = cast(stepperMaxFps.text_field, FlxInputText).hasFocus = false;
 
 		var notTyping:Bool = !nameInputText.hasFocus && !imageInputText.hasFocus;
+		
+		if (notTyping)
+		{
+			FlxG.sound.muteKeys = Main.muteKeys;
+			FlxG.sound.volumeDownKeys = Main.volumeDownKeys;
+			FlxG.sound.volumeUpKeys = Main.volumeUpKeys;
+		}
+
 		if (controls.BACK && notTyping)
 		{
 			MusicBeatState.switchState(new MasterEditorMenu());
@@ -278,7 +287,7 @@ class NoteSplashEditorState extends MusicBeatState
 		if (FlxG.keys.justPressed.ENTER)
 		{
 			savedText.text = 'Press ENTER again to save.';
-			if (pressEnterToSave > 0) //save
+			if (pressEnterToSave > 0) // save
 			{
 				saveFile();
 				FlxG.sound.play(Paths.sound('confirmMenu'), 0.4);

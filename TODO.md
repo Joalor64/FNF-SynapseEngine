@@ -1,4 +1,4 @@
-# To-Dos (Not Final)
+# To-Dos
 ## V0.1.0
 ### High Priority
 * [X] HScript Support
@@ -17,6 +17,7 @@
     * [ ] Game Over
     * [ ] Pause Menu
 * [ ] Custom Options
+* [ ] Custom Achievements
 * [ ] Optimizations
 * [X] RGB Notes
 * [X] Rewrite Controls
@@ -31,20 +32,18 @@
 ### Low Priority
 * [X] Noteskins
 * [ ] Hold Note Cover
-* [ ] Switch Project.xml to project.hxp
+* [ ] Migrate to HXP
 
 ## V0.2.0
 ### High Priority
 * [ ] Weekend 1
-* [ ] Custom Achievements
 * [ ] In-Game Crash Handler
-* [ ] Time Signature Support
 * [ ] Support for more than 2 health icons
 
 ### Low Priority
 * [ ] Extra Keys
 * [ ] Erect Mixes
 * [ ] Controller Support
+* [ ] Time Signature Support
 * [ ] Potentially Backport Newer Psych Stuff
 * [ ] Potentially Backport V-Slice Stuff
-* [ ] MAYBE Forwards Compatibility?
