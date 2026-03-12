@@ -35,6 +35,7 @@ class Note extends FlxSprite
 
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
+	public var isSustainEnd:Bool = false;
 	public var noteType(default, set):String = null;
 
 	public var eventName:String = '';
@@ -214,7 +215,7 @@ class Note extends FlxSprite
 			shader = rgbShader.shader;
 
 			x += swagWidth * (noteData);
-			if (!isSustainNote && noteData > -1 && noteData < colArray.length)
+			if (!isSustainNote && noteData < colArray.length)
 			{ // Doing this 'if' check to fix the warnings on Senpai songs
 				var animToPlay:String = '';
 				animToPlay = colArray[noteData % colArray.length];
@@ -262,6 +263,8 @@ class Note extends FlxSprite
 				}
 				prevNote.updateHitbox();
 			}
+
+			isSustainEnd = true;
 
 			if (PlayState.isPixelStage)
 			{
@@ -343,6 +346,12 @@ class Note extends FlxSprite
 		{
 			frames = Paths.getSparrowAtlas(skin);
 			loadNoteAnims();
+
+			if (isSustainNote)
+    		{
+        		offsetX += width / 2;
+        		copyAngle = false;
+    		}
 			
 			if (!isSustainNote)
 			{
@@ -353,6 +362,11 @@ class Note extends FlxSprite
 		if (isSustainNote)
 		{
 			scale.y = lastScaleY;
+
+			if (!PlayState.isPixelStage)
+    		{
+        		offsetX -= width / 2;
+    		}
 		}
 		updateHitbox();
 
@@ -360,10 +374,10 @@ class Note extends FlxSprite
     	{
         	if (isSustainNote)
         	{
-            	if (nextNote != null && nextNote.isSustainNote)
-                	animation.play(colArray[noteData % colArray.length] + 'hold', true);
-            	else
+            	if (isSustainEnd)
                 	animation.play(colArray[noteData % colArray.length] + 'holdend', true);
+            	else
+                	animation.play(colArray[noteData % colArray.length] + 'hold', true);
         	}
         	else
         	{
