@@ -357,7 +357,19 @@ class Note extends FlxSprite
 		updateHitbox();
 
 		if (animName != null)
-    		animation.play(animName, true);
+    	{
+        	if (isSustainNote)
+        	{
+            	if (nextNote != null && nextNote.isSustainNote)
+                	animation.play(colArray[noteData % colArray.length] + 'hold', true);
+            	else
+                	animation.play(colArray[noteData % colArray.length] + 'holdend', true);
+        	}
+        	else
+        	{
+            	animation.play(animName, true);
+        	}
+    	}
 
 		if (inEditor)
 		{
