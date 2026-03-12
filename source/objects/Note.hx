@@ -379,11 +379,11 @@ class Note extends FlxSprite
 		if (isSustainNote)
 		{
 			attemptToAddAnimationByPrefix('purpleholdend', 'pruple end hold', 24, true); // this fixes some retarded typo from the original note .FLA
-			animation.addByPrefix(colArray[noteData] + 'holdend', colArray[noteData] + ' hold end', 24, true);
-			animation.addByPrefix(colArray[noteData] + 'hold', colArray[noteData] + ' hold piece', 24, true);
+			animation.addByPrefix(colArray[noteData % colArray.length] + 'holdend', colArray[noteData % colArray.length] + ' hold end', 24, true);
+			animation.addByPrefix(colArray[noteData % colArray.length] + 'hold', colArray[noteData % colArray.length] + ' hold piece', 24, true);
 		}
 		else
-			animation.addByPrefix(colArray[noteData] + 'Scroll', colArray[noteData] + '0');
+			animation.addByPrefix(colArray[noteData % colArray.length] + 'Scroll', colArray[noteData % colArray.length] + '0');
 
 		setGraphicSize(Std.int(width * 0.7));
 		updateHitbox();
