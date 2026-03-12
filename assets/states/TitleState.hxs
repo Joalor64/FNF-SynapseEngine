@@ -177,8 +177,10 @@ function beatHit(curBeat:Int)
 	switch (curBeat)
 	{
 		case 1:
-			createCoolText(["Synapse Engine by"]);
+			createCoolText(['Psych Engine by', 'Shadow Mario']);
 		case 3:
+			addMoreText('');
+			addMoreText('Synapse Engine by');
 			addMoreText('Joalor64');
 		case 4:
 			credGroup.clear();

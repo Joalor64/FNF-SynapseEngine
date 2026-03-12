@@ -2880,6 +2880,7 @@ class PlayState extends MusicBeatState
 			FlxG.sound.music.pause();
 			vocals.pause();
 		}
+		// openSubState(new ScriptedSubState('PauseSubState', [boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y]));
 		openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 
 		#if DISCORD_ALLOWED
@@ -2923,6 +2924,9 @@ class PlayState extends MusicBeatState
 					tween.active = true;
 				for (timer in modchartTimers)
 					timer.active = true;
+
+				/* openSubState(new ScriptedSubState('GameOverSubState', [boyfriend.getScreenPosition().x - boyfriend.positionArray[0],
+					boyfriend.getScreenPosition().y - boyfriend.positionArray[1], camFollowPos.x, camFollowPos.y])); */
 
 				openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x - boyfriend.positionArray[0],
 					boyfriend.getScreenPosition().y - boyfriend.positionArray[1], camFollowPos.x, camFollowPos.y));

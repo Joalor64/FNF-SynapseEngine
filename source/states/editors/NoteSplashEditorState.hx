@@ -36,6 +36,8 @@ class NoteSplashEditorState extends MusicBeatState
 
 	override function create()
 	{
+		canSelectMods = false;
+
 		FlxG.mouse.visible = true;
 
 		FlxG.camera.bgColor = FlxColor.fromHSL(0, 0, 0.5);
@@ -204,6 +206,12 @@ class NoteSplashEditorState extends MusicBeatState
 			FlxG.sound.muteKeys = Main.muteKeys;
 			FlxG.sound.volumeDownKeys = Main.volumeDownKeys;
 			FlxG.sound.volumeUpKeys = Main.volumeUpKeys;
+		}
+		else
+		{
+    		FlxG.sound.muteKeys = [];
+    		FlxG.sound.volumeDownKeys = [];
+    		FlxG.sound.volumeUpKeys = [];
 		}
 
 		if (controls.BACK && notTyping)
