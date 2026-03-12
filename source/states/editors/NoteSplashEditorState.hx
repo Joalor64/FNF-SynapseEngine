@@ -3,6 +3,7 @@ package states.editors;
 import objects.Note;
 import objects.StrumNote;
 import objects.NoteSplash;
+import shaders.RGBPalette;
 import flixel.addons.ui.FlxInputText;
 import flixel.addons.ui.FlxUINumericStepper;
 
@@ -57,7 +58,12 @@ class NoteSplashEditorState extends MusicBeatState
 
 			var splash:FlxSprite = new FlxSprite(x, y);
 			splash.setPosition(splash.x - Note.swagWidth * 0.95, splash.y - Note.swagWidth);
-			splash.shader = note.rgbShader.shader;
+			var splashPalette = new RGBPalette();
+    		var noteColor = ClientPrefs.data.arrowRGB[i % 4];
+    		splashPalette.r = noteColor[0];
+    		splashPalette.g = noteColor[1];
+    		splashPalette.b = noteColor[2];
+    		splash.shader = splashPalette.shader;
 			splash.antialiasing = ClientPrefs.data.globalAntialiasing;
 			splashes.add(splash);
 		}

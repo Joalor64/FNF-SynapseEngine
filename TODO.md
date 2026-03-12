@@ -29,7 +29,7 @@
 * [X] Update to hxdiscord_rpc
 
 ### Low Priority
-* [ ] Noteskins
+* [X] Noteskins
 * [ ] Hold Note Cover
 * [ ] Switch Project.xml to project.hxp
 
