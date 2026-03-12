@@ -36,6 +36,8 @@ class ModsMenuState extends MusicBeatState
 
 	override function create()
 	{
+		canSelectMods = false; // you're literally in the mods menu??
+		
 		Paths.clearStoredMemory();
 		Paths.clearUnusedMemory();
 		WeekData.setDirectoryFromWeek();

@@ -118,6 +118,24 @@ class CoolUtil
 	inline public static function numberArray(max:Int, ?min = 0):Array<Int>
 		return [for (i in min...max) i];
 
+	public static function lerp(base:Float, target:Float, alpha:Float):Float
+	{
+    	if (alpha == 0)
+			return base;
+    	if (alpha == 1)
+			return target;
+    	return base + alpha * (target - base);
+	}
+
+	public static function smoothLerpPrecision(base:Float, target:Float, deltaTime:Float, duration:Float, precision:Float = 1 / 100):Float
+  	{
+    	if (deltaTime == 0)
+			return base;
+    	if (base == target)
+			return target;
+    	return lerp(target, base, Math.pow(precision, deltaTime / duration));
+  	}
+
 	public static function precacheSound(sound:String):Void
 	{
 		Paths.sound(sound);
