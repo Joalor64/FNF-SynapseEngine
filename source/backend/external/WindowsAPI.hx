@@ -13,6 +13,7 @@ package backend.external;
 class WindowsAPI
 {
 	@:functionCode('
+        HWND window = FindWindowA(NULL, Application::current->window->title.c_str());
         int value = enable ? 1 : 0;
 
         if (window != NULL) {
