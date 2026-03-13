@@ -17,9 +17,7 @@ class Rating
 		this.counter = name + 's';
 		this.hitWindow = Reflect.field(ClientPrefs.data, name + 'Window');
 		if (hitWindow == null)
-		{
 			hitWindow = 0;
-		}
 	}
 
 	inline public function increase(blah:Int = 1)
