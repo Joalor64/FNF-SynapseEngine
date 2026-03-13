@@ -13,7 +13,10 @@ package backend.external;
 class WindowsAPI
 {
 	@:functionCode('
-        HWND window = FindWindowA(NULL, Application::current->window->title.c_str());
+        HWND window = FindWindowA(NULL, title.c_str());
+	    if (window == NULL) 
+            window = FindWindowExA(GetActiveWindow(), NULL, NULL, title.c_str());
+        
         int value = enable ? 1 : 0;
 
         if (window != NULL) {
@@ -24,11 +27,11 @@ class WindowsAPI
             SetFocus(window);
         }
     ')
-    public static function setDarkMode(enable:Bool):Void {}
+    public static function setDarkMode(title:String, enable:Bool):Void {}
 
     public static function darkMode(enable:Bool):Void
 	{
-		setDarkMode(enable);
+		setDarkMode(Application.current.window.title, enable);
 	}
 
 	@:functionCode('
