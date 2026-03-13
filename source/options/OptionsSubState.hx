@@ -187,7 +187,7 @@ class ControlsSubState extends MusicBeatSubstate
 
 		if (nextAccept > 0)
 		{
-			nextAccept -= 1;
+			nextAccept--;
 		}
 		super.update(elapsed);
 	}

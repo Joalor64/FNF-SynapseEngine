@@ -57,6 +57,10 @@ class Main extends Sprite
 		#end
 		#end
 
+		#if windows
+		backend.external.WindowsAPI.darkMode(true);
+		#end
+
 		#if VIDEOS_ALLOWED
 		hxvlc.util.Handle.init(#if (hxvlc >= "1.8.0") ['--no-lua'] #end);
 		#end

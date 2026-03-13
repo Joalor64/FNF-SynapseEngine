@@ -31,7 +31,7 @@ class MenuItem extends FlxSprite
 		y = FlxMath.lerp(y, (targetY * 120) + 480, CoolUtil.boundTo(elapsed * 10.2, 0, 1));
 
 		if (isFlashing)
-			flashingInt += 1;
+			flashingInt++;
 
 		if (flashingInt % fakeFramerate >= Math.floor(fakeFramerate / 2))
 			color = 0xFF33ffff;

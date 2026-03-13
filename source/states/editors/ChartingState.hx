@@ -1808,13 +1808,13 @@ class ChartingState extends MusicBeatState
 			{
 				if (FlxG.keys.pressed.SHIFT)
 				{
-					UI_box.selected_tab -= 1;
+					UI_box.selected_tab--;
 					if (UI_box.selected_tab < 0)
 						UI_box.selected_tab = 2;
 				}
 				else
 				{
-					UI_box.selected_tab += 1;
+					UI_box.selected_tab++;
 					if (UI_box.selected_tab >= 3)
 						UI_box.selected_tab = 0;
 				}
