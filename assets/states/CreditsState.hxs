@@ -104,7 +104,7 @@ function update(elapsed:Float)
 
 	if (Controls.instance.ACCEPT)
 	{
-		if (creditsStuff[curSelected][3] != null || creditsStuff[curSelected][3].length > 0 || !noLink)
+		if (creditsStuff[curSelected][3] != null && creditsStuff[curSelected][3].length > 0 && !noLink)
 			CoolUtil.browserLoad(creditsStuff[curSelected][3]);
 		else
 			FlxG.sound.play(Paths.sound('cancelMenu'));

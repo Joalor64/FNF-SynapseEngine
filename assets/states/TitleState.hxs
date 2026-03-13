@@ -201,7 +201,10 @@ function beatHit(curBeat:Int)
 		case 13:
 			addMoreText('Friday');
 		case 14:
-			addMoreText('Night');
+			if (curWacky[0] == 'trending')
+				addMoreText('Nigth');
+			else
+				addMoreText('Night');
 		case 15:
 			addMoreText('Funkin');
 		case 16:
