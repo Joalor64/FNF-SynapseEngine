@@ -1,3 +1,3 @@
 # Synapse Engine Wiki
-The documentation is a HEAVY Work in progress! I'll probably try to get the basics in soon! <br>
+The documentation is a HEAVY work in progress! I'll probably try to get the basics in soon! <br>
 Like how to build the game, mod and script creation, etc...
