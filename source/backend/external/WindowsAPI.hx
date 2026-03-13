@@ -9,27 +9,25 @@ package backend.external;
 @:cppFileCode('
     #include <Windows.h>
     #include <dwmapi.h>
-    #include <winuser.h>
-
-    #ifndef DWMWA_USE_IMMERSIVE_DARK_MODE
-    #define DWMWA_USE_IMMERSIVE_DARK_MODE 20 // support for windows 11
-    #endif
     ')
 class WindowsAPI
 {
 	@:functionCode('
-        int darkMode = enable ? 1 : 0;
-        HWND window = GetActiveWindow();
-        if (S_OK != DwmSetWindowAttribute(window, DWMWA_USE_IMMERSIVE_DARK_MODE, reinterpret_cast<LPCVOID>(&darkMode), sizeof(darkMode)))
-            DwmSetWindowAttribute(window, DWMWA_USE_IMMERSIVE_DARK_MODE, reinterpret_cast<LPCVOID>(&darkMode), sizeof(darkMode));
-    ')
-	public static function setDarkMode(enable:Bool):Void {}
+        int value = enable ? 1 : 0;
 
-	public static function darkMode(enable:Bool):Void
+        if (window != NULL) {
+            DwmSetWindowAttribute(window, 20, &value, sizeof(value));
+
+            ShowWindow(window, 0);
+            ShowWindow(window, 1);
+            SetFocus(window);
+        }
+    ')
+    public static function setDarkMode(enable:Bool):Void {}
+
+    public static function darkMode(enable:Bool):Void
 	{
 		setDarkMode(enable);
-		Application.current.window.borderless = true;
-		Application.current.window.borderless = false;
 	}
 
 	@:functionCode('
