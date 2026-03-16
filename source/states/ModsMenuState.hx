@@ -40,6 +40,8 @@ class ModsMenuState extends MusicBeatState
 
 	override function create()
 	{
+		canSelectMods = false;
+
 		Paths.clearStoredMemory();
 		Paths.clearUnusedMemory();
 		persistentUpdate = false;
@@ -49,7 +51,7 @@ class ModsMenuState extends MusicBeatState
 
 		#if DISCORD_ALLOWED
 		// Updating Discord Rich Presence
-		DiscordClient.changePresence("In the Menus", null);
+		DiscordClient.changePresence("Mods Menu", null);
 		#end
 
 		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
