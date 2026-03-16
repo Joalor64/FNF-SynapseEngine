@@ -1,36 +1,134 @@
-// WORK IN PROGRESS!!
-
-import backend.MusicBeatState;
-import states.ScriptedState;
 import backend.Controls;
-import backend.Paths;
+import backend.ClientPrefs;
+import backend.StageData;
+import states.LoadingState;
+import states.PlayState;
+#if DISCORD_ALLOWED
+import backend.DiscordClient;
+#end
 
+// i WAS also going to softcode the submenus
+// but honestly, that would have been stupid
+// besides, i already backported the mod options thing from 0.7.3
+var options:Array<String> = ['Note Colors', 'Controls', 'Offsets', 'Visuals', 'Gameplay', 'Miscellaneous'];
+var grpOptions:FlxTypedGroup<Alphabet>;
+var curSelected:Int = 0;
+var selectorLeft:Alphabet;
+var selectorRight:Alphabet;
 var fromPlayState:Bool = false;
-
-var data = Json.parse(Paths.getTextFromFile('options.json'));
 
 function new(?playState:Bool)
 {
-    fromPlayState = playState;
+	fromPlayState = playState;
 }
 
 function create()
 {
-    trace(data);
-    
-    var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuBG'));
-    bg.screenCenter();
+	#if DISCORD_ALLOWED
+	DiscordClient.changePresence("Options Menu", null);
+	#end
+
+	var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+	bg.color = 0xFFea71fd;
+	bg.updateHitbox();
+	bg.screenCenter();
+	bg.antialiasing = ClientPrefs.data.globalAntialiasing;
 	add(bg);
 
-	var text:FlxText = new FlxText(0, 0, FlxG.width, "I am a custom state!", 48);
-	text.color = FlxColor.BLACK;
-	add(text);
+	grpOptions = createTypedGroup();
+	add(grpOptions);
+
+	for (i in 0...options.length)
+	{
+		var optionText:Alphabet = new Alphabet(0, 0, options[i], true);
+		optionText.screenCenter();
+		optionText.y += (100 * (i - (options.length / 2))) + 50;
+		grpOptions.add(optionText);
+	}
+
+	selectorLeft = new Alphabet(0, 0, '>', true);
+	add(selectorLeft);
+	selectorRight = new Alphabet(0, 0, '<', true);
+	add(selectorRight);
+
+	changeSelection(0);
+	ClientPrefs.saveSettings();
 }
 
 function update(elapsed:Float)
 {
-    if (Controls.instance.BACK)
-    {
-        MusicBeatState.switchState(new ScriptedState('MainMenuState', []));
-    }
+	if (Controls.instance.UI_UP_P)
+	{
+		changeSelection(-1);
+	}
+	if (Controls.instance.UI_DOWN_P)
+	{
+		changeSelection(1);
+	}
+
+	if (Controls.instance.BACK)
+	{
+		FlxG.sound.play(Paths.sound('cancelMenu'));
+		if (fromPlayState)
+		{
+			if (FlxG.sound.music != null)
+				FlxG.sound.music.stop();
+			StageData.loadDirectory(PlayState.SONG);
+			LoadingState.loadAndSwitchState(new PlayState());
+		}
+		else
+			MusicBeatState.switchState(new ScriptedState('MainMenuState', []));
+	}
+
+	if (Controls.instance.ACCEPT)
+	{
+		openSelectedSubstate(options[curSelected]);
+	}
+}
+
+function changeSelection(change:Int = 0)
+{
+	curSelected += change;
+	if (curSelected < 0)
+		curSelected = options.length - 1;
+	if (curSelected >= options.length)
+		curSelected = 0;
+
+	var bullShit:Int = 0;
+
+	for (item in grpOptions.members)
+	{
+		item.targetY = bullShit - curSelected;
+		bullShit++;
+
+		item.alpha = 0.6;
+		if (item.targetY == 0)
+		{
+			item.alpha = 1;
+			selectorLeft.x = item.x - 63;
+			selectorLeft.y = item.y;
+			selectorRight.x = item.x + item.width + 15;
+			selectorRight.y = item.y;
+		}
+	}
+	FlxG.sound.play(Paths.sound('scrollMenu'));
+}
+
+function openSelectedSubstate(label:String)
+{
+	switch (label)
+	{
+		case 'Note Colors':
+			openSubState(new NotesSubState());
+		case 'Controls':
+			openSubState(new ControlsSubState());
+		case 'Miscellaneous':
+			openSubState(new MiscSubState());
+		case 'Visuals':
+			openSubState(new VisualsSubState());
+		case 'Gameplay':
+			openSubState(new GameplaySubState());
+		case 'Offsets':
+			MusicBeatState.switchState(new NoteOffsetState());
+	}
 }

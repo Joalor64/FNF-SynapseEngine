@@ -5,13 +5,13 @@ import states.ScriptedState;
 import backend.Controls;
 import backend.Paths;
 
-var menuX:Float = 0;
-var menuY:Float = 0;
+var subX:Float = 0;
+var subY:Float = 0;
 
 function new(x:Float, y:Float)
 {
-    menuX = x;
-    menuY = y;
+    subX = x;
+    subY = y;
 }
 
 function create()
@@ -20,7 +20,7 @@ function create()
     bg.scrollFactor.set();
 	add(bg);
 
-	var text:FlxText = new FlxText(0, 0, FlxG.width, "GAME PAUSED, 48);
+	var text:FlxText = new FlxText(0, 0, FlxG.width, "GAME PAUSED", 48);
 	text.color = FlxColor.WHITE;
     text.scrollFactor.set();
 	add(text);

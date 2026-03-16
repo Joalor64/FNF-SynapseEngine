@@ -5,7 +5,8 @@ import animateatlas.HelperEnums.LoopMode;
 import animateatlas.HelperEnums.SymbolType;
 
 @:access(animateatlas.displayobject.SpriteSymbol)
-class SpriteMovieClip extends Sprite {
+class SpriteMovieClip extends Sprite
+{
 	public var framerate(get, set):Float;
 	public var currentLabel(get, set):String;
 	public var currentFrame(get, set):Int;
@@ -21,21 +22,25 @@ class SpriteMovieClip extends Sprite {
 
 	private var frameElapsed:Float = 0;
 
-	public function new(symbol:SpriteSymbol) {
+	public function new(symbol:SpriteSymbol)
+	{
 		super();
 		this.symbol = symbol;
 		addChild(this.symbol);
 	}
 
-	public function update(dt:Int) {
+	public function update(dt:Int)
+	{
 		var frameDuration:Float = 1000 / framerate;
 		frameElapsed += dt;
 
-		while (frameElapsed > frameDuration) {
+		while (frameElapsed > frameDuration)
+		{
 			frameElapsed -= frameDuration;
 			symbol.nextFrame();
 		}
-		while (frameElapsed < -frameDuration) {
+		while (frameElapsed < -frameDuration)
+		{
 			frameElapsed += frameDuration;
 			symbol.prevFrame();
 		}
@@ -49,7 +54,8 @@ class SpriteMovieClip extends Sprite {
 
 	// # region Property setter and getter
 
-	inline private function set_currentLabel(value:String):String {
+	inline private function set_currentLabel(value:String):String
+	{
 		symbol.currentFrame = symbol.getFrame(value);
 		return value;
 	}
@@ -57,7 +63,8 @@ class SpriteMovieClip extends Sprite {
 	inline private function get_currentLabel():String
 		return symbol.currentLabel;
 
-	inline private function set_currentFrame(value:Int):Int {
+	inline private function set_currentFrame(value:Int):Int
+	{
 		symbol.currentFrame = value;
 		return value;
 	}
@@ -65,7 +72,8 @@ class SpriteMovieClip extends Sprite {
 	inline private function get_currentFrame():Int
 		return symbol.currentFrame;
 
-	inline private function set_type(value:SymbolType):SymbolType {
+	inline private function set_type(value:SymbolType):SymbolType
+	{
 		symbol.type = value;
 		return value;
 	}
@@ -73,7 +81,8 @@ class SpriteMovieClip extends Sprite {
 	inline private function get_type():SymbolType
 		return symbol.type;
 
-	inline private function set_loopMode(value:LoopMode):LoopMode {
+	inline private function set_loopMode(value:LoopMode):LoopMode
+	{
 		symbol.loopMode = value;
 		return value;
 	}

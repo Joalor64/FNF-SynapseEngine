@@ -37,6 +37,7 @@ class PhillyTrain extends BGSprite
 						PlayState.instance.gf.playAnim('hairBlow');
 						PlayState.instance.gf.specialAnim = true;
 					}
+					FlxG.camera.shake(0.002, 0.1, null, true, X);
 				}
 
 				if (startedMoving)

@@ -142,8 +142,6 @@ class FlxUIDropDownMenuCustom extends FlxUIGroup implements IFlxUIWidget impleme
 
 	public var callback:String->Void;
 
-	// private var _ui_control_callback:Bool->FlxUIDropDownMenuCustom->Void;
-
 	/**
 	 * This creates a new dropdown menu.
 	 *
@@ -203,7 +201,6 @@ class FlxUIDropDownMenuCustom extends FlxUIGroup implements IFlxUIWidget impleme
 			btn.visible = false;
 		}
 
-		// _ui_control_callback = UIControlCallback;
 		header.button.onUp.callback = onDropdown;
 		add(header);
 	}
@@ -223,7 +220,7 @@ class FlxUIDropDownMenuCustom extends FlxUIGroup implements IFlxUIWidget impleme
 			var button:FlxUIButton = list[i];
 			if (button != null)
 			{
-				button.y = -99999;
+				button.y = FlxG.height + 250;
 			}
 		}
 		for (i in currentScroll...list.length)
@@ -357,7 +354,7 @@ class FlxUIDropDownMenuCustom extends FlxUIGroup implements IFlxUIWidget impleme
 
 		t.loadGraphicSlice9([FlxUIAssets.IMG_INVIS, FlxUIAssets.IMG_HILIGHT, FlxUIAssets.IMG_HILIGHT], Std.int(header.background.width),
 			Std.int(header.background.height), [[1, 1, 3, 3], [1, 1, 3, 3], [1, 1, 3, 3]], FlxUI9SliceSprite.TILE_NONE);
-		t.labelOffsets[FlxButton.PRESSED].y--; // turn off the 1-pixel depress on click
+		t.labelOffsets[FlxButton.PRESSED].y -= 1; // turn off the 1-pixel depress on click
 
 		t.up_color = FlxColor.BLACK;
 		t.over_color = FlxColor.WHITE;
@@ -377,9 +374,6 @@ class FlxUIDropDownMenuCustom extends FlxUIGroup implements IFlxUIWidget impleme
 		return t;
 	}
 
-	/*public function setUIControlCallback(UIControlCallback:Bool->FlxUIDropDownMenuCustom->Void):Void {
-		_ui_control_callback = UIControlCallback;
-	}*/
 	public function changeLabelByIndex(i:Int, NewLabel:String):Void
 	{
 		var btn:FlxUIButton = getBtnByIndex(i);
@@ -428,13 +422,13 @@ class FlxUIDropDownMenuCustom extends FlxUIGroup implements IFlxUIWidget impleme
 		{
 			if (list.length > 1 && canScroll)
 			{
+				var lastScroll:Int = currentScroll;
 				if (FlxG.mouse.wheel > 0 || FlxG.keys.justPressed.UP)
 				{
 					// Go up
 					--currentScroll;
 					if (currentScroll < 0)
 						currentScroll = 0;
-					updateButtonPositions();
 				}
 				else if (FlxG.mouse.wheel < 0 || FlxG.keys.justPressed.DOWN)
 				{
@@ -442,30 +436,18 @@ class FlxUIDropDownMenuCustom extends FlxUIGroup implements IFlxUIWidget impleme
 					currentScroll++;
 					if (currentScroll >= list.length)
 						currentScroll = list.length - 1;
-					updateButtonPositions();
 				}
+
+				if (lastScroll != currentScroll)
+					updateButtonPositions();
 			}
 
-			if (FlxG.mouse.justPressed && !mouseOverlapping())
+			if (FlxG.mouse.justPressed && !FlxG.mouse.overlaps(this, camera))
 			{
 				showList(false);
 			}
 		}
 		#end
-	}
-
-	function mouseOverlapping()
-	{
-		var mousePoint = FlxG.mouse.getScreenPosition(camera);
-		var objPoint = this.getScreenPosition(null, camera);
-		if (mousePoint.x >= objPoint.x
-			&& mousePoint.y >= objPoint.y
-			&& mousePoint.x < objPoint.x + this.width
-			&& mousePoint.y < objPoint.y + this.height)
-		{
-			return true;
-		}
-		return false;
 	}
 
 	override public function destroy():Void
@@ -475,7 +457,6 @@ class FlxUIDropDownMenuCustom extends FlxUIGroup implements IFlxUIWidget impleme
 		dropPanel = FlxDestroyUtil.destroy(dropPanel);
 
 		list = FlxDestroyUtil.destroyArray(list);
-		// _ui_control_callback = null;
 		callback = null;
 	}
 

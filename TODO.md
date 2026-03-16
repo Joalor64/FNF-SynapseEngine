@@ -6,18 +6,18 @@
 * [X] Crossfades
 * [X] New Events
 * [ ] Softcoding
-    * [ ] Menu States
+    * [X] Menu States
         * [X] Title
         * [X] Main Menu
         * [X] Story Mode
         * [X] Freeplay
         * [X] Awards
         * [X] Credits
-        * [ ] Options
+        * [X] Options
     * [ ] Game Over
     * [ ] Pause Menu
-* [ ] Custom Options
-* [ ] Custom Achievements
+* [X] Custom Options
+* [X] Custom Achievements
 * [ ] Optimizations
 * [X] RGB Notes
 * [X] Rewrite Controls

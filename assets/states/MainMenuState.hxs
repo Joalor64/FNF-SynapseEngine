@@ -1,8 +1,8 @@
 import backend.Controls;
 import backend.Constants;
+import backend.Achievements;
 import states.LoadingState;
 import states.editors.MasterEditorMenu;
-import backend.Achievements.AchievementObject;
 import flixel.effects.FlxFlicker;
 import lime.app.Application;
 
@@ -32,7 +32,7 @@ function create()
 	Mods.loadTheFirstEnabledMod();
 
 	#if DISCORD_ALLOWED
-	DiscordClient.changePresence("In the Menus", null);
+	DiscordClient.changePresence("Main Menu", null);
 	#end
 
 	debugKeys = ClientPrefs.keyBinds.get('debug_1').copy();
@@ -118,25 +118,13 @@ function create()
 	#if ACHIEVEMENTS_ALLOWED
 	var leDate = Date.now();
 	if (leDate.getDay() == 5 && leDate.getHours() >= 18)
-	{
-		var achieveID:Int = Achievements.getAchievementIndex('friday_night_play');
-		if (!Achievements.isAchievementUnlocked(Achievements.achievementsStuff[achieveID][2]))
-		{ // It's a friday night. WEEEEEEEEEEEEEEEEEE
-			Achievements.achievementsMap.set(Achievements.achievementsStuff[achieveID][2], true);
-			giveAchievement();
-			ClientPrefs.saveSettings();
-		}
-	}
+		Achievements.unlock('friday_night_play');
+
+	#if MODS_ALLOWED
+	Achievements.reloadList();
+	#end
 	#end
 }
-
-#if ACHIEVEMENTS_ALLOWED
-function giveAchievement()
-{
-	add(new AchievementObject('friday_night_play', camAchievement));
-	FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
-}
-#end
 
 var selectedSomethin:Bool = false;
 
@@ -209,7 +197,7 @@ function update(elapsed:Float)
 								case 'credits':
 									MusicBeatState.switchState(new ScriptedState('CreditsState', []));
 								case 'options':
-									LoadingState.loadAndSwitchState(new options.OptionsState());
+									MusicBeatState.switchState(new ScriptedState('OptionsState', [false]));
 									if (PlayState.SONG != null)
 									{
 										PlayState.SONG.arrowSkin = null;
@@ -256,7 +244,7 @@ function changeItem(huh:Int)
 		spr.updateHitbox();
 		spr.screenCenter(FlxAxes.X);
 
-		i += 1;
+		i++;
 	}
 
 	camFollow.y = menuItems.members[curSelected].y;

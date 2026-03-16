@@ -1,18 +1,29 @@
+import flixel.util.FlxSort;
 import backend.Controls;
 import backend.Achievements;
-import backend.Achievements.AttachedAchievement;
 import backend.MusicBeatState;
 import states.ScriptedState;
-import substates.Prompt;
 import backend.Paths;
+import objects.Bar;
 
 #if ACHIEVEMENTS_ALLOWED
 var curSelected:Int = 0;
-var achievements:Array<String> = [];
-var achievementGrp:FlxTypedGroup<Alphabet>;
-var achievementArray:Array<AttachedAchievement> = [];
-var achievementIndex:Array<Int> = [];
+
+var options:Array<Dynamic> = [];
+var grpOptions:FlxSpriteGroup;
+
+var nameText:FlxText;
 var descText:FlxText;
+var progressTxt:FlxText;
+
+var progressBar:Bar;
+var barTween:FlxTween = null;
+
+var camFollow:FlxObject;
+
+var MAX_PER_ROW:Int = 4;
+
+var goingBack:Bool = false;
 
 function create()
 {
@@ -20,133 +31,241 @@ function create()
 	DiscordClient.changePresence("Achievements Menu", null);
 	#end
 
-	var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuBGBlue'));
-	bg.setGraphicSize(Std.int(bg.width * 1.1));
-	bg.updateHitbox();
-	bg.screenCenter();
-	bg.antialiasing = ClientPrefs.data.globalAntialiasing;
-	add(bg);
-
-	achievementGrp = createTypedGroup();
-	add(achievementGrp);
-
-	Achievements.loadAchievements();
-	for (i in 0...Achievements.achievementsStuff.length)
+	for (achievement => data in Achievements.achievements)
 	{
-		if (!Achievements.achievementsStuff[i][3] || Achievements.achievementsMap.exists(Achievements.achievementsStuff[i][2]))
+		var unlocked:Bool = Achievements.isUnlocked(achievement);
+		if (data.hidden != true || unlocked)
+			options.push(makeAchievement(achievement, data, unlocked, data.mod));
+	}
+
+	camFollow = new FlxObject(0, 0, 1, 1);
+	add(camFollow);
+
+	var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuBGBlue'));
+	menuBG.antialiasing = ClientPrefs.data.globalAntialising;
+	menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
+	menuBG.updateHitbox();
+	menuBG.screenCenter();
+	menuBG.scrollFactor.set();
+	add(menuBG);
+
+	grpOptions = createSpriteGroup();
+	grpOptions.scrollFactor.x = 0;
+
+	options.sort(sortByID);
+	for (option in options)
+	{
+		var hasAntialias:Bool = ClientPrefs.data.globalAntialising;
+		var graphic = null;
+		if (option.unlocked)
 		{
-			achievements.push(Achievements.achievementsStuff[i]);
-			achievementIndex.push(i);
+			#if MODS_ALLOWED
+			Mods.currentModDirectory = option.mod;
+			#end
+			var image:String = 'achievements/' + option.name;
+			if (Paths.fileExists('images/$image-pixel.png'))
+			{
+				graphic = Paths.image('$image-pixel');
+				hasAntialias = false;
+			}
+			else
+				graphic = Paths.image(image);
+
+			if (graphic == null)
+				graphic = Paths.image('unknownMod');
 		}
+		else
+			graphic = Paths.image('achievements/lockedachievement');
+
+		var spr:FlxSprite = new FlxSprite(0, Math.floor(grpOptions.members.length / MAX_PER_ROW) * 180).loadGraphic(graphic);
+		spr.scrollFactor.x = 0;
+		spr.screenCenter(FlxAxes.X);
+		spr.x += 180 * ((grpOptions.members.length % MAX_PER_ROW) - MAX_PER_ROW / 2) + spr.width / 2 + 15;
+		spr.ID = grpOptions.members.length;
+		spr.antialiasing = hasAntialias;
+		grpOptions.add(spr);
 	}
 
-	for (i in 0...achievements.length)
-	{
-		var achieveName:String = Achievements.achievementsStuff[achievementIndex[i]][2];
-		var optionText:Alphabet = new Alphabet(280, 300,
-			Achievements.isAchievementUnlocked(achieveName) ? Achievements.achievementsStuff[achievementIndex[i]][0] : '?', false);
-		optionText.isMenuItem = true;
-		optionText.targetY = i - curSelected;
-		optionText.snapToPosition();
-		achievementGrp.add(optionText);
+	#if MODS_ALLOWED
+	Mods.loadTheFirstEnabledMod();
+	#end
 
-		var icon:AttachedAchievement = new AttachedAchievement(optionText.x - 105, optionText.y, achieveName);
-		icon.sprTracker = optionText;
-		achievementArray.push(icon);
-		add(icon);
-	}
+	var box:FlxSprite = new FlxSprite(0, -30).makeGraphic(1, 1, FlxColor.BLACK);
+	box.scale.set(grpOptions.width + 60, grpOptions.height + 60);
+	box.updateHitbox();
+	box.alpha = 0.6;
+	box.scrollFactor.x = 0;
+	box.screenCenter(FlxAxes.X);
+	add(box);
+	add(grpOptions);
 
-	descText = new FlxText(150, 600, 980, "", 32);
-	descText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+	var box:FlxSprite = new FlxSprite(0, 570).makeGraphic(1, 1, FlxColor.BLACK);
+	box.scale.set(FlxG.width, FlxG.height - box.y);
+	box.updateHitbox();
+	box.alpha = 0.6;
+	box.scrollFactor.set();
+	add(box);
+
+	nameText = new FlxText(50, box.y + 10, FlxG.width - 100, "", 32);
+	nameText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, FlxTextAlign.CENTER);
+	nameText.scrollFactor.set();
+
+	descText = new FlxText(50, nameText.y + 38, FlxG.width - 100, "", 24);
+	descText.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, FlxTextAlign.CENTER);
 	descText.scrollFactor.set();
-	descText.borderSize = 2.4;
+
+	progressBar = new Bar(0, descText.y + 52);
+	progressBar.screenCenter(FlxAxes.X);
+	progressBar.scrollFactor.set();
+	progressBar.enabled = false;
+
+	progressTxt = new FlxText(50, progressBar.y - 6, FlxG.width - 100, "", 32);
+	progressTxt.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+	progressTxt.scrollFactor.set();
+	progressTxt.borderSize = 2;
+
+	add(progressBar);
+	add(progressTxt);
 	add(descText);
+	add(nameText);
 
-	var textBG:FlxSprite = new FlxSprite(0, FlxG.height - 26).makeGraphic(FlxG.width, 26, 0xFF000000);
-	textBG.alpha = 0.6;
-	add(textBG);
+	changeSelection();
 
-	var text:FlxText = new FlxText(textBG.x, textBG.y + 4, FlxG.width,
-		"Press RESET to reset the currently selected achievement. / Press RESET + ALT to reset ALL achievements.", 18);
-	text.setFormat(Paths.font("vcr.ttf"), 18, FlxColor.WHITE, FlxTextAlign.CENTER);
-	text.scrollFactor.set();
-	add(text);
+	FlxG.camera.follow(camFollow, null, 0.15);
+	FlxG.camera.scroll.y = -FlxG.height;
+}
 
-	changeSelection(0);
+function makeAchievement(achievement:String, data:Achievement, unlocked:Bool, mod:String = null)
+{
+	var unlocked:Bool = Achievements.isUnlocked(achievement);
+	return {
+		name: achievement,
+		displayName: unlocked ? data.name : '???',
+		description: data.description,
+		curProgress: data.maxScore > 0 ? Achievements.getScore(achievement) : 0,
+		maxProgress: data.maxScore > 0 ? data.maxScore : 0,
+		decProgress: data.maxScore > 0 ? data.maxDecimals : 0,
+		unlocked: unlocked,
+		ID: data.ID,
+		mod: mod
+	};
+}
+
+function sortByID(Obj1:Dynamic, Obj2:Dynamic):Int
+{
+	var id1:Int = Std.int(Obj1.ID != null ? Obj1.ID : 0);
+    var id2:Int = Std.int(Obj2.ID != null ? Obj2.ID : 0);
+    return id1 - id2;
 }
 
 function update(elapsed:Float)
 {
-	if (Controls.instance.UI_UP_P)
-		changeSelection(-1);
+	if (!goingBack && options.length > 1)
+	{
+		var add:Int = 0;
+		if (Controls.instance.UI_LEFT_P)
+			add = -1;
+		else if (Controls.instance.UI_RIGHT_P)
+			add = 1;
 
-	if (Controls.instance.UI_DOWN_P)
-		changeSelection(1);
+		if (add != 0)
+		{
+			var oldRow:Int = Math.floor(curSelected / MAX_PER_ROW);
+			var rowSize:Int = Std.int(Math.min(MAX_PER_ROW, options.length - oldRow * MAX_PER_ROW));
+
+			curSelected += add;
+			var curRow:Int = Math.floor(curSelected / MAX_PER_ROW);
+			if (curSelected >= options.length)
+				curRow++;
+
+			if (curRow != oldRow)
+			{
+				if (curRow < oldRow)
+					curSelected += rowSize;
+				else
+					curSelected = curSelected -= rowSize;
+			}
+			changeSelection();
+		}
+
+		if (options.length > MAX_PER_ROW)
+		{
+			var add:Int = 0;
+			if (Controls.instance.UI_UP_P)
+				add = -1;
+			else if (Controls.instance.UI_DOWN_P)
+				add = 1;
+
+			if (add != 0)
+			{
+				var diff:Int = curSelected - (Math.floor(curSelected / MAX_PER_ROW) * MAX_PER_ROW);
+				curSelected += add * MAX_PER_ROW;
+				if (curSelected < 0)
+				{
+					curSelected += Math.ceil(options.length / MAX_PER_ROW) * MAX_PER_ROW;
+					if (curSelected >= options.length)
+						curSelected -= MAX_PER_ROW;
+				}
+				if (curSelected >= options.length)
+				{
+					curSelected = diff;
+				}
+
+				changeSelection();
+			}
+		}
+	}
 
 	if (Controls.instance.BACK)
 	{
 		FlxG.sound.play(Paths.sound('cancelMenu'));
 		MusicBeatState.switchState(new ScriptedState('MainMenuState', []));
-	}
-
-	if (Controls.instance.RESET)
-	{
-		FlxG.mouse.visible = true;
-		var isAlt = FlxG.keys.pressed.ALT;
-		openSubState(new Prompt((isAlt ? 'Reset ALL achievements?' : 'Reset this achievement?') + "\nThis action is irreversible!", 0, function()
-		{
-			FlxG.mouse.visible = false;
-			FlxG.sound.play(Paths.sound('confirmMenu'));
-			if (isAlt)
-			{
-				for (i in 0...achievementArray.length)
-				{
-					achievementArray[i].forget();
-					grpOptions.members[i].text = '?';
-				}
-			}
-			else
-			{
-				achievementArray[curSelected].forget();
-				grpOptions.members[curSelected].text = '?';
-			}
-			changeSelection(0);
-		}, function()
-		{
-			FlxG.mouse.visible = false;
-			FlxG.sound.play(Paths.sound('cancelMenu'));
-		}, false));
+		goingBack = true;
 	}
 }
 
-function changeSelection(change:Int)
+function changeSelection()
 {
-	curSelected += change;
-	if (curSelected < 0)
-		curSelected = achievements.length - 1;
-	if (curSelected >= achievements.length)
-		curSelected = 0;
+	FlxG.sound.play(Paths.sound('scrollMenu'));
+	var hasProgress = options[curSelected].maxProgress > 0;
+	nameText.text = options[curSelected].displayName;
+	descText.text = options[curSelected].description;
+	progressTxt.visible = progressBar.visible = hasProgress;
 
-	var bullShit:Int = 0;
+	if (barTween != null)
+		barTween.cancel();
 
-	for (item in achievementGrp.members)
+	if (hasProgress)
 	{
-		item.targetY = bullShit - curSelected;
-		bullShit++;
+		var val1:Float = options[curSelected].curProgress;
+		var val2:Float = options[curSelected].maxProgress;
+		progressTxt.text = CoolUtil.floorDecimal(val1, options[curSelected].decProgress)
+			+ ' / '
+			+ CoolUtil.floorDecimal(val2, options[curSelected].decProgress);
 
-		item.alpha = 0.6;
-		if (item.targetY == 0)
-			item.alpha = 1;
+		barTween = FlxTween.tween(progressBar, {percent: (val1 / val2) * 100}, 0.5, {
+			ease: FlxEase.quadOut,
+			onComplete: function(twn:FlxTween) progressBar.updateBar(),
+			onUpdate: function(twn:FlxTween) progressBar.updateBar()
+		});
 	}
+	else
+		progressBar.percent = 0;
 
-	for (i in 0...achievementArray.length)
+	var maxRows = Math.floor(grpOptions.members.length / MAX_PER_ROW);
+	if (maxRows > 0)
 	{
-		achievementArray[i].alpha = 0.6;
-		if (i == curSelected)
-			achievementArray[i].alpha = 1;
+		var camY:Float = FlxG.height / 2 + (Math.floor(curSelected / MAX_PER_ROW) / maxRows) * Math.max(0, grpOptions.height - FlxG.height / 2 - 50) - 100;
+		camFollow.setPosition(0, camY);
 	}
+	else
+		camFollow.setPosition(0, grpOptions.members[curSelected].getGraphicMidpoint().y - 100);
 
-	descText.text = Achievements.achievementsStuff[achievementIndex[curSelected]][1];
-	FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+	grpOptions.forEach(function(spr:FlxSprite)
+	{
+		spr.alpha = 0.6;
+		if (spr.ID == curSelected)
+			spr.alpha = 1;
+	});
 }
 #end

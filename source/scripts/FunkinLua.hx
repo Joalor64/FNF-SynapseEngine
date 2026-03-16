@@ -2198,15 +2198,13 @@ class FunkinLua
 		{
 			var left:FlxColor = CoolUtil.colorFromString(leftHex);
 			var right:FlxColor = CoolUtil.colorFromString(rightHex);
-			PlayState.instance.healthBar.createFilledBar(left, right);
-			PlayState.instance.healthBar.updateBar();
+			PlayState.instance.healthBar.setColors(left, right);
 		});
 		Lua_helper.add_callback(lua, "setTimeBarColors", function(leftHex:String, rightHex:String)
 		{
 			var left:FlxColor = CoolUtil.colorFromString(leftHex);
 			var right:FlxColor = CoolUtil.colorFromString(rightHex);
-			PlayState.instance.timeBar.createFilledBar(right, left);
-			PlayState.instance.timeBar.updateBar();
+			PlayState.instance.healthBar.setColors(left, right);
 		});
 
 		Lua_helper.add_callback(lua, "setObjectCamera", function(obj:String, camera:String = '')
@@ -2600,6 +2598,10 @@ class FunkinLua
 			closed = true;
 			return closed;
 		});
+
+		#if ACHIEVEMENTS_ALLOWED
+		Achievements.addLuaCallbacks(lua);
+		#end
 
 		Lua_helper.add_callback(lua, "changePresence",
 			function(details:String, state:Null<String>, ?smallImageKey:String, ?hasStartTimestamp:Bool, ?endTimestamp:Float)

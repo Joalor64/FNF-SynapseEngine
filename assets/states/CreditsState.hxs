@@ -14,29 +14,24 @@ var creditsStuff:Array<Array<String>> = [];
 var curSelected:Int = -1;
 var offsetThing:Float = -25;
 
-var data = Json.parse(Paths.getTextFromFile('credits.json'));
-
 function create()
 {
 	#if DISCORD_ALLOWED
-	DiscordClient.changePresence("In the Menus", null);
+	DiscordClient.changePresence("Credits Menu", null);
 	#end
 
-	categories = data.categories;
+	#if MODS_ALLOWED
+    for (mod in Mods.parseList().enabled)
+    {
+        var modPath:String = Paths.mods(mod + '/credits.json');
+        if (FileSystem.exists(modPath))
+            parseCreditsJson(modPath, mod);
+    }
+    #end
 
-	for (cat in categories)
-	{
-		creditsStuff.push([cat.name]);
-
-		for (dev in cat.developers)
-		{
-			var link:String = dev.link != null ? dev.link : 'nolink';
-			var color:String = dev.color != null ? dev.color : '444444';
-			creditsStuff.push([dev.name, dev.icon, dev.description, link, color]);
-		}
-
-		creditsStuff.push(['']);
-	}
+	var path:String = Paths.getPath('credits.json');
+    if (Paths.exists(path))
+        parseCreditsJson(path);
 
 	bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 	bg.screenCenter();
@@ -57,11 +52,15 @@ function create()
 
 		if (isSelectable)
 		{
+			if (creditsStuff[i][5] != null) 
+				Mods.currentModDirectory = creditsStuff[i][5];
 			var icon = new AttachedSprite('credits/' + creditsStuff[i][1]);
 			icon.xAdd = optionText.width + 10;
 			icon.sprTracker = optionText;
 			iconArray.push(icon);
 			add(icon);
+
+			Mods.currentModDirectory = '';
 
 			if (curSelected == -1)
 				curSelected = i;
@@ -84,6 +83,28 @@ function create()
 
 	bg.color = CoolUtil.colorFromString(creditsStuff[curSelected][4]);
 	changeSelection(0);
+}
+
+function parseCreditsJson(path:String, ?modFolder:String = '')
+{
+    var rawJson:String = #if sys File.getContent(path) #else Assets.getText(path) #end;
+    var data = Json.parse(rawJson);
+        
+    if (data.categories != null)
+    {
+        for (cat in data.categories)
+        {
+            creditsStuff.push([cat.name]);
+
+            for (dev in cat.developers)
+            {
+                var link:String = dev.link != null ? dev.link : 'nolink';
+                var color:String = dev.color != null ? dev.color : '444444';
+                creditsStuff.push([dev.name, dev.icon, dev.description, link, color, modFolder]);
+            }
+            creditsStuff.push(['']);
+        }
+    }
 }
 
 function update(elapsed:Float)

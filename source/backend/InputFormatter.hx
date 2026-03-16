@@ -1,8 +1,11 @@
 package backend;
 
-class InputFormatter {
-	public static function getKeyName(key:FlxKey):String {
-		switch (key) {
+class InputFormatter
+{
+	public static function getKeyName(key:FlxKey):String
+	{
+		switch (key)
+		{
 			case BACKSPACE:
 				return "BckSpc";
 			case CONTROL:
@@ -83,7 +86,8 @@ class InputFormatter {
 				return '---';
 			default:
 				var label:String = '' + key;
-				if(label.toLowerCase() == 'null') return '---';
+				if (label.toLowerCase() == 'null')
+					return '---';
 				return '' + label.charAt(0).toUpperCase() + label.substr(1).toLowerCase();
 		}
 	}

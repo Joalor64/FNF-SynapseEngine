@@ -2,7 +2,7 @@ package objects;
 
 class CrossFade extends FlxSprite
 {
-	public function new(character:Character, group:FlxTypedGroup<CrossFade>, ?isDad:Bool = false)
+	public function new(character:Character, group:FlxTypedGroup<CrossFade>, ?isDad:Bool = true)
 	{
 		super();
 		frames = character.frames;
@@ -37,8 +37,38 @@ class CrossFade extends FlxSprite
 		{
 			switch (character.curCharacter)
 			{
-				case 'bf':
+				case 'gf-pixel':
+					color = 0xFFa5004d;
+					antialiasing = false;
+				case 'monster' | 'monster-christmas':
+					color = 0xFF981b3a;
+					antialiasing = ClientPrefs.data.globalAntialiasing;
+				case 'pico' | 'pico-player':
+					color = 0xff2c8c00;
+					antialiasing = character.antialiasing;
+				case 'bf' | 'bf-car' | 'bf-christmas':
 					color = 0xFF1b008c;
+					antialiasing = ClientPrefs.data.globalAntialiasing;
+				case 'bf-holding-gf':
+					color = FlxG.random.bool(50) ? 0xFF1b008c : 0xFFa5004d;
+					antialiasing = ClientPrefs.data.globalAntialiasing;
+				case 'parents-christmas':
+					@:privateAccess
+					var sectionIndex:Int = PlayState.instance.curSection;
+					var isAlt:Bool = PlayState.SONG.notes[sectionIndex].altAnim;
+					color = isAlt ? 0xff882952 : 0xff6a3381;
+					antialiasing = character.antialiasing;
+				case 'spooky':
+					color = FlxG.random.bool(50) ? 0xff777777 : 0xff925500;
+					antialiasing = character.antialiasing;
+				case 'bf-pixel' | 'bf-pixel-opponent':
+					color = 0xFF00368c;
+					antialiasing = false;
+				case 'senpai' | 'senpai-angry':
+					color = 0xFFffaa6f;
+					antialiasing = false;
+				case 'tankman' | 'tankman-player':
+					color = 0xff000000;
 					antialiasing = ClientPrefs.data.globalAntialiasing;
 				default:
 					color = FlxColor.fromRGB(character.healthColorArray[0], character.healthColorArray[1], character.healthColorArray[2]);

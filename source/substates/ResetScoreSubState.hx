@@ -103,13 +103,9 @@ class ResetScoreSubState extends MusicBeatSubstate
 			if (onYes)
 			{
 				if (week == -1)
-				{
 					Highscore.resetSong(song, difficulty);
-				}
 				else
-				{
 					Highscore.resetWeek(WeekData.weeksList[week], difficulty);
-				}
 			}
 			FlxG.sound.play(Paths.sound('cancelMenu'), 1);
 			close();
@@ -121,7 +117,7 @@ class ResetScoreSubState extends MusicBeatSubstate
 	{
 		var scales:Array<Float> = [0.75, 1];
 		var alphas:Array<Float> = [0.6, 1.25];
-		var confirmInt:Int = onYes ? 1 : 0;
+		var confirmInt:Int = getIconAmount();
 
 		yesText.alpha = alphas[confirmInt];
 		yesText.scale.set(scales[confirmInt], scales[confirmInt]);
@@ -130,4 +126,10 @@ class ResetScoreSubState extends MusicBeatSubstate
 		if (week == -1)
 			icon.animation.curAnim.curFrame = confirmInt;
 	}
+
+	inline function hasIcon():Bool
+		return icon != null && icon.exists;
+
+	inline function getIconAmount():Int
+		return onYes ? 1 : hasIcon() ? icon.widthThing == 450 ? 2 : 0 : 0;
 }

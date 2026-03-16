@@ -4,7 +4,7 @@ class MallCrowd extends BGSprite
 {
 	public var heyTimer:Float = 0;
 
-	public function new(x:Float = 0, y:Float = 0, sprite:String = 'stages/mall/christmas/bottomBop', idle:String = 'Bottom Level Boppers Idle',
+	public function new(x:Float = 0, y:Float = 0, sprite:String = 'stages/mall/bottomBop', idle:String = 'Bottom Level Boppers Idle',
 			hey:String = 'Bottom Level Boppers HEY')
 	{
 		super(sprite, x, y, 0.9, 0.9, [idle]);

@@ -19,6 +19,8 @@ class BaseOptionsMenu extends MusicBeatSubstate
 	public var title:String;
 	public var rpcTitle:String;
 
+	public var bg:FlxSprite;
+
 	public function new()
 	{
 		super();
@@ -32,7 +34,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		DiscordClient.changePresence(rpcTitle, null);
 		#end
 
-		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		bg.color = 0xFFea71fd;
 		bg.screenCenter();
 		bg.antialiasing = ClientPrefs.data.globalAntialiasing;
@@ -127,6 +129,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		if (controls.BACK)
 		{
 			close();
+			ClientPrefs.saveSettings();
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 		}
 
@@ -214,6 +217,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
 						else if (curOption.type != 'string')
 						{
 							holdValue += curOption.scrollSpeed * elapsed * (controls.UI_LEFT ? -1 : 1);
+
 							if (holdValue < curOption.minValue)
 								holdValue = curOption.minValue;
 							else if (holdValue > curOption.maxValue)

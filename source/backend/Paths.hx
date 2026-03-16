@@ -19,11 +19,7 @@ class Paths
 			dumpExclusions.push(key);
 	}
 
-	public static var dumpExclusions:Array<String> = [
-		'assets/music/freakyMenu.ogg',
-		'assets/music/breakfast.ogg',
-		'assets/music/tea-time.ogg',
-	];
+	public static var dumpExclusions:Array<String> = ['assets/music/freakyMenu.ogg'];
 
 	@:noCompletion private inline static function _gc(major:Bool)
 	{
@@ -137,7 +133,14 @@ class Paths
 	}
 
 	static public function validScriptType(n:String):Bool
-		return n.endsWith('.hx') || n.endsWith('.hxs') || n.endsWith('.hxc') || n.endsWith('.hscript');
+	{
+		for (ext in HSCRIPT_EXT)
+		{
+			if (n.endsWith(ext))
+				return true;
+		}
+		return false;
+	}
 
 	inline static public function exists(asset:String)
 		return FileAssets.exists(asset);
@@ -184,6 +187,47 @@ class Paths
 
 	static public function image(key:String):FlxGraphic
 		return returnGraphic(key);
+
+	public static function cacheBitmap(key:String, ?bitmap:BitmapData, ?allowGPU:Bool = true):FlxGraphic
+	{
+		if (bitmap == null)
+		{
+			var file:String = getPath(key, true);
+			#if MODS_ALLOWED if (FileSystem.exists(file))
+				bitmap = BitmapData.fromFile(file);
+			else #end if (Assets.exists(file, IMAGE))
+				bitmap = Assets.getBitmapData(file);
+
+			if (bitmap == null)
+			{
+				trace('Bitmap not found: $file | key: $key');
+				return null;
+			}
+		}
+
+		if (allowGPU && ClientPrefs.data.cacheOnGPU && bitmap.image != null)
+		{
+			bitmap.lock();
+			if (bitmap.__texture == null)
+			{
+				bitmap.image.premultiplied = true;
+				bitmap.getTexture(FlxG.stage.context3D);
+			}
+			bitmap.getSurface();
+			bitmap.disposeImage();
+			bitmap.image.data = null;
+			bitmap.image = null;
+			bitmap.readable = true;
+		}
+
+		var graph:FlxGraphic = FlxGraphic.fromBitmapData(bitmap, false, key);
+		graph.persist = true;
+		graph.destroyOnNoUse = false;
+
+		currentTrackedAssets.set(key, graph);
+		localTrackedAssets.push(key);
+		return graph;
+	}
 
 	static public function getTextFromFile(key:String, ?ignoreMods:Bool = false):String
 	{
@@ -418,10 +462,8 @@ class Paths
 	}
 
 	#if MODS_ALLOWED
-	static final modFolderPath:String = "mods/";
-
 	inline static public function mods(key:String = '')
-		return modFolderPath + key;
+		return 'mods/' + key;
 
 	inline static public function modsFont(key:String)
 		return modFolders('fonts/$key');

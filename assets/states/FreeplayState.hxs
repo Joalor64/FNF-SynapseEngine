@@ -46,7 +46,7 @@ function create()
 	WeekData.reloadWeekFiles(false);
 
 	#if DISCORD_ALLOWED
-	DiscordClient.changePresence("In the Menus", null);
+	DiscordClient.changePresence("Freeplay Menu", null);
 	#end
 
 	if (WeekData.weeksList.length < 1)
@@ -240,7 +240,7 @@ function update(elapsed:Float)
 	if (FlxG.keys.justPressed.CONTROL)
 	{
 		state.persistentUpdate = false;
-		openSubState(new options.GameplayChangersSubstate());
+		openSubState(new GameplayChangersSubstate());
 	}
 
 	if (FlxG.keys.justPressed.SPACE)
@@ -277,7 +277,7 @@ function update(elapsed:Float)
 	if (Controls.instance.RESET)
 	{
 		state.persistentUpdate = false;
-		openSubState(new substates.ResetScoreSubState(songs[curSelected].songName, curDifficulty, songs[curSelected].songCharacter));
+		openSubState(new ResetScoreSubState(songs[curSelected].songName, curDifficulty, songs[curSelected].songCharacter));
 		FlxG.sound.play(Paths.sound('scrollMenu'));
 	}
 }

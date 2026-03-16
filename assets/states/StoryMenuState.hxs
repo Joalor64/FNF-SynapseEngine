@@ -84,7 +84,7 @@ function create()
 	add(grpLocks);
 
 	#if DISCORD_ALLOWED
-	DiscordClient.changePresence("In the Menus", null);
+	DiscordClient.changePresence("Story Mode Menu", null);
 	#end
 
 	var num:Int = 0;
@@ -240,12 +240,12 @@ function update(elapsed:Float)
 
 		if (FlxG.keys.justPressed.CONTROL)
 		{
-			persistentUpdate = false;
-			openSubState(new options.GameplayChangersSubstate());
+			state.persistentUpdate = false;
+			openSubState(new GameplayChangersSubstate());
 		}
 		else if (Controls.instance.RESET)
 		{
-			persistentUpdate = false;
+			state.persistentUpdate = false;
 			openSubState(new ResetScoreSubState('', curDifficulty, '', curWeek));
 		}
 		else if (Controls.instance.ACCEPT)

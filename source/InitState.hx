@@ -12,19 +12,15 @@ class InitState extends FlxState
 
 		FlxG.save.bind('funkin', CoolUtil.getSavePath());
 
-		#if ACHIEVEMENTS_ALLOWED
-		Achievements.loadAchievements();
-		#end
-
-		#if DISCORD_ALLOWED
-		DiscordClient.load();
-		#end
-
 		Controls.instance = new Controls();
 
 		ClientPrefs.loadDefaultKeys();
 		ClientPrefs.loadPrefs();
 		Colorblind.updateFilter();
+
+		#if ACHIEVEMNTS_ALLOWED
+		Achievements.init();
+		#end
 
 		Highscore.load();
 

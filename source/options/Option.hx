@@ -37,7 +37,10 @@ class Option
 		this.description = description;
 		this.variable = variable;
 		this.type = type;
-		this.defaultValue = Reflect.field(ClientPrefs.defaultData, variable);
+		if (variable != null && Reflect.hasField(ClientPrefs.defaultData, variable))
+			this.defaultValue = Reflect.field(ClientPrefs.defaultData, variable);
+		else
+			this.defaultValue = 'null variable value';
 		this.options = options;
 
 		if (defaultValue == 'null variable value')
@@ -61,7 +64,8 @@ class Option
 			}
 		}
 
-		if (getValue() == null)
+		var value = getValue();
+		if (value == null && variable != null)
 		{
 			setValue(defaultValue);
 		}
@@ -94,14 +98,35 @@ class Option
 		}
 	}
 
-	public function getValue():Dynamic
+	public dynamic function getValue():Dynamic
 	{
-		return Reflect.field(ClientPrefs.data, variable);
+		if (variable == null)
+			return null;
+
+		try
+		{
+			return Reflect.getProperty(ClientPrefs.data, variable);
+		}
+		catch (e:Dynamic)
+		{
+			return null;
+		}
 	}
 
-	public function setValue(value:Dynamic)
+	public dynamic function setValue(value:Dynamic)
 	{
-		Reflect.setField(ClientPrefs.data, variable, value);
+		if (variable == null)
+			return value;
+
+		try
+		{
+			Reflect.setProperty(ClientPrefs.data, variable, value);
+		}
+		catch (e:Dynamic)
+		{
+		}
+
+		return value;
 	}
 
 	public function setChild(child:Alphabet)
@@ -140,10 +165,10 @@ class Option
 				newValue = 'string';
 			case 'fl':
 				newValue = 'float';
-			case 'button': 
+			case 'button':
 				newValue = 'button';
-			case 'label': 
-				'label';
+			case 'label':
+				newValue = 'label';
 		}
 		type = newValue;
 		return type;

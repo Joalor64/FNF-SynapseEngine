@@ -5,7 +5,7 @@ import flixel.system.FlxAssets.FlxShader;
 import backend.animation.PsychAnimationController;
 import flixel.graphics.frames.FlxFrame;
 
-typedef NoteSplashConfig = 
+typedef NoteSplashConfig =
 {
 	anim:String,
 	minFps:Int,
@@ -52,8 +52,8 @@ class NoteSplash extends FlxSprite
 	}
 
 	var maxAnims:Int = 2;
-	public function setupNoteSplash(x:Float, y:Float, note:Int = 0, redColor:FlxColor = 0, greenColor:FlxColor = 0,
-			blueColor:FlxColor = 0)
+
+	public function setupNoteSplash(x:Float, y:Float, note:Int = 0, redColor:FlxColor = 0, greenColor:FlxColor = 0, blueColor:FlxColor = 0)
 	{
 		setPosition(x - Note.swagWidth * 0.95, y - Note.swagWidth);
 
@@ -78,7 +78,7 @@ class NoteSplash extends FlxSprite
 
 		alpha = ClientPrefs.data.splashAlpha;
 
-		if (PlayState.isPixelStage || !ClientPrefs.data.globalAntialiasing) 
+		if (PlayState.isPixelStage || !ClientPrefs.data.globalAntialiasing)
 			antialiasing = false;
 
 		_textureLoaded = texture;
@@ -86,7 +86,7 @@ class NoteSplash extends FlxSprite
 
 		var animNum:Int = FlxG.random.int(1, maxAnims);
 		animation.play('note' + note + '-' + animNum, true);
-		
+
 		var minFps:Int = 22;
 		var maxFps:Int = 26;
 		if (config != null)
@@ -161,7 +161,7 @@ class NoteSplash extends FlxSprite
 		var configFile:Array<String> = CoolUtil.coolTextFile(path);
 		if (configFile.length < 1)
 			return null;
-		
+
 		var framerates:Array<String> = configFile[1].split(' ');
 		var offs:Array<Array<Float>> = [];
 		for (i in 2...configFile.length)
@@ -188,7 +188,7 @@ class NoteSplash extends FlxSprite
 
 		if (animFrames.length < 1)
 			return false;
-	
+
 		animation.addByPrefix(name, anim, framerate, loop);
 		return true;
 	}
@@ -199,43 +199,42 @@ class NoteSplash extends FlxSprite
 	override function update(elapsed:Float)
 	{
 		aliveTime += elapsed;
-		if ((animation.curAnim != null && animation.curAnim.finished) ||
-			(animation.curAnim == null && aliveTime >= buggedKillTime)) 
+		if ((animation.curAnim != null && animation.curAnim.finished) || (animation.curAnim == null && aliveTime >= buggedKillTime))
 			kill();
 
 		super.update(elapsed);
 	}
 }
 
-class PixelSplashShaderRef 
+class PixelSplashShaderRef
 {
 	public var shader:PixelSplashShader = new PixelSplashShader();
 	public var enabled(default, set):Bool = true;
 	public var pixelAmount(default, set):Float = 1;
 	public var r(default, set):FlxColor;
-    public var g(default, set):FlxColor;
-    public var b(default, set):FlxColor;
+	public var g(default, set):FlxColor;
+	public var b(default, set):FlxColor;
 
-    private function set_r(color:FlxColor)
-    {
-        r = color;
-        shader.r.value = [color.redFloat, color.greenFloat, color.blueFloat];
-        return color;
-    }
+	private function set_r(color:FlxColor)
+	{
+		r = color;
+		shader.r.value = [color.redFloat, color.greenFloat, color.blueFloat];
+		return color;
+	}
 
-    private function set_g(color:FlxColor)
-    {
-        g = color;
-        shader.g.value = [color.greenFloat, color.greenFloat, color.blueFloat];
-        return color;
-    }
+	private function set_g(color:FlxColor)
+	{
+		g = color;
+		shader.g.value = [color.greenFloat, color.greenFloat, color.blueFloat];
+		return color;
+	}
 
-    private function set_b(color:FlxColor)
-    {
-        b = color;
-        shader.b.value = [color.redFloat, color.greenFloat, color.blueFloat];
-        return color;
-    }
+	private function set_b(color:FlxColor)
+	{
+		b = color;
+		shader.b.value = [color.redFloat, color.greenFloat, color.blueFloat];
+		return color;
+	}
 
 	public function copyValues(tempShader:RGBPalette)
 	{
@@ -249,7 +248,8 @@ class PixelSplashShaderRef
 			}
 			shader.mult.value[0] = tempShader.shader.mult.value[0];
 		}
-		else enabled = false;
+		else
+			enabled = false;
 	}
 
 	public function set_enabled(value:Bool)
@@ -278,8 +278,10 @@ class PixelSplashShaderRef
 		reset();
 		enabled = true;
 
-		if (!PlayState.isPixelStage) pixelAmount = 1;
-		else pixelAmount = PlayState.daPixelZoom;
+		if (!PlayState.isPixelStage)
+			pixelAmount = 1;
+		else
+			pixelAmount = PlayState.daPixelZoom;
 	}
 }
 
@@ -316,14 +318,12 @@ class PixelSplashShader extends FlxShader
 			}
 			return vec4(0.0, 0.0, 0.0, 0.0);
 		}')
-
 	@:glFragmentSource('
 		#pragma header
 
 		void main() {
 			gl_FragColor = flixel_texture2DCustom(bitmap, openfl_TextureCoordv);
 		}')
-
 	public function new()
 	{
 		super();

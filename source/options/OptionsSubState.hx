@@ -431,16 +431,12 @@ class GameplaySubState extends BaseOptionsMenu
 				ClientPrefs.data.noteSkin = ClientPrefs.defaultData.noteSkin; // Reset to default if saved noteskin couldnt be found
 
 			noteSkins.insert(0, ClientPrefs.defaultData.noteSkin); // Default skin always comes first
-			var option:Option = new Option('Note Skins:',
-				"Select your prefered Note skin.",
-				'noteSkin',
-				'string',
-				noteSkins);
+			var option:Option = new Option('Note Skins:', "Select your prefered Note skin.", 'noteSkin', 'string', noteSkins);
 			addOption(option);
 			option.onChange = onChangeNoteSkin;
 			noteOptionID = optionsArray.length - 1;
 		}
-		
+
 		var noteSplashes:Array<String> = Mods.mergeAllTextsNamed('images/noteSplashes/list.txt');
 		if (noteSplashes.length > 0)
 		{
@@ -448,18 +444,12 @@ class GameplaySubState extends BaseOptionsMenu
 				ClientPrefs.data.splashSkin = ClientPrefs.defaultData.splashSkin; // Reset to default if saved splashskin couldnt be found
 
 			noteSplashes.insert(0, ClientPrefs.defaultData.splashSkin); // Default skin always comes first
-			var option:Option = new Option('Note Splashes:',
-				"Select your prefered Note Splash variation or turn it off.",
-				'splashSkin',
-				'string',
+			var option:Option = new Option('Note Splashes:', "Select your prefered Note Splash variation or turn it off.", 'splashSkin', 'string',
 				noteSplashes);
 			addOption(option);
 		}
 
-		var option:Option = new Option('Note Splash Opacity',
-			'How much transparent should the Note Splashes be.',
-			'splashAlpha',
-			'percent');
+		var option:Option = new Option('Note Splash Opacity', 'How much transparent should the Note Splashes be.', 'splashAlpha', 'percent');
 		option.scrollSpeed = 1.6;
 		option.minValue = 0.0;
 		option.maxValue = 1;
@@ -498,6 +488,10 @@ class GameplaySubState extends BaseOptionsMenu
 		option.changeValue = 0.1;
 		option.displayFormat = '%vX';
 		addOption(option);
+
+		var option:Option = new Option('Auto Pause', "If checked, the game automatically pauses if the screen isn't on focus.", 'autoPause', 'bool');
+		addOption(option);
+		option.onChange = onChangeAutoPause;
 
 		var option:Option = new Option('Disable Reset Button', "If checked, pressing Reset won't do anything.", 'noReset', 'bool');
 		addOption(option);
@@ -607,9 +601,10 @@ class GameplaySubState extends BaseOptionsMenu
 	}
 
 	function onChangeHitsoundVolume()
-	{
 		FlxG.sound.play(Paths.sound('hitsound'), ClientPrefs.data.hitsoundVolume);
-	}
+
+	function onChangeAutoPause()
+		FlxG.autoPause = ClientPrefs.data.autoPause;
 
 	override function changeSelection(change:Int = 0)
 	{
@@ -621,7 +616,8 @@ class GameplaySubState extends BaseOptionsMenu
 		for (i in 0...Note.colArray.length)
 		{
 			var note:StrumNote = notes.members[i];
-			if (notesTween[i] != null) notesTween[i].cancel();
+			if (notesTween[i] != null)
+				notesTween[i].cancel();
 			if (curSelected == noteOptionID)
 				notesTween[i] = FlxTween.tween(note, {y: noteY}, Math.abs(note.y / (200 + noteY)) / 3, {ease: FlxEase.quadInOut});
 			else
@@ -634,7 +630,8 @@ class GameplaySubState extends BaseOptionsMenu
 
 	function onChangeNoteSkin()
 	{
-		notes.forEachAlive(function(note:StrumNote) {
+		notes.forEachAlive(function(note:StrumNote)
+		{
 			changeNoteSkin(note);
 			note.centerOffsets();
 			note.centerOrigin();
@@ -1173,8 +1170,7 @@ class NotesSubState extends MusicBeatSubstate
 				for (i in 0...3)
 				{
 					var strumRGB:RGBPalette = myNotes.members[curSelectedNote].rgbShader;
-					var color:FlxColor = !onPixel ? ClientPrefs.defaultData.arrowRGB[curSelectedNote][i] :
-													ClientPrefs.defaultData.arrowRGBPixel[curSelectedNote][i];
+					var color:FlxColor = !onPixel ? ClientPrefs.defaultData.arrowRGB[curSelectedNote][i] : ClientPrefs.defaultData.arrowRGBPixel[curSelectedNote][i];
 					switch (i)
 					{
 						case 0:
@@ -1444,6 +1440,11 @@ class VisualsSubState extends BaseOptionsMenu
 		addOption(option);
 		option.minValue = 1;
 		option.maxValue = 10;
+
+		var option:Option = new Option('GPU Caching', // Name
+			"If checked, allows the GPU to be used for caching textures, decreasing RAM usage.\nDon't turn this on if you have a shitty Graphics Card.", // Description
+			'cacheOnGPU', 'bool');
+		addOption(option);
 
 		#if !html5 // Apparently other framerates isn't correctly supported on Browser? Probably it has some V-Sync shit enabled by default, idk
 		var option:Option = new Option('Framerate', "Pretty self explanatory, isn't it?", 'framerate', 'int');

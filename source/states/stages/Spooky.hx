@@ -56,6 +56,8 @@ class Spooky extends BaseStage
 		if (!ClientPrefs.data.lowQuality)
 			halloweenBG.animation.play('halloweem bg lightning strike');
 
+		FlxG.camera.shake(0.003, 2.3, null, true, Y);
+
 		lightningStrikeBeat = curBeat;
 		lightningOffset = FlxG.random.int(8, 24);
 

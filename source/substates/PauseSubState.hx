@@ -48,13 +48,14 @@ class PauseSubState extends MusicBeatSubstate
 		difficultyChoices.push('BACK');
 
 		pauseMusic = new FlxSound();
-		if (songName != null)
+		try
 		{
-			pauseMusic.loadEmbedded(Paths.music(songName), true, true);
+			var pauseSong:String = getPauseSong();
+			if (pauseSong != null)
+				pauseMusic.loadEmbedded(Paths.music(pauseSong), true, true);
 		}
-		else if (songName != 'None')
+		catch (e:Dynamic)
 		{
-			pauseMusic.loadEmbedded(Paths.music(Paths.formatToSongPath(ClientPrefs.data.pauseMusic)), true, true);
 		}
 		pauseMusic.volume = 0;
 		pauseMusic.play(false, FlxG.random.int(0, Std.int(pauseMusic.length / 2)));
@@ -122,6 +123,16 @@ class PauseSubState extends MusicBeatSubstate
 
 		regenMenu();
 		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+	}
+
+	function getPauseSong()
+	{
+		var formattedSongName:String = (songName != null ? Paths.formatToSongPath(songName) : '');
+		var formattedPauseMusic:String = Paths.formatToSongPath(ClientPrefs.data.pauseMusic);
+		if (formattedSongName == 'none' || (formattedSongName != 'none' && formattedPauseMusic == 'none'))
+			return null;
+
+		return (formattedSongName != '') ? formattedSongName : formattedPauseMusic;
 	}
 
 	var holdTime:Float = 0;
@@ -224,13 +235,9 @@ class PauseSubState extends MusicBeatSubstate
 
 							Mods.loadTheFirstEnabledMod();
 							if (PlayState.isStoryMode)
-							{
 								MusicBeatState.switchState(new ScriptedState('StoryMenuState', []));
-							}
 							else
-							{
 								MusicBeatState.switchState(new ScriptedState('MainMenuState', []));
-							}
 							PlayState.cancelMusicFadeTween();
 							FlxG.sound.playMusic(Paths.music('freakyMenu'));
 							PlayState.chartingMode = false;
@@ -286,11 +293,11 @@ class PauseSubState extends MusicBeatSubstate
 					PlayState.instance.botplayTxt.alpha = 1;
 					PlayState.instance.botplaySine = 0;
 				case "Options":
+					PlayState.fromPlayState = true;
 					Mods.loadTheFirstEnabledMod();
-					MusicBeatState.switchState(new options.OptionsState());
+					MusicBeatState.switchState(new ScriptedState('OptionsState', [PlayState.fromPlayState]));
 					FlxG.sound.playMusic(Paths.music('freakyMenu'));
 					PlayState.cancelMusicFadeTween();
-					PlayState.fromPlayState = true;
 				case "Exit":
 					menuItems = exitChoices;
 					deleteSkipTimeText();

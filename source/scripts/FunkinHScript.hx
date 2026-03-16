@@ -3,6 +3,8 @@ package scripts;
 import rulescript.*;
 import rulescript.parsers.*;
 import cutscenes.CutsceneHandler;
+import options.OptionsSubState;
+import options.*;
 #if VIDEOS_ALLOWED
 import hxvlc.flixel.FlxVideoSprite;
 #end
@@ -334,6 +336,18 @@ class FunkinHScript extends FlxBasic
 		setVariable('PlayState', PlayState);
 		setVariable('ScriptedState', ScriptedState);
 		setVariable('ScriptedSubState', ScriptedSubState);
+
+		// you can't access these unless they're exposed to hscript???
+		// i mean, i'm pretty sure that should be obvious, but cmon bruh
+		setVariable('GameplayChangersSubstate', GameplayChangersSubstate);
+		setVariable('ResetScoreSubState', ResetScoreSubState);
+
+		setVariable('NotesSubState', NotesSubState);
+		setVariable('ControlsSubState', ControlsSubState);
+		setVariable('MiscSubState', MiscSubState);
+		setVariable('VisualsSubState', VisualsSubState);
+		setVariable('GameplaySubState', GameplaySubState);
+		setVariable('NoteOffsetState', NoteOffsetState);
 
 		if (execute && file != null)
 			this.execute(file);

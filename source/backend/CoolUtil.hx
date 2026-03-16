@@ -120,21 +120,21 @@ class CoolUtil
 
 	public static function lerp(base:Float, target:Float, alpha:Float):Float
 	{
-    	if (alpha == 0)
+		if (alpha == 0)
 			return base;
-    	if (alpha == 1)
+		if (alpha == 1)
 			return target;
-    	return base + alpha * (target - base);
+		return base + alpha * (target - base);
 	}
 
 	public static function smoothLerpPrecision(base:Float, target:Float, deltaTime:Float, duration:Float, precision:Float = 1 / 100):Float
-  	{
-    	if (deltaTime == 0)
+	{
+		if (deltaTime == 0)
 			return base;
-    	if (base == target)
+		if (base == target)
 			return target;
-    	return lerp(target, base, Math.pow(precision, deltaTime / duration));
-  	}
+		return lerp(target, base, Math.pow(precision, deltaTime / duration));
+	}
 
 	public static function precacheSound(sound:String):Void
 	{
@@ -156,6 +156,19 @@ class CoolUtil
 		#else
 		FlxG.openURL(site);
 		#end
+	}
+
+	public static function floorDecimal(value:Float, decimals:Int):Float
+	{
+		if (decimals < 1)
+			return Math.floor(value);
+
+		var tempMult:Float = 1;
+		for (i in 0...decimals)
+			tempMult *= 10;
+
+		var newValue:Float = Math.floor(value * tempMult);
+		return newValue / tempMult;
 	}
 
 	@:access(flixel.util.FlxSave.validate)

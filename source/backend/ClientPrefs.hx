@@ -9,10 +9,12 @@ import backend.Controls;
 	public var opponentStrums:Bool = true;
 	public var showFPS:Bool = true;
 	public var flashing:Bool = true;
+	public var autoPause:Bool = true;
 	public var globalAntialiasing:Bool = true;
 	public var noteSplashes:Bool = true;
 	public var lowQuality:Bool = false;
 	public var shaders:Bool = true;
+	public var cacheOnGPU:Bool = #if !switch false #else true #end;
 	public var framerate:Int = 60;
 	public var camZooms:Bool = true;
 	public var hideHud:Bool = false;
@@ -137,6 +139,10 @@ class ClientPrefs
 		for (key in Reflect.fields(data))
 			Reflect.setField(FlxG.save.data, key, Reflect.field(data, key));
 
+		#if ACHIEVEMENTS_ALLOWED
+		Achievements.save();
+		#end
+
 		FlxG.save.flush();
 
 		var save:FlxSave = new FlxSave();
@@ -148,6 +154,10 @@ class ClientPrefs
 
 	public static function loadPrefs()
 	{
+		#if ACHIEVEMENTS_ALLOWED
+		Achievements.load();
+		#end
+
 		for (key in Reflect.fields(data))
 			if (key != 'gameplaySettings' && Reflect.hasField(FlxG.save.data, key))
 				Reflect.setField(data, key, Reflect.field(FlxG.save.data, key));

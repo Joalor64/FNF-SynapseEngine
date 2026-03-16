@@ -166,9 +166,9 @@ class Note extends FlxSprite
 	public function updateColours()
 	{
 		var colorArray:Array<FlxColor> = noteColor[noteData % colArray.length];
-    	rgbShader.r = colorArray[0];
-    	rgbShader.g = colorArray[1];  
-    	rgbShader.b = colorArray[2];
+		rgbShader.r = colorArray[0];
+		rgbShader.g = colorArray[1];
+		rgbShader.b = colorArray[2];
 	}
 
 	public static function initializeGlobalRGBShader(idx:Int, aQuant:Bool)
@@ -278,9 +278,12 @@ class Note extends FlxSprite
 	}
 
 	var _lastNoteOffX:Float = 0;
+
 	static var _lastValidChecked:String; // optimization
+
 	public var originalHeight:Float = 6;
 	public var correctionOffset:Float = 0; // dont mess with this
+
 	public function reloadNote(texture:String = '', postfix:String = '')
 	{
 		for (e in [texture, postfix])
@@ -387,7 +390,7 @@ class Note extends FlxSprite
 		{
 			animation.add(colArray[noteData] + 'holdend', [noteData + 4], 24, true);
 			animation.add(colArray[noteData] + 'hold', [noteData], 24, true);
-		} 
+		}
 		else
 			animation.add(colArray[noteData] + 'Scroll', [noteData + 4], 24, true);
 	}

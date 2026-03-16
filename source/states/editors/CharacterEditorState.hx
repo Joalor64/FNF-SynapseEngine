@@ -54,7 +54,7 @@ class CharacterEditorState extends MusicBeatState
 	var characterList:Array<String> = [];
 
 	var cameraFollowPointer:FlxSprite;
-	var healthBarBG:FlxSprite;
+	var healthBar:Bar;
 
 	override function create()
 	{
@@ -92,10 +92,10 @@ class CharacterEditorState extends MusicBeatState
 
 		loadChar(!daAnim.startsWith('bf'), false);
 
-		healthBarBG = new FlxSprite(30, FlxG.height - 75).loadGraphic(Paths.image('healthBar'));
-		healthBarBG.scrollFactor.set();
-		add(healthBarBG);
-		healthBarBG.cameras = [camHUD];
+		healthBar = new Bar(30, FlxG.height - 75);
+		healthBar.scrollFactor.set();
+		add(healthBar);
+		healthBar.cameras = [camHUD];
 
 		leHealthIcon = new HealthIcon(char.healthIcon, false);
 		leHealthIcon.y = FlxG.height - 150;
@@ -786,17 +786,17 @@ class CharacterEditorState extends MusicBeatState
 			else if (sender == healthColorStepperR)
 			{
 				char.healthColorArray[0] = Math.round(healthColorStepperR.value);
-				healthBarBG.color = FlxColor.fromRGB(char.healthColorArray[0], char.healthColorArray[1], char.healthColorArray[2]);
+				resetHealthBarColor();
 			}
 			else if (sender == healthColorStepperG)
 			{
 				char.healthColorArray[1] = Math.round(healthColorStepperG.value);
-				healthBarBG.color = FlxColor.fromRGB(char.healthColorArray[0], char.healthColorArray[1], char.healthColorArray[2]);
+				resetHealthBarColor();
 			}
 			else if (sender == healthColorStepperB)
 			{
 				char.healthColorArray[2] = Math.round(healthColorStepperB.value);
-				healthBarBG.color = FlxColor.fromRGB(char.healthColorArray[0], char.healthColorArray[1], char.healthColorArray[2]);
+				resetHealthBarColor();
 			}
 		}
 	}
@@ -1099,7 +1099,7 @@ class CharacterEditorState extends MusicBeatState
 		healthColorStepperR.value = char.healthColorArray[0];
 		healthColorStepperG.value = char.healthColorArray[1];
 		healthColorStepperB.value = char.healthColorArray[2];
-		healthBarBG.color = FlxColor.fromRGB(char.healthColorArray[0], char.healthColorArray[1], char.healthColorArray[2]);
+		healthBar.leftBar.color = healthBar.rightBar.color = FlxColor.fromRGB(char.healthColorArray[0], char.healthColorArray[1], char.healthColorArray[2]);
 	}
 
 	function updatePresence()

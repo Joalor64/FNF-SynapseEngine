@@ -109,6 +109,10 @@ class Main extends Sprite
 		FlxG.autoPause = FlxG.mouse.visible = false;
 		#end
 
+		#if DISCORD_ALLOWED
+		DiscordClient.load();
+		#end
+
 		Lib.current.stage.application.window.onClose.add(function()
 		{
 			#if linux
