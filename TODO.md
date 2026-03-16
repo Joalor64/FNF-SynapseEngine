@@ -32,18 +32,17 @@
 ### Low Priority
 * [X] Noteskins
 * [ ] Hold Note Cover
-* [ ] Migrate to HXP
 
 ## V0.2.0
 ### High Priority
 * [ ] Weekend 1
 * [ ] In-Game Crash Handler
-* [ ] Support for more than 2 health icons
+* [ ] Potentially Backport Newer Psych Stuff
 
 ### Low Priority
 * [ ] Extra Keys
 * [ ] Erect Mixes
+* [ ] Le SSerafim Collab
 * [ ] Controller Support
 * [ ] Time Signature Support
-* [ ] Potentially Backport Newer Psych Stuff
 * [ ] Potentially Backport V-Slice Stuff
