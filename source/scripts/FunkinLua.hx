@@ -39,7 +39,7 @@ class FunkinLua
 			{
 				trace('Error on lua script! ' + resultStr);
 				#if windows
-				lime.app.Application.current.window.alert(resultStr, 'Error on lua script!');
+				Application.current.window.alert(resultStr, 'Error on lua script!');
 				#else
 				LuaUtils.luaTrace(lua, 'Error loading lua script: "$script"\n' + resultStr, true, false, FlxColor.RED);
 				#end

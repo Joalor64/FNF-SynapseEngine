@@ -510,7 +510,7 @@ class PlayState extends MusicBeatState
 				new Tank(); // Week 7 - Ugh, Guns, Stress
 		}
 
-		switch (Paths.formatToSongPath(SONG.song))
+		switch (songName)
 		{
 			case 'stress':
 				GameOverSubstate.characterName = 'bf-holding-gf-dead';
@@ -627,7 +627,7 @@ class PlayState extends MusicBeatState
 					gfVersion = 'gf';
 			}
 
-			switch (Paths.formatToSongPath(SONG.song))
+			switch (songName)
 			{
 				case 'stress':
 					gfVersion = 'pico-speaker';
@@ -1948,7 +1948,6 @@ class PlayState extends MusicBeatState
 		// NEW SHIT
 		noteData = songData.notes;
 
-		var songName:String = Paths.formatToSongPath(SONG.song);
 		var file:String = Paths.json('songs/' + songName + '/events');
 		#if MODS_ALLOWED
 		if (FileSystem.exists(Paths.modsJson('songs/' + songName + '/events')) || FileSystem.exists(file))
@@ -2947,8 +2946,6 @@ class PlayState extends MusicBeatState
 
 				vocals.stop();
 				FlxG.sound.music.stop();
-
-				FlxG.camera.shake(0.08, 0.1, null, true, XY);
 
 				if (SONG.song.toLowerCase() == 'tutorial')
 					trace('how tf did you die on tutorial');

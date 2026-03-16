@@ -42,6 +42,7 @@
 ### Low Priority
 * [ ] Extra Keys
 * [ ] Erect Mixes
+* [ ] New Editor UI
 * [ ] Le SSerafim Collab
 * [ ] Controller Support
 * [ ] Time Signature Support
