@@ -11,6 +11,7 @@
 		"gf"
 	],
 	"weekBackground": "school",
+	"weekColor": [255, 120, 191],
 
 	"storyName": "HATING SIMULATOR FT. MOAWLING",
 	"weekBefore": "week5",

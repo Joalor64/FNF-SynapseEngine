@@ -11,6 +11,7 @@
 		"gf"
 	],
 	"weekBackground": "stage",
+	"weekColor": [146, 113, 253],
 
 	"storyName": "DADDY DEAREST",
 	"weekBefore": "tutorial",

@@ -11,6 +11,7 @@
 		"gf"
 	],
 	"weekBackground": "limo",
+	"weekColor": [252, 150, 215],
 
 	"storyName": "MOMMY MUST MURDER",
 	"weekBefore": "week3",

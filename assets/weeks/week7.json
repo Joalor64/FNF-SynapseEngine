@@ -30,6 +30,7 @@
 	],
 	"hideFreeplay": false,
 	"weekBackground": "tank",
+	"weekColor": [246, 182, 4],
 	"weekCharacters": [
 		"tankman",
 		"bf",

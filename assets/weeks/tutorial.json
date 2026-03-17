@@ -9,6 +9,7 @@
 		""
 	],
 	"weekBackground": "stage",
+	"weekColor": [176, 11, 105],
 
 	"storyName": "TEACHING TIME",
 	"weekBefore": "tutorial",

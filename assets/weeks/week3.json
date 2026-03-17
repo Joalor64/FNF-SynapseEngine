@@ -11,6 +11,7 @@
 		"gf"
 	],
 	"weekBackground": "philly",
+	"weekColor": [148, 22, 83],
 
 	"storyName": "PICO",
 	"weekBefore": "week2",

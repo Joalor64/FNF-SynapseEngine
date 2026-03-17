@@ -21,7 +21,9 @@ var scoreText:FlxText;
 var txtTracklist:FlxText;
 var txtWeekTitle:FlxText;
 
+var bgYellow:FlxSprite;
 var bgSprite:FlxSprite;
+var bgColor:Array<Int>;
 
 var grpWeekText:FlxTypedGroup<MenuItem>;
 var grpWeekCharacters:FlxTypedGroup<MenuCharacter>;
@@ -68,7 +70,7 @@ function create()
 	rankText.screenCenter(FlxAxes.X);
 
 	var ui_tex = Paths.getSparrowAtlas('campaign_menu_UI_assets');
-	var bgYellow:FlxSprite = new FlxSprite(0, 56).makeGraphic(FlxG.width, 386, 0xFFF9CF51);
+	bgYellow = new FlxSprite(0, 56).makeGraphic(FlxG.width, 386, 0xFFF9CF51);
 	bgSprite = new FlxSprite(0, 56);
 	bgSprite.antialiasing = ClientPrefs.data.globalAntialiasing;
 
@@ -438,6 +440,15 @@ function changeWeek(change:Int)
 		curDifficulty = newPos;
 	}
 	updateText();
+
+	var storyColor:Array<Int> = WeekData.getCurrentWeek().weekColor;
+	if (storyColor != null && storyColor.length < 2)
+		bgColor = storyColor;
+	else
+		bgColor = [249, 207, 81];
+	
+	for (bg in [bgYellow, bgSprite])
+		FlxTween.color(bg, 0.25, bg.color, FlxColor.fromRGB(bgColor[0], bgColor[1], bgColor[2]));
 }
 
 function weekIsLocked(name:String):Bool

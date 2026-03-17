@@ -11,6 +11,7 @@
 		"gf"
 	],
 	"weekBackground": "halloween",
+	"weekColor": [34, 51, 68],
 
 	"storyName": "SPOOKY MONTH",
 	"weekBefore": "week1",
