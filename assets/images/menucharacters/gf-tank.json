@@ -1,0 +1,11 @@
+{
+	
+	"image": "Menu_GF_Tank",
+	"position": [
+		0,
+		-25
+	],
+	"scale": 1,
+	"idle_anim": "GF Dancing at Gunpoint",
+	"confirm_anim": "GF Dancing at Gunpoint"
+}

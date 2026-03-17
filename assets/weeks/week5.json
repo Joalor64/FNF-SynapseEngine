@@ -6,9 +6,9 @@
 	],
 
 	"weekCharacters": [
-		"parents-christmas",
-		"bf",
-		"gf"
+		"parents",
+		"bf-christmas",
+		"gf-christmas"
 	],
 	"weekBackground": "christmas",
 	"weekColor": [160, 209, 255],

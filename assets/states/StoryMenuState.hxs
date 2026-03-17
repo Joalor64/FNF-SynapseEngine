@@ -442,13 +442,16 @@ function changeWeek(change:Int)
 	updateText();
 
 	var storyColor:Array<Int> = WeekData.getCurrentWeek().weekColor;
-	if (storyColor != null && storyColor.length < 2)
+	if (storyColor != null && storyColor.length > 2)
 		bgColor = storyColor;
 	else
 		bgColor = [249, 207, 81];
 	
 	for (bg in [bgYellow, bgSprite])
 		FlxTween.color(bg, 0.25, bg.color, FlxColor.fromRGB(bgColor[0], bgColor[1], bgColor[2]));
+	
+	for (char in grpWeekCharacters.members)
+		FlxTween.color(char, 0.25, char.color, FlxColor.fromRGB(bgColor[0], bgColor[1], bgColor[2]));
 }
 
 function weekIsLocked(name:String):Bool
