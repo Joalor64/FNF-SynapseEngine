@@ -193,6 +193,7 @@ class Paths
 
 	static public function image(key:String, ?allowGPU:Bool = true):FlxGraphic
 	{
+		key = 'images/$key.png';
 		var bitmap:BitmapData = null;
 		if (currentTrackedAssets.exists(key))
 		{
