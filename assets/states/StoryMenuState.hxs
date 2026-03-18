@@ -284,7 +284,7 @@ function selectWeek()
 			{
 				if (char.character != '' && char.hasConfirmAnimation)
 				{
-					char.animation.play('confirm');
+					char.playConfirm();
 				}
 			}
 			stopspamming = true;
@@ -480,6 +480,7 @@ function updateText()
 	for (i in 0...grpWeekCharacters.length)
 	{
 		grpWeekCharacters.members[i].changeCharacter(weekArray[i]);
+		grpWeekCharacters.members[i].playIdle();
 	}
 
 	var leWeek:WeekData = loadedWeeks[curWeek];

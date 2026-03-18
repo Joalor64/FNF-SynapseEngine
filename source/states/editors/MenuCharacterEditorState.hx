@@ -29,8 +29,8 @@ class MenuCharacterEditorState extends MusicBeatState
 			image: 'Menu_Dad',
 			scale: 1,
 			position: [0, 0],
-			idle_anim: 'M Dad Idle',
-			confirm_anim: 'M Dad Idle',
+			idle_anim: 'Dad idle dance',
+			confirm_anim: 'Dad idle dance',
 			flipX: false
 		};
 		#if DISCORD_ALLOWED
@@ -47,7 +47,7 @@ class MenuCharacterEditorState extends MusicBeatState
 			grpWeekCharacters.add(weekCharacterThing);
 		}
 
-		add(new FlxSprite(0, 56).makeGraphic(FlxG.width, 386, 0xFFF9CF51));
+		add(new FlxSprite(0, 56).makeGraphic(FlxG.width, 386, FlxColor.WHITE));
 		add(grpWeekCharacters);
 
 		txtOffsets = new FlxText(20, 10, 0, "[0, 0]", 32);
@@ -236,7 +236,7 @@ class MenuCharacterEditorState extends MusicBeatState
 
 		char.scale.set(characterFile.scale, characterFile.scale);
 		char.updateHitbox();
-		char.animation.play('idle');
+		char.playIdle();
 		updateOffset();
 
 		#if desktop
@@ -328,14 +328,14 @@ class MenuCharacterEditorState extends MusicBeatState
 
 			if (FlxG.keys.justPressed.SPACE && curTypeSelected == 1)
 			{
-				grpWeekCharacters.members[curTypeSelected].animation.play('confirm', true);
+				grpWeekCharacters.members[curTypeSelected].playConfirm();
 			}
 		}
 
 		var char:MenuCharacter = grpWeekCharacters.members[1];
 		if (char.animation.curAnim != null && char.animation.curAnim.name == 'confirm' && char.animation.curAnim.finished)
 		{
-			char.animation.play('idle', true);
+			char.playIdle();
 		}
 
 		super.update(elapsed);

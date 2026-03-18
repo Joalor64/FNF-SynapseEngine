@@ -8,12 +8,16 @@ typedef MenuCharacterFile =
 	var idle_anim:String;
 	var confirm_anim:String;
 	var flipX:Bool;
+	var ?confirm_position:Array<Int>;
 }
 
 class MenuCharacter extends FlxSprite
 {
 	public var character:String;
 	public var hasConfirmAnimation:Bool = false;
+	
+	private var basePosition:Array<Int> = [0, 0];
+	private var confirmOffset:Array<Int> = [0, 0];
 
 	private static var DEFAULT_CHARACTER:String = 'bf';
 
@@ -89,8 +93,31 @@ class MenuCharacter extends FlxSprite
 					scale.set(charFile.scale, charFile.scale);
 					updateHitbox();
 				}
-				offset.set(charFile.position[0], charFile.position[1]);
+				
+				basePosition = charFile.position;
+				offset.set(basePosition[0], basePosition[1]);
+				
+				if (charFile.confirm_position != null && charFile.confirm_position.length >= 2)
+					confirmOffset = charFile.confirm_position;
+				else
+					confirmOffset = [0, 0];
+				
 				animation.play('idle');
 		}
+	}
+	
+	public function playConfirm():Void
+	{
+		if (hasConfirmAnimation && animation.getByName('confirm') != null)
+		{
+			offset.set(basePosition[0] + confirmOffset[0], basePosition[1] + confirmOffset[1]);
+			animation.play('confirm', true);
+		}
+	}
+	
+	public function playIdle():Void
+	{
+		offset.set(basePosition[0], basePosition[1]);
+		animation.play('idle');
 	}
 }
