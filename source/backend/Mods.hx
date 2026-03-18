@@ -73,26 +73,6 @@ class Mods
 		return list;
 	}
 
-	static public function getActiveModsDir(inclMainFol:Bool = false):Array<String>
-	{
-		var finalList:Array<String> = [];
-		if (inclMainFol)
-			finalList.push('');
-		var path:String = 'modsList.txt';
-		if (FileSystem.exists(path))
-		{
-			var genList:Array<String> = getModDirectories();
-			var list:Array<String> = CoolUtil.coolTextFile(path);
-			for (i in list)
-			{
-				var dat = i.split("|");
-				if (dat[1] == "1" && genList.contains(dat[0]))
-					finalList.push(dat[0]);
-			}
-		}
-		return finalList;
-	}
-
 	inline public static function mergeAllTextsNamed(path:String, defaultDirectory:String = null, allowDuplicates:Bool = false)
 	{
 		if (defaultDirectory == null)

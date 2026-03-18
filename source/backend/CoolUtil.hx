@@ -103,7 +103,7 @@ class CoolUtil
 		}
 		var maxCount = 0;
 		var maxKey:Int = 0;
-		countByColor[flixel.util.FlxColor.BLACK] = 0;
+		countByColor[FlxColor.BLACK] = 0;
 		for (key in countByColor.keys())
 		{
 			if (countByColor[key] >= maxCount)
@@ -134,16 +134,6 @@ class CoolUtil
 		if (base == target)
 			return target;
 		return lerp(target, base, Math.pow(precision, deltaTime / duration));
-	}
-
-	public static function precacheSound(sound:String):Void
-	{
-		Paths.sound(sound);
-	}
-
-	public static function precacheMusic(sound:String):Void
-	{
-		Paths.music(sound);
 	}
 
 	inline public static function browserLoad(site:String)

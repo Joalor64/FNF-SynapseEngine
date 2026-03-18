@@ -1,5 +1,6 @@
 package backend;
 
+import flixel.system.FlxAssets;
 import flixel.graphics.FlxGraphic;
 
 using haxe.io.Path;
@@ -408,8 +409,8 @@ class Paths
 			#end
 			else if (beepOnNull)
 			{
-				trace('SOUND NOT FOUND: $key, PATH: $path');
-				FlxG.log.error('SOUND NOT FOUND: $key, PATH: $path');
+				trace('SOUND NOT FOUND: $key');
+				FlxG.log.error('SOUND NOT FOUND: $key');
 				return FlxAssets.getSound('flixel/sounds/beep');
 			}
 		}

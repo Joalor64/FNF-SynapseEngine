@@ -1616,17 +1616,17 @@ class FunkinLua
 			}
 			PlayState.instance.addCharacterToList(name, charType);
 		});
-		Lua_helper.add_callback(lua, "precacheImage", function(name:String)
+		Lua_helper.add_callback(lua, "precacheImage", function(name:String, ?allowGPU:Bool = true)
 		{
-			Paths.returnGraphic(name);
+			Paths.image(name, allowGPU);
 		});
 		Lua_helper.add_callback(lua, "precacheSound", function(name:String)
 		{
-			CoolUtil.precacheSound(name);
+			Paths.sound(name);
 		});
-		Lua_helper.add_callback(lua, "precacheMusic", function(name:String)
-		{
-			CoolUtil.precacheMusic(name);
+		Lua_helper.add_callback(lua, "precacheMusic", function(name:String
+		 {
+			Paths.music(name);
 		});
 		Lua_helper.add_callback(lua, "triggerEvent", function(name:String, arg1:Dynamic, arg2:Dynamic, strumTime:Float)
 		{
