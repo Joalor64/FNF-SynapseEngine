@@ -20,6 +20,8 @@ class Mods
 
 	public static final ignoreModFolders:Array<String> = [
 		'characters',
+		'custom_events',
+		'custom_notetypes',
 		'data',
 		'songs',
 		'music',
@@ -31,8 +33,7 @@ class Mods
 		'weeks',
 		'fonts',
 		'scripts',
-		'custom_events',
-		'custom_notetypes'
+		'achievements'
 	];
 
 	public static var globalMods:Array<String> = [];
@@ -136,18 +137,18 @@ class Mods
 			for (mod in Mods.getGlobalMods())
 			{
 				var folder:String = Paths.mods(mod + '/' + fileToFind);
-				if (FileSystem.exists(folder))
+				if (FileSystem.exists(folder) && !foldersToCheck.contains(folder))
 					foldersToCheck.push(folder);
 			}
 
 			var folder:String = Paths.mods(fileToFind);
-			if (FileSystem.exists(folder))
+			if (FileSystem.exists(folder) && !foldersToCheck.contains(folder))
 				foldersToCheck.push(Paths.mods(fileToFind));
 
 			if (Mods.currentModDirectory != null && Mods.currentModDirectory.length > 0)
 			{
 				var folder:String = Paths.mods(Mods.currentModDirectory + '/' + fileToFind);
-				if (FileSystem.exists(folder))
+				if (FileSystem.exists(folder) && !foldersToCheck.contains(folder))
 					foldersToCheck.push(folder);
 			}
 		}
@@ -172,7 +173,7 @@ class Mods
 				var rawJson:String = Assets.getText(path);
 				#end
 				if (rawJson != null && rawJson.length > 0)
-					return Json.parse(rawJson);
+					return TJSON.parse(rawJson);
 			}
 			catch (e:Dynamic)
 			{

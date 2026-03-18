@@ -21,7 +21,7 @@ var ngSpr:FlxSprite;
 
 var curWacky:Array<String> = [];
 
-var titleJSON = Json.parse(Paths.getTextFromFile('images/gfDanceTitle.json'));
+var titleJSON = TJSON.parse(Paths.getTextFromFile('images/gfDanceTitle.json'));
 
 function getIntroTextShit()
 {
