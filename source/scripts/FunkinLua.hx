@@ -1624,8 +1624,8 @@ class FunkinLua
 		{
 			Paths.sound(name);
 		});
-		Lua_helper.add_callback(lua, "precacheMusic", function(name:String
-		 {
+		Lua_helper.add_callback(lua, "precacheMusic", function(name:String)
+		{
 			Paths.music(name);
 		});
 		Lua_helper.add_callback(lua, "triggerEvent", function(name:String, arg1:Dynamic, arg2:Dynamic, strumTime:Float)

@@ -136,11 +136,11 @@ class Paths
 		return getPath(key + extension);
 	}
 
-	static public function validScriptType(n:String):Bool
+	static public function validScriptType(key:String):Bool
 	{
 		for (ext in HSCRIPT_EXT)
 		{
-			if (n.endsWith(ext))
+			if (key.endsWith(ext))
 				return true;
 		}
 		return false;
