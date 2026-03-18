@@ -2,8 +2,8 @@
 	
 	"image": "Menu_GF_Tank",
 	"position": [
-		0,
-		-25
+		-12,
+		-26
 	],
 	"scale": 1,
 	"idle_anim": "GF Dancing at Gunpoint",

@@ -12,6 +12,7 @@
 	],
 	"weekBackground": "christmas",
 	"weekColor": [160, 209, 255],
+	"weekColorTween": true,
 
 	"storyName": "RED SNOW",
 	"weekBefore": "week4",

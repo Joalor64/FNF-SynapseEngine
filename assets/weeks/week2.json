@@ -12,6 +12,7 @@
 	],
 	"weekBackground": "halloween",
 	"weekColor": [34, 51, 68],
+	"weekColorTween": true,
 
 	"storyName": "SPOOKY MONTH",
 	"weekBefore": "week1",

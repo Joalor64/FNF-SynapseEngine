@@ -12,6 +12,7 @@
 	],
 	"weekBackground": "stage",
 	"weekColor": [146, 113, 253],
+	"weekColorTween": true,
 
 	"storyName": "DADDY DEAREST",
 	"weekBefore": "tutorial",

@@ -449,7 +449,7 @@ function changeWeek(change:Int)
 		else
 			bgColor = [249, 207, 81];
 	
-		tweenColors([bgColor[0], bgColor[1], bgColor[2]])
+		tweenColors([bgColor[0], bgColor[1], bgColor[2]]);
 	}
 	else
 	{
@@ -463,7 +463,7 @@ function tweenColors(colArray:Array<Int>)
 		FlxTween.color(bg, 0.25, bg.color, FlxColor.fromRGB(colArray[0], colArray[1], colArray[2]));
 	
 	for (char in grpWeekCharacters.members)
-		FlxTween.color(char, 0.25, char.color, FlxColor.fromRGB(colArray[0], colArray[1], bgColorcolArray[2]));
+		FlxTween.color(char, 0.25, char.color, FlxColor.fromRGB(colArray[0], colArray[1], colArray[2]));
 }
 
 function weekIsLocked(name:String):Bool

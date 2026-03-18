@@ -12,6 +12,7 @@
 	],
 	"weekBackground": "philly",
 	"weekColor": [148, 22, 83],
+	"weekColorTween": true,
 
 	"storyName": "PICO",
 	"weekBefore": "week2",
