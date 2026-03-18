@@ -8,5 +8,5 @@
 	"scale": 0.9,
 	"idle_anim": "BF idle dance",
 	"confirm_anim": "BF HEY!!",
-	"confirm_position": [5, 0]
+	"confirm_position": [1, 4]
 }

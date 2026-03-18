@@ -14,6 +14,7 @@ import openfl.net.FileFilter;
 import backend.WeekData;
 import objects.MenuCharacter;
 
+// To-Do: add config stuff for confirm anim offsets
 class MenuCharacterEditorState extends MusicBeatState
 {
 	var grpWeekCharacters:FlxTypedGroup<MenuCharacter>;

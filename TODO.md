@@ -37,13 +37,14 @@
 ### High Priority
 * [ ] Weekend 1
 * [ ] In-Game Crash Handler
+* [ ] Lil' Buddies (From FPS+)
 * [ ] Potentially Backport Newer Psych Stuff
 
 ### Low Priority
 * [ ] Extra Keys
 * [ ] Erect Mixes
 * [ ] New Editor UI
-* [ ] Le SSerafim Collab
+* [ ] Le Sserafim Collab
 * [ ] Controller Support
 * [ ] Time Signature Support
 * [ ] Potentially Backport V-Slice Stuff
