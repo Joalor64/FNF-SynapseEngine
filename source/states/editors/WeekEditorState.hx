@@ -14,9 +14,11 @@ import openfl.net.FileFilter;
 import lime.system.Clipboard;
 import backend.WeekData;
 
+// To-Do: add color steppers for bg and stuff
 class WeekEditorState extends MusicBeatState
 {
 	var txtWeekTitle:FlxText;
+	var bgYellow:FlxSprite;
 	var bgSprite:FlxSprite;
 	var lock:FlxSprite;
 	var txtTracklist:FlxText;
@@ -45,7 +47,7 @@ class WeekEditorState extends MusicBeatState
 		txtWeekTitle.alpha = 0.7;
 
 		var ui_tex = Paths.getSparrowAtlas('campaign_menu_UI_assets');
-		var bgYellow:FlxSprite = new FlxSprite(0, 56).makeGraphic(FlxG.width, 386, 0xFFF9CF51);
+		bgYellow = new FlxSprite(0, 56).makeGraphic(FlxG.width, 386, 0xFFF9CF51);
 		bgSprite = new FlxSprite(0, 56);
 		bgSprite.antialiasing = ClientPrefs.data.globalAntialiasing;
 
@@ -482,6 +484,12 @@ class WeekEditorState extends MusicBeatState
 		}
 
 		super.update(elapsed);
+
+		for (bg in [bgYellow, bgSprite])
+			bg.color = FlxColor.fromRGB(weekFile.weekColor[0], weekFile.weekColor[1], weekFile.weekColor[2]);
+		
+		for (char in grpWeekCharacters.members)
+			char.color = FlxColor.fromRGB(weekFile.weekColor[0], weekFile.weekColor[1], weekFile.weekColor[2]);
 
 		lock.y = weekThing.y;
 		missingFileText.y = weekThing.y + 36;

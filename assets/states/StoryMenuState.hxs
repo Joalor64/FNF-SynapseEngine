@@ -441,17 +441,29 @@ function changeWeek(change:Int)
 	}
 	updateText();
 
-	var storyColor:Array<Int> = WeekData.getCurrentWeek().weekColor;
-	if (storyColor != null && storyColor.length > 2)
-		bgColor = storyColor;
-	else
-		bgColor = [249, 207, 81];
+	if (WeekData.getCurrentWeek().weekColorTween)
+	{
+		var storyColor:Array<Int> = WeekData.getCurrentWeek().weekColor;
+		if (storyColor != null && storyColor.length > 2)
+			bgColor = storyColor;
+		else
+			bgColor = [249, 207, 81];
 	
+		tweenColors([bgColor[0], bgColor[1], bgColor[2]])
+	}
+	else
+	{
+		tweenColors([255, 255, 255]);
+	}
+}
+
+function tweenColors(colArray:Array<Int>)
+{
 	for (bg in [bgYellow, bgSprite])
-		FlxTween.color(bg, 0.25, bg.color, FlxColor.fromRGB(bgColor[0], bgColor[1], bgColor[2]));
+		FlxTween.color(bg, 0.25, bg.color, FlxColor.fromRGB(colArray[0], colArray[1], colArray[2]));
 	
 	for (char in grpWeekCharacters.members)
-		FlxTween.color(char, 0.25, char.color, FlxColor.fromRGB(bgColor[0], bgColor[1], bgColor[2]));
+		FlxTween.color(char, 0.25, char.color, FlxColor.fromRGB(colArray[0], colArray[1], bgColorcolArray[2]));
 }
 
 function weekIsLocked(name:String):Bool
