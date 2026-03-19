@@ -149,19 +149,6 @@ class Paths
 	inline static public function exists(asset:String)
 		return FileAssets.exists(asset);
 
-	inline static public function getContent(asset:String):Null<String>
-	{
-		#if sys
-		if (FileSystem.exists(asset))
-			return File.getContent(asset);
-		#else
-		if (Assets.exists(asset))
-			return Assets.getText(asset);
-		#end
-
-		return null;
-	}
-
 	static public function video(key:String)
 	{
 		#if MODS_ALLOWED
