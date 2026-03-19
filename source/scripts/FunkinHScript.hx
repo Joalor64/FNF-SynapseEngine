@@ -306,7 +306,9 @@ class FunkinHScript extends FlxBasic
 		if (FlxG.state is PlayState && PlayState.instance != null)
 			setVariable('game', PlayState.instance);
 
+		#if ACHIEVEMENTS_ALLOWED
 		setVariable('Achievements', Achievements);
+		#end
 		setVariable('Alphabet', Alphabet);
 		setVariable('AttachedSprite', AttachedSprite);
 		setVariable('AttachedText', AttachedText);
