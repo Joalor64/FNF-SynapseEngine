@@ -1,6 +1,5 @@
 package substates;
 
-// To-Do: actually add functionality to reset achievements
 #if ACHIEVEMENTS_ALLOWED
 class ResetAchievementSubState extends MusicBeatSubstate
 {
@@ -69,6 +68,12 @@ class ResetAchievementSubState extends MusicBeatSubstate
 		{
 			if (onYes)
 			{
+                Achievements.variables.remove(achiName);
+                Achievements.achievementsUnlocked.remove(achiName);
+                Achievements.save();
+                FlxG.save.flush();
+                // using reset state for now until i find a way to update the state
+                FlxG.resetState();
 				FlxG.sound.play(Paths.sound('cancelMenu'));
 			}
 			close();

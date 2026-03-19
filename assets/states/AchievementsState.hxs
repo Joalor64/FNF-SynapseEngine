@@ -214,6 +214,11 @@ function update(elapsed:Float)
 				changeSelection();
 			}
 		}
+
+		if (Controls.instance.RESET && (options[curSelected].unlocked || options[curSelected].curProgress > 0))
+		{
+			openSubState(new substates.ResetAchievementSubState(options[curSelected].displayName));
+		}
 	}
 
 	if (Controls.instance.BACK)
@@ -221,11 +226,6 @@ function update(elapsed:Float)
 		FlxG.sound.play(Paths.sound('cancelMenu'));
 		MusicBeatState.switchState(new ScriptedState('MainMenuState', []));
 		goingBack = true;
-	}
-
-	if (Controls.instance.RESET)
-	{
-		openSubState(new substates.ResetAchievementSubState(options[curSelected].displayName));
 	}
 }
 
