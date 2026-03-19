@@ -7,13 +7,15 @@ class ResetAchievementSubState extends MusicBeatSubstate
     var yesText:Alphabet;
     var noText:Alphabet;
 
-    var achiName:String = '';
+    var option:Dynamic;
+    var curSelected:Int;
 
-    public function new(achiName:String = '')
+    public function new(option:Dynamic, curSelected:Int)
     {
         super();
 
-        this.achiName = achiName;
+        this.option = option;
+        this.curSelected = curSelected;
 
         var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		bg.alpha = 0;
@@ -26,7 +28,7 @@ class ResetAchievementSubState extends MusicBeatSubstate
 		text.scrollFactor.set();
 		add(text);
 		
-		var text:FlxText = new FlxText(50, text.y + 90, FlxG.width - 100, achiName, 40);
+		var text:FlxText = new FlxText(50, text.y + 90, FlxG.width - 100, option.displayName, 40);
 		text.setFormat(Paths.font("vcr.ttf"), 40, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		text.scrollFactor.set();
 		text.borderSize = 2;
@@ -68,12 +70,18 @@ class ResetAchievementSubState extends MusicBeatSubstate
 		{
 			if (onYes)
 			{
-                Achievements.variables.remove(achiName);
-                Achievements.achievementsUnlocked.remove(achiName);
+                Achievements.variables.remove(option.name);
+                Achievements.achievementsUnlocked.remove(option.name);
+                option.unlocked = false;
+                option.curProgress = 0;
+                option.displayName = '???';
+                
+                var scriptedState = cast(FlxG.state, ScriptedState);
+                scriptedState.scriptExecute('onAchievementReset', [option, curSelected]);
+
                 Achievements.save();
                 FlxG.save.flush();
-                // using reset state for now until i find a way to update the state
-                FlxG.resetState();
+
 				FlxG.sound.play(Paths.sound('cancelMenu'));
 			}
 			close();
