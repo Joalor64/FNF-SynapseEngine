@@ -1,4 +1,5 @@
 import flixel.util.FlxSort;
+import substates.ResetAchievementSubState;
 import backend.Controls;
 import backend.Achievements;
 import backend.MusicBeatState;
@@ -221,6 +222,11 @@ function update(elapsed:Float)
 		FlxG.sound.play(Paths.sound('cancelMenu'));
 		MusicBeatState.switchState(new ScriptedState('MainMenuState', []));
 		goingBack = true;
+	}
+
+	if (Controls.instance.RESET)
+	{
+		openSubState(new ResetAchievementSubState(options[curSelected].displayName));
 	}
 }
 

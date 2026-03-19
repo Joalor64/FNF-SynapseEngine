@@ -802,11 +802,9 @@ class NotesSubState extends MusicBeatSubstate
 		bg.alpha = 0.25;
 		add(bg);
 
-		var text:Alphabet = new Alphabet(84, 20, '', false);
+		var text:Alphabet = new Alphabet(84, 20, 'CTRL', false);
 		text.alignment = CENTERED;
-		text.scaleX = 0.4;
-		text.scaleY = 0.4;
-		text.text = "CTRL";
+		text.setScale(0.4);
 		add(text);
 
 		copyButton = new FlxSprite(760, 50).loadGraphic(Paths.image('noteColorMenu/copy'));
@@ -1240,8 +1238,7 @@ class NotesSubState extends MusicBeatSubstate
 	{
 		var text:Alphabet = new Alphabet(x, y, '', true);
 		text.alignment = CENTERED;
-		text.scaleX = 0.6;
-		text.scaleY = 0.6;
+		text.setScale(0.6);
 		add(text);
 		return text;
 	}
