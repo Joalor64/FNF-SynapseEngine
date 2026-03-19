@@ -1,5 +1,4 @@
 import flixel.util.FlxSort;
-import substates.ResetAchievementSubState;
 import backend.Controls;
 import backend.Achievements;
 import backend.MusicBeatState;
@@ -226,7 +225,7 @@ function update(elapsed:Float)
 
 	if (Controls.instance.RESET)
 	{
-		openSubState(new ResetAchievementSubState(options[curSelected].displayName));
+		openSubState(new substates.ResetAchievementSubState(options[curSelected].displayName));
 	}
 }
 

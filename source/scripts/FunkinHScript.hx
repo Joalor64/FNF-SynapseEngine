@@ -341,6 +341,7 @@ class FunkinHScript extends FlxBasic
 		// you can't access these unless they're exposed to hscript???
 		// i mean, i'm pretty sure that should be obvious, but cmon bruh
 		setVariable('GameplayChangersSubstate', GameplayChangersSubstate);
+		setVariable('ResetAchievementSubState', ResetAchievementSubState);
 		setVariable('ResetScoreSubState', ResetScoreSubState);
 
 		setVariable('NotesSubState', NotesSubState);
