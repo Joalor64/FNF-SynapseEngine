@@ -38,6 +38,7 @@
 * [ ] Weekend 1
 * [ ] In-Game Crash Handler
 * [ ] Lil' Buddies (From FPS+)
+* [ ] Support for Separated Vocals
 * [ ] Potentially Backport Newer Psych Stuff
 
 ### Low Priority
