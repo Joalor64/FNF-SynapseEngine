@@ -15,7 +15,6 @@ var grpOptions:FlxSpriteGroup;
 var nameText:FlxText;
 var descText:FlxText;
 var progressTxt:FlxText;
-
 var progressBar:Bar;
 var barTween:FlxTween = null;
 
@@ -154,8 +153,8 @@ function makeAchievement(achievement:String, data:Achievement, unlocked:Bool, mo
 function sortByID(Obj1:Dynamic, Obj2:Dynamic):Int
 {
 	var id1:Int = Std.int(Obj1.ID != null ? Obj1.ID : 0);
-    var id2:Int = Std.int(Obj2.ID != null ? Obj2.ID : 0);
-    return id1 - id2;
+	var id2:Int = Std.int(Obj2.ID != null ? Obj2.ID : 0);
+	return id1 - id2;
 }
 
 function update(elapsed:Float)
@@ -276,24 +275,24 @@ function changeSelection()
 
 function onAchievementReset(option:Dynamic, index:Int)
 {
-    nameText.text = '???';
-    
-    if (option.maxProgress > 0)
-        progressTxt.text = '0 / ' + option.maxProgress;
-    
-    var spr = grpOptions.members[index];
-    spr.loadGraphic(Paths.image('achievements/lockedachievement'));
-    spr.antialiasing = ClientPrefs.data.globalAntialising;
-    
-    if (progressBar.visible)
-    {
-        if (barTween != null)
-            barTween.cancel();
-        barTween = FlxTween.tween(progressBar, {percent: 0}, 0.5, {
-            ease: FlxEase.quadOut,
-            onComplete: function(twn:FlxTween) progressBar.updateBar(),
-            onUpdate: function(twn:FlxTween) progressBar.updateBar()
-        });
-    }
+	nameText.text = '???';
+
+	if (option.maxProgress > 0)
+		progressTxt.text = '0 / ' + option.maxProgress;
+
+	var spr = grpOptions.members[index];
+	spr.loadGraphic(Paths.image('achievements/lockedachievement'));
+	spr.antialiasing = ClientPrefs.data.globalAntialising;
+
+	if (progressBar.visible)
+	{
+		if (barTween != null)
+			barTween.cancel();
+		barTween = FlxTween.tween(progressBar, {percent: 0}, 0.5, {
+			ease: FlxEase.quadOut,
+			onComplete: function(twn:FlxTween) progressBar.updateBar(),
+			onUpdate: function(twn:FlxTween) progressBar.updateBar()
+		});
+	}
 }
 #end

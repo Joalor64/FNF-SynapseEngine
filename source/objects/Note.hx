@@ -12,6 +12,16 @@ typedef EventNote =
 	value2:String
 }
 
+typedef NoteSplashData =
+{
+	disabled:Bool,
+	texture:String,
+	useGlobalShader:Bool, // breaks r/g/b/a but makes it copy default colors for your custom note
+	useRGBShader:Bool,
+	antialiasing:Bool,
+	alpha:Float
+}
+
 class Note extends FlxSprite
 {
 	public var extraData:Map<String, Dynamic> = [];
@@ -60,9 +70,14 @@ class Note extends FlxSprite
 	public static var colArray:Array<String> = ['purple', 'blue', 'green', 'red'];
 	public static var defaultNoteSkin(default, never):String = 'noteSkins/NOTE_assets';
 
-	// Lua shit
-	public var noteSplashDisabled:Bool = false;
-	public var noteSplashTexture:String = null;
+	public var noteSplashData:NoteSplashData = {
+		disabled: false,
+		texture: null,
+		antialiasing: !PlayState.isPixelStage,
+		useGlobalShader: false,
+		useRGBShader: (PlayState.SONG != null) ? !(PlayState.SONG.disableNoteRGB == true) : true,
+		alpha: ClientPrefs.data.splashAlpha
+	};
 
 	public var offsetX:Float = 0;
 	public var offsetY:Float = 0;
@@ -131,8 +146,7 @@ class Note extends FlxSprite
 
 	private function set_noteType(value:String):String
 	{
-		if (PlayState.SONG != null)
-			noteSplashTexture = PlayState.SONG.splashSkin;
+		noteSplashData.texture = PlayState.SONG != null ? PlayState.SONG.splashSkin : 'noteSplashes';
 
 		updateColours();
 
@@ -142,9 +156,13 @@ class Note extends FlxSprite
 			{
 				case 'Hurt Note':
 					ignoreNote = mustPress;
-					reloadNote('HURT');
-					noteSplashTexture = 'HURTnoteSplashes';
-					rgbShader.enabled = false;
+
+					rgbShader.r = 0xFF101010;
+					rgbShader.g = 0xFFFF0000;
+					rgbShader.b = 0xFF990022;
+
+					noteSplashData.texture = 'noteSplashes/noteSplashes-electric';
+
 					lowPriority = true;
 					missHealth = isSustainNote ? 0.25 : 0.1;
 					hitCausesMiss = true;

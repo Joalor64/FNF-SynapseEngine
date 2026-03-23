@@ -330,6 +330,7 @@ class FunkinHScript extends FlxBasic
 		#end
 		#if MODS_ALLOWED
 		setVariable('Mods', Mods);
+		setVariable('ModsMenuState', ModsMenuState);
 		#end
 		setVariable('Main', Main);
 		setVariable('MusicBeatState', MusicBeatState);

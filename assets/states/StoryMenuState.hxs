@@ -10,10 +10,9 @@ import states.LoadingState;
 var tweenDifficulty:FlxTween;
 
 var lastDifficultyName:String = '';
-
 var curDifficulty:Int = 1;
-var curWeek:Int = 0;
 
+var curWeek:Int = 0;
 var lerpScore:Int = 0;
 var intendedScore:Int = 0;
 
@@ -448,7 +447,7 @@ function changeWeek(change:Int)
 			bgColor = storyColor;
 		else
 			bgColor = [249, 207, 81];
-	
+
 		tweenColors([bgColor[0], bgColor[1], bgColor[2]]);
 	}
 	else
@@ -461,7 +460,7 @@ function tweenColors(colArray:Array<Int>)
 {
 	for (bg in [bgYellow, bgSprite])
 		FlxTween.color(bg, 0.25, bg.color, FlxColor.fromRGB(colArray[0], colArray[1], colArray[2]));
-	
+
 	for (char in grpWeekCharacters.members)
 		FlxTween.color(char, 0.25, char.color, FlxColor.fromRGB(colArray[0], colArray[1], colArray[2]));
 }

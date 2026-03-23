@@ -15,6 +15,7 @@ var grpOptions:FlxTypedGroup<Alphabet>;
 var curSelected:Int = 0;
 var selectorLeft:Alphabet;
 var selectorRight:Alphabet;
+var camFollow:FlxObject;
 var fromPlayState:Bool = false;
 
 function new(?playState:Bool)
@@ -28,12 +29,18 @@ function create()
 	DiscordClient.changePresence("Options Menu", null);
 	#end
 
+	var yScroll:Float = Math.max(0.25 - (0.05 * (options.length - options.length)), 0.1);
 	var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 	bg.color = 0xFFea71fd;
 	bg.updateHitbox();
+	bg.scrollFactor.set(0, 0);
 	bg.screenCenter();
 	bg.antialiasing = ClientPrefs.data.globalAntialiasing;
 	add(bg);
+
+	camFollow = new FlxObject(0, 0, 1, 1);
+	camFollow.screenCenter(FlxAxes.X);
+	add(camFollow);
 
 	grpOptions = createTypedGroup();
 	add(grpOptions);
@@ -43,15 +50,20 @@ function create()
 		var optionText:Alphabet = new Alphabet(0, 0, options[i], true);
 		optionText.screenCenter();
 		optionText.y += (100 * (i - (options.length / 2))) + 50;
+		optionText.scrollFactor.set(0, yScroll * 1.5);
 		grpOptions.add(optionText);
 	}
 
 	selectorLeft = new Alphabet(0, 0, '>', true);
+	selectorLeft.scrollFactor.set(0, yScroll * 1.5);
 	add(selectorLeft);
 	selectorRight = new Alphabet(0, 0, '<', true);
+	selectorRight.scrollFactor.set(0, yScroll * 1.5);
 	add(selectorRight);
 
 	changeSelection(0);
+	FlxG.camera.follow(camFollow, null, 0.15);
+
 	ClientPrefs.saveSettings();
 }
 
@@ -111,6 +123,9 @@ function changeSelection(change:Int = 0)
 			selectorRight.y = item.y;
 		}
 	}
+
+	camFollow.y = grpOptions.members[curSelected].y;
+
 	FlxG.sound.play(Paths.sound('scrollMenu'));
 }
 

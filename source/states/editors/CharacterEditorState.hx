@@ -18,7 +18,7 @@ import objects.Character;
 import lime.system.Clipboard;
 
 @:bitmap("assets/images/debugger/cursorCross.png")
-class PointerGraphic extends openfl.display.BitmapData
+class PointerGraphic extends BitmapData
 {
 }
 

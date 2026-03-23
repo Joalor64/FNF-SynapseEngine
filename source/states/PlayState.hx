@@ -292,7 +292,6 @@ class PlayState extends MusicBeatState
 
 		debugKeysChart = ClientPrefs.keyBinds.get('debug_1').copy();
 		debugKeysCharacter = ClientPrefs.keyBinds.get('debug_2').copy();
-		PauseSubState.songName = null; // Reset to default
 		playbackRate = ClientPrefs.getGameplaySetting('songspeed', 1);
 
 		comboFunction = () ->
@@ -969,9 +968,7 @@ class PlayState extends MusicBeatState
 			Paths.sound('missnote$i');
 		Paths.image('alphabet');
 
-		if (PauseSubState.songName != null)
-			Paths.music(PauseSubState.songName);
-		else if(Paths.formatToSongPath(ClientPrefs.data.pauseMusic) != 'none')
+		if (Paths.formatToSongPath(ClientPrefs.data.pauseMusic) != 'none')
 			Paths.music(Paths.formatToSongPath(ClientPrefs.data.pauseMusic));
 
 		#if DISCORD_ALLOWED
@@ -2909,8 +2906,7 @@ class PlayState extends MusicBeatState
 			FlxG.sound.music.pause();
 			vocals.pause();
 		}
-		// openSubState(new ScriptedSubState('PauseSubState', [boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y]));
-		openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+		openSubState(new ScriptedSubState('PauseSubState', [boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y]));
 
 		#if DISCORD_ALLOWED
 		DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter());
@@ -3622,7 +3618,7 @@ class PlayState extends MusicBeatState
 		note.rating = daRating.name;
 		score = daRating.score;
 
-		if (daRating.noteSplash && !note.noteSplashDisabled)
+		if (daRating.noteSplash && !note.noteSplashData.disabled)
 			spawnNoteSplashOnNote(note);
 
 		if (!practiceMode && !cpuControlled)
@@ -4239,7 +4235,7 @@ class PlayState extends MusicBeatState
 			if (note.hitCausesMiss)
 			{
 				noteMiss(note);
-				if (!note.noteSplashDisabled && !note.isSustainNote)
+				if (!note.noteSplashData.disabled && !note.isSustainNote)
 				{
 					spawnNoteSplashOnNote(note);
 				}
@@ -4407,7 +4403,7 @@ class PlayState extends MusicBeatState
 		}
 
 		var splash:NoteSplash = grpNoteSplashes.recycle(NoteSplash);
-		splash.setupNoteSplash(x, y, data, r, g, b);
+		splash.setupNoteSplash(x, y, data, note, r, g, b);
 		grpNoteSplashes.add(splash);
 	}
 

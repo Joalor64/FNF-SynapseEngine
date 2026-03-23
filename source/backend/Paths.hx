@@ -298,7 +298,7 @@ class Paths
 		var imageLoaded:FlxGraphic = image(key, allowGPU);
 		#if MODS_ALLOWED
 		var txtExists:Bool = false;
-		
+
 		var txt:String = modsTxt(key);
 		if (FileSystem.exists(txt))
 			txtExists = true;
@@ -306,6 +306,22 @@ class Paths
 		return FlxAtlasFrames.fromSpriteSheetPacker(imageLoaded, (txtExists ? File.getContent(txt) : getPath('images/$key.txt')));
 		#else
 		return FlxAtlasFrames.fromSpriteSheetPacker(imageLoaded, getPath('images/$key.txt'));
+		#end
+	}
+
+	inline static public function getAsepriteAtlas(key:String, ?allowGPU:Bool = true):FlxAtlasFrames
+	{
+		var imageLoaded:FlxGraphic = image(key, allowGPU);
+		#if MODS_ALLOWED
+		var jsonExists:Bool = false;
+
+		var json:String = modsImagesJson(key);
+		if (FileSystem.exists(json))
+			jsonExists = true;
+
+		return FlxAtlasFrames.fromTexturePackerJson(imageLoaded, (jsonExists ? File.getContent(json) : getPath('images/$key.json')));
+		#else
+		return FlxAtlasFrames.fromTexturePackerJson(imageLoaded, getPath('images/$key.json'));
 		#end
 	}
 
@@ -372,7 +388,8 @@ class Paths
 	}
 	#end
 
-	inline static public function formatToSongPath(path:String) {
+	inline static public function formatToSongPath(path:String)
+	{
 		final invalidChars = ~/[~&;:<>#\s]/g;
 		final hideChars = ~/[.,'"%?!]/g;
 
@@ -395,12 +412,12 @@ class Paths
 			if (Assets.exists(file, SOUND))
 				currentTrackedSounds.set(file, Assets.getSound(file));
 			#end
-			else if (beepOnNull)
-			{
-				trace('SOUND NOT FOUND: $key');
-				FlxG.log.error('SOUND NOT FOUND: $key');
-				return FlxAssets.getSound('flixel/sounds/beep');
-			}
+		else if (beepOnNull)
+		{
+			trace('SOUND NOT FOUND: $key');
+			FlxG.log.error('SOUND NOT FOUND: $key');
+			return FlxAssets.getSound('flixel/sounds/beep');
+		}
 		}
 		localTrackedAssets.push(file);
 		return currentTrackedSounds.get(file);
@@ -430,6 +447,9 @@ class Paths
 
 	inline static public function modsTxt(key:String)
 		return modFolders('images/$key.txt');
+
+	inline static public function modsImagesJson(key:String)
+		return modFolders('images/$key.json');
 
 	static public function modFolders(key:String)
 	{

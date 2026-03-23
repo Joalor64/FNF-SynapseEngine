@@ -15,7 +15,7 @@
         * [X] Credits
         * [X] Options
     * [ ] Game Over
-    * [ ] Pause Menu
+    * [X] Pause Menu
 * [X] Custom Options
 * [X] Custom Achievements
 * [ ] Optimizations
@@ -40,6 +40,7 @@
 * [ ] Lil' Buddies (From FPS+)
 * [ ] Support for Separated Vocals
 * [ ] Potentially Backport Newer Psych Stuff
+* [ ] Deprecate `animateatlas` in favor of `flxanimate`
 
 ### Low Priority
 * [ ] Extra Keys

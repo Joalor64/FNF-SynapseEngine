@@ -1,36 +1,382 @@
-// WORK IN PROGRESS!!
-
 import backend.MusicBeatState;
 import states.ScriptedState;
 import backend.Controls;
 import backend.Paths;
+import backend.CoolUtil;
+import backend.Conductor;
+import backend.ClientPrefs;
+import backend.Highscore;
+import backend.Song;
+import backend.Mods;
+import objects.Alphabet;
+import flixel.util.FlxStringUtil;
 
-var subX:Float = 0;
-var subY:Float = 0;
+var grpMenuShit:FlxTypedGroup;
+var menuItems:Array<String> = [];
+var menuItemsOG:Array<String> = ['Resume', 'Restart Song', 'Change Difficulty', 'Options', 'Exit'];
+var exitChoices:Array<String> = ['Exit to Freeplay', 'Exit to Menu', 'Exit Game', 'Back'];
+var difficultyChoices:Array<String> = [];
+var curSelected:Int = 0;
+
+var pauseMusic:FlxSound;
+
+var levelInfo:FlxText;
+var levelDifficulty:FlxText;
+var blueballedTxt:FlxText;
+var practiceText:FlxText;
+
+var bg:FlxSprite;
+
+var skipTimeText:FlxText;
+var skipTimeTracker:Alphabet;
+
+var curTime:Float = 0;
+var holdTime:Float = 0;
+
+var cantUnpause:Float = 0.1;
 
 function new(x:Float, y:Float)
 {
-    subX = x;
-    subY = y;
+	curTime = Math.max(0, Conductor.songPosition);
+
+	if (CoolUtil.difficulties.length < 2)
+		menuItemsOG.remove('Change Difficulty');
+
+	if (PlayState.chartingMode)
+	{
+		menuItemsOG.insert(2, 'Leave Charting Mode');
+		var num:Int = PlayState.instance.startingSong ? 0 : 1;
+		if (!PlayState.instance.startingSong)
+			menuItemsOG.insert(3, 'Skip Time');
+		menuItemsOG.insert(3 + num, 'End Song');
+		menuItemsOG.insert(4 + num, 'Toggle Practice Mode');
+		menuItemsOG.insert(5 + num, 'Toggle Botplay');
+	}
+	menuItems = menuItemsOG;
+
+	for (i in 0...CoolUtil.difficulties.length)
+	{
+		difficultyChoices.push('' + CoolUtil.difficulties[i]);
+	}
+	difficultyChoices.push('BACK');
 }
 
 function create()
 {
-    var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
-    bg.scrollFactor.set();
+	bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+	bg.alpha = 0;
+	bg.scrollFactor.set();
 	add(bg);
 
-	var text:FlxText = new FlxText(0, 0, FlxG.width, "GAME PAUSED", 48);
-	text.color = FlxColor.WHITE;
-    text.scrollFactor.set();
-	add(text);
+	levelInfo = new FlxText(20, 15, 0, PlayState.SONG.song, 32);
+	levelInfo.setFormat(Paths.font("vcr.ttf"), 32);
+	levelInfo.updateHitbox();
+	add(levelInfo);
+
+	levelDifficulty = new FlxText(20, 15 + 32, 0, CoolUtil.difficultyString(), 32);
+	levelDifficulty.setFormat(Paths.font('vcr.ttf'), 32);
+	add(levelDifficulty);
+
+	blueballedTxt = new FlxText(20, 15 + 64, 0, "Blueballed: " + PlayState.deathCounter, 32);
+	blueballedTxt.setFormat(Paths.font('vcr.ttf'), 32);
+	add(blueballedTxt);
+
+	practiceText = new FlxText(20, 15 + 96, 0, "PRACTICE MODE", 32);
+	practiceText.setFormat(Paths.font('vcr.ttf'), 32);
+	practiceText.visible = PlayState.instance.practiceMode;
+	add(practiceText);
+
+	levelInfo.alpha = levelDifficulty.alpha = blueballedTxt.alpha = practiceText.alpha = 0;
+	levelInfo.x = FlxG.width - (levelInfo.width + 20);
+	levelDifficulty.x = FlxG.width - (levelDifficulty.width + 20);
+	blueballedTxt.x = FlxG.width - (blueballedTxt.width + 20);
+	practiceText.x = FlxG.width - (practiceText.width + 20);
+
+	FlxTween.tween(bg, {alpha: 0.6}, 0.4, {ease: FlxEase.quartInOut});
+	FlxTween.tween(levelInfo, {alpha: 1, y: 20}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.3});
+	FlxTween.tween(levelDifficulty, {alpha: 1, y: levelDifficulty.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.5});
+	FlxTween.tween(blueballedTxt, {alpha: 1, y: blueballedTxt.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.7});
+	FlxTween.tween(practiceText, {alpha: 1, y: practiceText.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.9});
+
+	pauseMusic = new FlxSound();
+	var songName = Paths.formatToSongPath(ClientPrefs.data.pauseMusic);
+	if (songName != 'none')
+	{
+		pauseMusic.loadEmbedded(Paths.music(songName), true, true);
+		pauseMusic.volume = 0;
+		pauseMusic.play(false, FlxG.random.int(0, Std.int(pauseMusic.length / 2)));
+		FlxG.sound.list.add(pauseMusic);
+	}
+
+	grpMenuShit = createTypedGroup();
+	add(grpMenuShit);
+	regenMenu();
+
+	substate.cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
 }
 
 function update(elapsed:Float)
 {
-    if (Controls.instance.BACK)
-    {
-        FlxG.sound.playMusic(Paths.music('freakyMenu'));
-        MusicBeatState.switchState(new ScriptedState('MainMenuState', []));
-    }
+	cantUnpause -= elapsed;
+	if (pauseMusic.volume < 0.5)
+		pauseMusic.volume += 0.01 * elapsed;
+
+	updateSkipTextStuff();
+
+	if (Controls.instance.UI_UP_P)
+		changeSelection(-1);
+	if (Controls.instance.UI_DOWN_P)
+		changeSelection(1);
+
+	if (menuItems[curSelected] == 'Skip Time')
+	{
+		if (skipTimeText != null && skipTimeTracker != null)
+		{
+			skipTimeText.x = skipTimeTracker.x + skipTimeTracker.width + 60;
+			skipTimeText.y = skipTimeTracker.y;
+		}
+
+		if (Controls.instance.UI_LEFT_P)
+		{
+			FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+			curTime -= 1000;
+			updateSkipTimeText();
+		}
+		if (Controls.instance.UI_RIGHT_P)
+		{
+			FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+			curTime += 1000;
+			updateSkipTimeText();
+		}
+
+		if (Controls.instance.UI_LEFT || Controls.instance.UI_RIGHT)
+		{
+			holdTime += elapsed;
+			if (holdTime > 0.5)
+			{
+				curTime += 45000 * elapsed * (Controls.instance.UI_LEFT ? -1 : 1);
+			}
+
+			if (curTime >= FlxG.sound.music.length)
+				curTime -= FlxG.sound.music.length;
+			else if (curTime < 0)
+				curTime += FlxG.sound.music.length;
+			updateSkipTimeText();
+		}
+		if (curTime < 0)
+			curTime = 0;
+		if (curTime >= FlxG.sound.music.length)
+			curTime = FlxG.sound.music.length - 1000;
+	}
+
+	if (Controls.instance.ACCEPT && cantUnpause <= 0)
+	{
+		var daSelected:String = menuItems[curSelected];
+
+		if (menuItems == difficultyChoices)
+		{
+			if (daSelected != 'BACK')
+			{
+				var name:String = PlayState.SONG.song;
+				var poop = Highscore.formatSong(name, curSelected);
+				PlayState.SONG = Song.loadFromJson(poop, name);
+				PlayState.storyDifficulty = curSelected;
+				FlxG.resetState();
+				FlxG.sound.music.volume = 0;
+				PlayState.changedDifficulty = true;
+				PlayState.chartingMode = false;
+				return;
+			}
+			menuItems = menuItemsOG;
+			regenMenu();
+			return;
+		}
+
+		if (menuItems == exitChoices)
+		{
+			switch (daSelected)
+			{
+				case "Exit to Freeplay":
+					PlayState.deathCounter = 0;
+					PlayState.seenCutscene = false;
+					Mods.loadTheFirstEnabledMod();
+					MusicBeatState.switchState(new ScriptedState('FreeplayState', []));
+					PlayState.cancelMusicFadeTween();
+					FlxG.sound.playMusic(Paths.music('freakyMenu'));
+					PlayState.chartingMode = false;
+				case "Exit to Menu":
+					PlayState.deathCounter = 0;
+					PlayState.seenCutscene = false;
+					Mods.loadTheFirstEnabledMod();
+					if (PlayState.isStoryMode)
+						MusicBeatState.switchState(new ScriptedState('StoryMenuState', []));
+					else
+						MusicBeatState.switchState(new ScriptedState('MainMenuState', []));
+					PlayState.cancelMusicFadeTween();
+					FlxG.sound.playMusic(Paths.music('freakyMenu'));
+					PlayState.chartingMode = false;
+				case "Exit Game":
+					Sys.exit(0);
+				case "Back":
+					menuItems = menuItemsOG;
+					regenMenu();
+			}
+			return;
+		}
+
+		switch (daSelected)
+		{
+			case "Resume":
+				substate.close();
+			case "Restart Song":
+				restartSong();
+			case "Leave Charting Mode":
+				restartSong();
+				PlayState.chartingMode = false;
+			case "Skip Time":
+				if (curTime < Conductor.songPosition)
+				{
+					PlayState.startOnTime = curTime;
+					restartSong();
+				}
+				else
+				{
+					if (curTime != Conductor.songPosition)
+					{
+						PlayState.instance.clearNotesBefore(curTime);
+						PlayState.instance.setSongTime(curTime);
+					}
+					substate.close();
+				}
+			case "End Song":
+				substate.close();
+				PlayState.instance.finishSong(true);
+			case "Toggle Practice Mode":
+				PlayState.instance.practiceMode = !PlayState.instance.practiceMode;
+				PlayState.changedDifficulty = true;
+				practiceText.visible = PlayState.instance.practiceMode;
+			case "Toggle Botplay":
+				PlayState.instance.cpuControlled = !PlayState.instance.cpuControlled;
+				PlayState.changedDifficulty = true;
+				PlayState.instance.botplayTxt.visible = PlayState.instance.cpuControlled;
+				PlayState.instance.botplayTxt.alpha = 1;
+				PlayState.instance.botplaySine = 0;
+			case "Change Difficulty":
+				menuItems = difficultyChoices;
+				deleteSkipTimeText();
+				regenMenu();
+			case "Options":
+				PlayState.fromPlayState = true;
+				Mods.loadTheFirstEnabledMod();
+				MusicBeatState.switchState(new ScriptedState('OptionsState', [PlayState.fromPlayState]));
+				FlxG.sound.playMusic(Paths.music('freakyMenu'));
+				PlayState.cancelMusicFadeTween();
+			case "Exit":
+				menuItems = exitChoices;
+				deleteSkipTimeText();
+				regenMenu();
+		}
+	}
+}
+
+function restartSong()
+{
+	PlayState.instance.paused = true;
+	FlxG.sound.music.volume = 0;
+	PlayState.instance.vocals.volume = 0;
+
+	FlxG.resetState();
+}
+
+function updateSkipTimeText()
+{
+	if (skipTimeText != null)
+		skipTimeText.text = FlxStringUtil.formatTime(Math.max(0, Math.floor(curTime / 1000)), false)
+			+ ' / '
+			+ FlxStringUtil.formatTime(Math.max(0, Math.floor(FlxG.sound.music.length / 1000)), false);
+}
+
+function updateSkipTextStuff()
+{
+	if (skipTimeText == null || skipTimeTracker == null)
+		return;
+
+	skipTimeText.x = skipTimeTracker.x + skipTimeTracker.width + 60;
+	skipTimeText.y = skipTimeTracker.y;
+	skipTimeText.visible = (skipTimeTracker.alpha >= 1);
+}
+
+function deleteSkipTimeText()
+{
+	if (skipTimeText != null)
+	{
+		skipTimeText.kill();
+		remove(skipTimeText);
+		skipTimeText.destroy();
+	}
+	skipTimeText = null;
+	skipTimeTracker = null;
+}
+
+function changeSelection(change:Int)
+{
+	curSelected += change;
+	if (curSelected < 0)
+		curSelected = menuItems.length - 1;
+	if (curSelected >= menuItems.length)
+		curSelected = 0;
+
+	var bullShit:Int = 0;
+	for (item in grpMenuShit.members)
+	{
+		item.targetY = bullShit - curSelected;
+		bullShit++;
+		item.alpha = (item.targetY == 0) ? 1 : 0.6;
+
+		if (item.targetY == 0 && item == skipTimeTracker)
+		{
+			curTime = Math.max(0, Conductor.songPosition);
+			updateSkipTimeText();
+		}
+	}
+	FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+}
+
+function regenMenu()
+{
+	while (grpMenuShit.members.length > 0)
+	{
+		var obj = grpMenuShit.members[0];
+		obj.kill();
+		grpMenuShit.remove(obj, true);
+		obj.destroy();
+	}
+
+	for (i in 0...menuItems.length)
+	{
+		var item = new Alphabet(90, 320, menuItems[i], true);
+		item.isMenuItem = true;
+		item.targetY = i;
+		grpMenuShit.add(item);
+
+		if (menuItems[i] == 'Skip Time')
+		{
+			skipTimeText = new FlxText(0, 0, 0, '', 64);
+			skipTimeText.setFormat(Paths.font("vcr.ttf"), 64, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			skipTimeText.scrollFactor.set();
+			skipTimeText.borderSize = 2;
+			skipTimeTracker = item;
+			add(skipTimeText);
+			updateSkipTextStuff();
+			updateSkipTimeText();
+		}
+	}
+	curSelected = 0;
+	changeSelection(0);
+}
+
+function destroy()
+{
+	if (pauseMusic != null)
+		pauseMusic.destroy();
 }

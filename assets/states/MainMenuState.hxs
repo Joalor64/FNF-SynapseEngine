@@ -8,12 +8,14 @@ import lime.app.Application;
 
 var curSelected:Int = 0;
 var menuItems:FlxTypedGroup<FlxSprite>;
+
 var camGame:FlxCamera;
 var camAchievement:FlxCamera;
 
 var optionShit:Array<String> = [
 	'story_mode',
 	'freeplay',
+	#if MODS_ALLOWED 'mods', #end
 	#if ACHIEVEMENTS_ALLOWED 'awards', #end
 	'credits',
 	'donate',
@@ -21,6 +23,7 @@ var optionShit:Array<String> = [
 ];
 
 var magenta:FlxSprite;
+
 var camFollow:FlxObject;
 var debugKeys:Array<Int> = [];
 
@@ -95,12 +98,14 @@ function create()
 	FlxG.camera.follow(camFollow, null, 0.15);
 
 	var versionArray:Array<String> = [
-		'Synapse Engine v${Constants.SYNAPSE_ENGINE_VERSION}' #if debug + ' [${Constants.GIT_COMMIT_HASH}]' #end,
+		'Synapse Engine v${Constants.SYNAPSE_ENGINE_VERSION}'
+		#if debug + ' [${Constants.GIT_COMMIT_HASH}]' #end,
 		'Psych Engine v${Constants.PSYCH_ENGINE_VERSION}',
 		"Friday Night Funkin' v" + Application.current.meta.get('version')
 	];
 	versionArray.reverse();
-	for (i in 0...versionArray.length) {
+	for (i in 0...versionArray.length)
+	{
 		var versionTxt:FlxText = new FlxText(12, (FlxG.height - 24) - (18 * i), 0, versionArray[i], 12);
 		versionTxt.scrollFactor.set();
 		versionTxt.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
@@ -192,8 +197,14 @@ function update(elapsed:Float)
 									MusicBeatState.switchState(new ScriptedState('StoryMenuState', []));
 								case 'freeplay':
 									MusicBeatState.switchState(new ScriptedState('FreeplayState', []));
+								#if MODS_ALLOWED
+								case 'mods':
+									MusicBeatState.switchState(new ModsMenuState());
+								#end
+								#if ACHIEVEMENTS_ALLOWED
 								case 'awards':
 									MusicBeatState.switchState(new ScriptedState('AchievementsState', []));
+								#end
 								case 'credits':
 									MusicBeatState.switchState(new ScriptedState('CreditsState', []));
 								case 'options':

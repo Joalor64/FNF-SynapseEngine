@@ -1417,8 +1417,7 @@ class VisualsSubState extends BaseOptionsMenu
 			'bool'); // Variable type
 		addOption(option);
 
-		var option:Option = new Option('Colorblind Filter:', "Filters for colorblind people.", 'colorBlindFilter', 'string',
-			['None', 'Deuteranopia', 'Protanopia', 'Tritanopia']);
+		var option:Option = new Option('Colorblind Filter:', "Filters for colorblind people.", 'colorBlindFilter', 'string', Colorblind.getFilterNames());
 		addOption(option);
 		option.onChange = () -> Colorblind.updateFilter();
 

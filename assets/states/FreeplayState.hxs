@@ -6,7 +6,6 @@ import backend.Controls;
 import backend.Song;
 
 var songs:Array<Dynamic> = [];
-
 var curSelected:Int = 0;
 var curDifficulty:Int = 0;
 var lastDifficultyName:String = '';
@@ -37,6 +36,7 @@ var intendedColor:Int = 0;
 
 var instPlaying:Int = -1;
 var vocals:FlxSound = null;
+
 var holdTime:Float = 0;
 
 function create()

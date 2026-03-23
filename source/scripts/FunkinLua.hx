@@ -1650,7 +1650,11 @@ class FunkinLua
 		Lua_helper.add_callback(lua, "restartSong", function(?skipTransition:Bool = false)
 		{
 			PlayState.instance.persistentUpdate = false;
-			PauseSubState.restartSong(skipTransition);
+			PlayState.instance.paused = true;
+			FlxG.sound.music.volume = 0;
+			PlayState.instance.vocals.volume = 0;
+
+			FlxG.resetState();
 			return true;
 		});
 		Lua_helper.add_callback(lua, "exitSong", function(?skipTransition:Bool = false)
@@ -3329,6 +3333,9 @@ class FunkinLua
 
 			case "texture_noaa" | "textureatlas_noaa" | "tex_noaa":
 				spr.frames = AtlasFrameMaker.construct(image, null, true);
+
+			case 'aseprite' | 'jsoni8':
+				spr.frames = Paths.getAsepriteAtlas(image);
 
 			case "packer" | "packeratlas" | "pac":
 				spr.frames = Paths.getPackerAtlas(image);

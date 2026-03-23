@@ -38,6 +38,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		bg.color = 0xFFea71fd;
 		bg.screenCenter();
 		bg.antialiasing = ClientPrefs.data.globalAntialiasing;
+		bg.y += 17;
 		add(bg);
 
 		// avoids lagspikes while scrolling through menus!

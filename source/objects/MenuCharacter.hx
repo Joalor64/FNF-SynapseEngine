@@ -15,7 +15,7 @@ class MenuCharacter extends FlxSprite
 {
 	public var character:String;
 	public var hasConfirmAnimation:Bool = false;
-	
+
 	private var basePosition:Array<Int> = [0, 0];
 	private var confirmOffset:Array<Int> = [0, 0];
 
@@ -93,19 +93,19 @@ class MenuCharacter extends FlxSprite
 					scale.set(charFile.scale, charFile.scale);
 					updateHitbox();
 				}
-				
+
 				basePosition = charFile.position;
 				offset.set(basePosition[0], basePosition[1]);
-				
+
 				if (charFile.confirm_position != null && charFile.confirm_position.length >= 2)
 					confirmOffset = charFile.confirm_position;
 				else
 					confirmOffset = [0, 0];
-				
+
 				animation.play('idle');
 		}
 	}
-	
+
 	public function playConfirm():Void
 	{
 		if (hasConfirmAnimation && animation.getByName('confirm') != null)
@@ -114,7 +114,7 @@ class MenuCharacter extends FlxSprite
 			animation.play('confirm', true);
 		}
 	}
-	
+
 	public function playIdle():Void
 	{
 		offset.set(basePosition[0], basePosition[1]);

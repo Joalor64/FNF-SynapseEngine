@@ -118,17 +118,17 @@ function create()
 	curWacky = introArray[FlxG.random.int(0, introArray.length - 1)];
 }
 
-function createCoolText(textArray:Array<String>)
+function createCoolText(textArray:Array<String>, ?offset:Float)
 {
 	for (i in 0...textArray.length)
-		addMoreText(textArray[i]);
+		addMoreText(textArray[i], offset);
 }
 
-function addMoreText(text:String)
+function addMoreText(text:String, ?offset:Float)
 {
 	var coolText:Alphabet = new Alphabet(0, 0, text, true);
 	coolText.screenCenter(FlxAxes.X);
-	coolText.y += (credGroup.length * 60) + 200;
+	coolText.y += (credGroup.length * 60) + 200 + offset;
 	credGroup.add(coolText);
 }
 
@@ -185,9 +185,9 @@ function beatHit(curBeat:Int)
 		case 4:
 			credGroup.clear();
 		case 5:
-			createCoolText(['Not in association', 'with']);
+			createCoolText(['Not in association', 'with'], -40);
 		case 7:
-			addMoreText('newgrounds');
+			addMoreText('newgrounds', -40);
 			ngSpr.visible = true;
 		case 8:
 			credGroup.clear();

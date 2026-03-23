@@ -14,7 +14,6 @@ import openfl.net.FileFilter;
 import lime.system.Clipboard;
 import backend.WeekData;
 
-// To-Do: add color steppers for bg and stuff
 class WeekEditorState extends MusicBeatState
 {
 	var txtWeekTitle:FlxText;
@@ -25,6 +24,11 @@ class WeekEditorState extends MusicBeatState
 	var grpWeekCharacters:FlxTypedGroup<MenuCharacter>;
 	var weekThing:MenuItem;
 	var missingFileText:FlxText;
+
+	var colorStepperR:FlxUINumericStepper;
+	var colorStepperG:FlxUINumericStepper;
+	var colorStepperB:FlxUINumericStepper;
+	var colorTweenCheckbox:FlxUICheckBox;
 
 	var weekFile:WeekFile = null;
 
@@ -252,6 +256,23 @@ class WeekEditorState extends MusicBeatState
 		tab_group.add(difficultiesInputText);
 		tab_group.add(hiddenUntilUnlockCheckbox);
 		tab_group.add(lockedCheckbox);
+
+		colorStepperR = new FlxUINumericStepper(10, difficultiesInputText.y + 70, 20, 255, 0, 255, 0);
+		colorStepperG = new FlxUINumericStepper(80, colorStepperR.y, 20, 255, 0, 255, 0);
+		colorStepperB = new FlxUINumericStepper(150, colorStepperR.y, 20, 255, 0, 255, 0);
+
+		colorTweenCheckbox = new FlxUICheckBox(10, colorStepperR.y + 30, null, null, "Week Color Tweening?", 100);
+		colorTweenCheckbox.callback = function()
+		{
+			weekFile.weekColorTween = colorTweenCheckbox.checked;
+		};
+
+		tab_group.add(new FlxText(10, colorStepperR.y - 18, 0, 'Week Background Color (R/G/B):'));
+		tab_group.add(colorStepperR);
+		tab_group.add(colorStepperG);
+		tab_group.add(colorStepperB);
+		tab_group.add(colorTweenCheckbox);
+
 		UI_box.addGroup(tab_group);
 	}
 
@@ -286,6 +307,11 @@ class WeekEditorState extends MusicBeatState
 
 		hiddenUntilUnlockCheckbox.checked = weekFile.hiddenUntilUnlocked;
 		hiddenUntilUnlockCheckbox.alpha = 0.4 + 0.6 * (lockedCheckbox.checked ? 1 : 0);
+
+		colorStepperR.value = weekFile.weekColor[0];
+		colorStepperG.value = weekFile.weekColor[1];
+		colorStepperB.value = weekFile.weekColor[2];
+		colorTweenCheckbox.checked = weekFile.weekColorTween;
 
 		reloadBG();
 		reloadWeekThing();
@@ -443,6 +469,15 @@ class WeekEditorState extends MusicBeatState
 				weekFile.difficulties = difficultiesInputText.text.trim();
 			}
 		}
+		else if (id == FlxUINumericStepper.CHANGE_EVENT && (sender is FlxUINumericStepper))
+		{
+			if (sender == colorStepperR || sender == colorStepperG || sender == colorStepperB)
+			{
+				weekFile.weekColor[0] = Math.round(colorStepperR.value);
+				weekFile.weekColor[1] = Math.round(colorStepperG.value);
+				weekFile.weekColor[2] = Math.round(colorStepperB.value);
+			}
+		}
 	}
 
 	override function update(elapsed:Float)
@@ -485,11 +520,19 @@ class WeekEditorState extends MusicBeatState
 
 		super.update(elapsed);
 
+		var finalColor:FlxColor = FlxColor.WHITE;
+		if (weekFile.weekColorTween)
+		{
+			finalColor = FlxColor.fromRGB(weekFile.weekColor[0], weekFile.weekColor[1], weekFile.weekColor[2]);
+		}
+
 		for (bg in [bgYellow, bgSprite])
-			bg.color = FlxColor.fromRGB(weekFile.weekColor[0], weekFile.weekColor[1], weekFile.weekColor[2]);
-		
+			bg.color = finalColor;
+
 		for (char in grpWeekCharacters.members)
-			char.color = FlxColor.fromRGB(weekFile.weekColor[0], weekFile.weekColor[1], weekFile.weekColor[2]);
+			char.color = finalColor;
+
+		lock.y = weekThing.y;
 
 		lock.y = weekThing.y;
 		missingFileText.y = weekThing.y + 36;

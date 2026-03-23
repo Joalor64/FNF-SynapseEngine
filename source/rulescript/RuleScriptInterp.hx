@@ -492,10 +492,10 @@ class RuleScriptInterp extends hscript.Interp
 		declared.push({n: value, old: locals.get(value)});
 
 		var itObj = makeKeyValueIterator(expr(it));
-var it = {
-  hasNext: itObj.hasNext,
-  next: itObj.next
-};
+		var it = {
+			hasNext: itObj.hasNext,
+			next: itObj.next
+		};
 		while (it.hasNext())
 		{
 			var itNext = it.next();

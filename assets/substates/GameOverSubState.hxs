@@ -1,41 +1,36 @@
 // WORK IN PROGRESS!!
-
 import backend.MusicBeatState;
 import states.ScriptedState;
 import backend.Controls;
 import backend.Paths;
 
-var subX:Float = 0;
-var subY:Float = 0;
 var cameraX:Float = 0;
 var cameraY:Float = 0;
 
 function new(x:Float, y:Float, camX:Float, camY:Float)
 {
-    subX = x;
-    subY = y;
-    cameraX = camX;
-    cameraY = camY;
+	cameraX = camX;
+	cameraY = camY;
 }
 
 function create()
 {
-    var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
-    bg.alpha = 0.6;
-    bg.scrollFactor.set();
+	var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+	bg.alpha = 0.6;
+	bg.scrollFactor.set();
 	add(bg);
 
 	var text:FlxText = new FlxText(0, 0, FlxG.width, "GAME OVER", 48);
 	text.color = FlxColor.WHITE;
-    text.scrollFactor.set();
+	text.scrollFactor.set();
 	add(text);
 }
 
 function update(elapsed:Float)
 {
-    if (Controls.instance.BACK)
-    {
-        FlxG.sound.playMusic(Paths.music('freakyMenu'));
-        MusicBeatState.switchState(new ScriptedState('MainMenuState', []));
-    }
+	if (Controls.instance.BACK)
+	{
+		FlxG.sound.playMusic(Paths.music('freakyMenu'));
+		MusicBeatState.switchState(new ScriptedState('MainMenuState', []));
+	}
 }

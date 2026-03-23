@@ -53,14 +53,17 @@ class NoteSplash extends FlxSprite
 
 	var maxAnims:Int = 2;
 
-	public function setupNoteSplash(x:Float, y:Float, note:Int = 0, redColor:FlxColor = 0, greenColor:FlxColor = 0, blueColor:FlxColor = 0)
+	public function setupNoteSplash(x:Float, y:Float, direction:Int = 0, ?note:Note = null, redColor:FlxColor = 0, greenColor:FlxColor = 0,
+			blueColor:FlxColor = 0)
 	{
 		setPosition(x - Note.swagWidth * 0.95, y - Note.swagWidth);
 
 		aliveTime = 0;
 
 		var texture:String = null;
-		if (PlayState.SONG.splashSkin != null && PlayState.SONG.splashSkin.length > 0)
+		if (note != null && note.noteSplashData.texture != null)
+			texture = note.noteSplashData.texture;
+		else if (PlayState.SONG.splashSkin != null && PlayState.SONG.splashSkin.length > 0)
 			texture = PlayState.SONG.splashSkin;
 		else
 			texture = defaultNoteSplash + getSplashSkinPostfix();
@@ -71,27 +74,51 @@ class NoteSplash extends FlxSprite
 		else
 			config = precacheConfig(_configLoaded);
 
-		rgbShader.r = redColor;
-		rgbShader.g = greenColor;
-		rgbShader.b = blueColor;
-		shader = rgbShader.shader;
+		var tempShader:RGBPalette = null;
+		if ((note == null || note.noteSplashData.useRGBShader) && (PlayState.SONG == null || !PlayState.SONG.disableNoteRGB))
+		{
+			if (note != null && !note.noteSplashData.useGlobalShader)
+			{
+				// did i do this weirdly?
+				// honestly, yeah
+				if (note.noteType == 'Hurt Note')
+				{
+					rgbShader.r = 0xFFFF0000;
+					rgbShader.g = 0xFF101010;
+				}
+				else
+				{
+					rgbShader.r = redColor;
+					rgbShader.g = greenColor;
+					rgbShader.b = blueColor;
+				}
+				shader = rgbShader.shader;
+			}
+			else
+				tempShader = Note.globalRgbShaders[direction];
+		}
 
 		alpha = ClientPrefs.data.splashAlpha;
+		if (note != null)
+			alpha = note.noteSplashData.alpha;
 
-		if (PlayState.isPixelStage || !ClientPrefs.data.globalAntialiasing)
+		antialiasing = ClientPrefs.data.globalAntialiasing;
+		if (note != null)
+			antialiasing = note.noteSplashData.antialiasing;
+		if (PlayState.isPixelStage)
 			antialiasing = false;
 
 		_textureLoaded = texture;
 		offset.set(10, 10);
 
 		var animNum:Int = FlxG.random.int(1, maxAnims);
-		animation.play('note' + note + '-' + animNum, true);
+		animation.play('note' + direction + '-' + animNum, true);
 
 		var minFps:Int = 22;
 		var maxFps:Int = 26;
 		if (config != null)
 		{
-			var animID:Int = note + ((animNum - 1) * Note.colArray.length);
+			var animID:Int = direction + ((animNum - 1) * Note.colArray.length);
 			var offs:Array<Float> = config.offsets[FlxMath.wrap(animID, 0, config.offsets.length - 1)];
 			offset.x += offs[0];
 			offset.y += offs[1];

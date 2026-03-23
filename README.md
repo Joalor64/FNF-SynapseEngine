@@ -21,7 +21,7 @@ If you want to figure out how the engine works, check out the [documentation](ht
 
 ## Credits
 ### Engine Credits / Special Thanks
-* Joalor64 - Creator + Main Programmer
+* Joalor64 - Creator/Main Programmer
 * Psych Engine Team (0.6.3) - Psych Engine
 
 ### The Funkin' Crew Inc.

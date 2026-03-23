@@ -105,10 +105,7 @@ class ChartingState extends MusicBeatState
 			'Add Subtitle',
 			"Adds a subtitle.\nValue 1: Text.\nValue 2: Color (write as 0xffffffff)\nValue 3: Duration before fadeout in STEPS.\n(Add to the end of value 2, with a comma to seperate.)"
 		],
-		[
-			'Toggle Screen Bop',
-			'Value 1: "off" to stop, "on" to resume.\nValue 2: (unused)'
-		]
+		['Toggle Screen Bop', 'Value 1: "off" to stop, "on" to resume.']
 	];
 
 	var _file:FileReference;
@@ -1757,6 +1754,8 @@ class ChartingState extends MusicBeatState
 			if (FlxG.keys.justPressed.ENTER)
 			{
 				autosaveSong();
+
+				PlayState.chartingMode = true;
 				FlxG.mouse.visible = false;
 				PlayState.SONG = _song;
 				FlxG.sound.music.stop();
@@ -3149,7 +3148,8 @@ class ChartingState extends MusicBeatState
 			funnyText.setFormat(Paths.font("vcr.ttf"), 64, FlxColor.RED, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 			add(funnyText);
 			FlxTween.tween(funnyText, {alpha: 0}, 0.6, {
-				onComplete: _ -> {
+				onComplete: _ ->
+				{
 					remove(funnyText, true);
 					funnyText.destroy();
 				}

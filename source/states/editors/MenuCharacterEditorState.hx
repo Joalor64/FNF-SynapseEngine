@@ -14,7 +14,6 @@ import openfl.net.FileFilter;
 import backend.WeekData;
 import objects.MenuCharacter;
 
-// To-Do: add config stuff for confirm anim offsets
 class MenuCharacterEditorState extends MusicBeatState
 {
 	var grpWeekCharacters:FlxTypedGroup<MenuCharacter>;
@@ -25,11 +24,12 @@ class MenuCharacterEditorState extends MusicBeatState
 	override function create()
 	{
 		canSelectMods = false;
-		
+
 		characterFile = {
 			image: 'Menu_Dad',
 			scale: 1,
 			position: [0, 0],
+			confirm_position: [0, 0],
 			idle_anim: 'Dad idle dance',
 			confirm_anim: 'Dad idle dance',
 			flipX: false
@@ -86,9 +86,9 @@ class MenuCharacterEditorState extends MusicBeatState
 
 		var tabs = [{name: 'Character', label: 'Character'},];
 		UI_mainbox = new FlxUITabMenu(null, tabs, true);
-		UI_mainbox.resize(240, 180);
+		UI_mainbox.resize(240, 210);
 		UI_mainbox.x = FlxG.width - UI_mainbox.width - 100;
-		UI_mainbox.y = FlxG.height - UI_mainbox.height - 50;
+		UI_mainbox.y = FlxG.height - UI_mainbox.height - 25;
 		UI_mainbox.scrollFactor.set();
 		addCharacterUI();
 		add(UI_mainbox);
@@ -114,6 +114,9 @@ class MenuCharacterEditorState extends MusicBeatState
 	var boyfriendCheckbox:FlxUICheckBox;
 	var girlfriendCheckbox:FlxUICheckBox;
 	var curTypeSelected:Int = 0; // 0 = Dad, 1 = BF, 2 = GF
+
+	var confirmOffsetCheckbox:FlxUICheckBox;
+	var editingConfirm:Bool = false;
 
 	function addTypeUI()
 	{
@@ -165,6 +168,8 @@ class MenuCharacterEditorState extends MusicBeatState
 		confirmInputText = new FlxUIInputText(10, idleInputText.y + 35, 100, characterFile.confirm_anim, 8);
 		blockPressWhileTypingOn.push(confirmInputText);
 
+		scaleStepper = new FlxUINumericStepper(140, imageInputText.y, 0.05, 1, 0.1, 30, 2);
+
 		flipXCheckbox = new FlxUICheckBox(10, confirmInputText.y + 30, null, null, "Flip X", 100);
 		flipXCheckbox.callback = function()
 		{
@@ -172,12 +177,18 @@ class MenuCharacterEditorState extends MusicBeatState
 			characterFile.flipX = flipXCheckbox.checked;
 		};
 
-		var reloadImageButton:FlxButton = new FlxButton(140, confirmInputText.y + 30, "Reload Char", function()
+		confirmOffsetCheckbox = new FlxUICheckBox(scaleStepper.x, flipXCheckbox.y, null, null, "Editing Confirm", 100);
+		confirmOffsetCheckbox.callback = function()
+		{
+			editingConfirm = confirmOffsetCheckbox.checked;
+			updateOffset();
+		};
+		tab_group.add(confirmOffsetCheckbox);
+
+		var reloadImageButton:FlxButton = new FlxButton(scaleStepper.x, confirmInputText.y + 65, "Reload Char", function()
 		{
 			reloadSelectedCharacter();
 		});
-
-		scaleStepper = new FlxUINumericStepper(140, imageInputText.y, 0.05, 1, 0.1, 30, 2);
 
 		var confirmDescText = new FlxText(10, confirmInputText.y - 18, 0, 'Start Press animation on the .XML:');
 		tab_group.add(new FlxText(10, imageInputText.y - 18, 0, 'Image file name:'));
@@ -306,24 +317,28 @@ class MenuCharacterEditorState extends MusicBeatState
 			if (FlxG.keys.pressed.SHIFT)
 				shiftMult = 10;
 
+			if (characterFile.confirm_position == null)
+				characterFile.confirm_position = [0, 0];
+			var curOffset = editingConfirm ? characterFile.confirm_position : characterFile.position;
+
 			if (FlxG.keys.justPressed.LEFT)
 			{
-				characterFile.position[0] += shiftMult;
+				curOffset[0] += shiftMult;
 				updateOffset();
 			}
 			if (FlxG.keys.justPressed.RIGHT)
 			{
-				characterFile.position[0] -= shiftMult;
+				curOffset[0] -= shiftMult;
 				updateOffset();
 			}
 			if (FlxG.keys.justPressed.UP)
 			{
-				characterFile.position[1] += shiftMult;
+				curOffset[1] += shiftMult;
 				updateOffset();
 			}
 			if (FlxG.keys.justPressed.DOWN)
 			{
-				characterFile.position[1] -= shiftMult;
+				curOffset[1] -= shiftMult;
 				updateOffset();
 			}
 
@@ -345,8 +360,19 @@ class MenuCharacterEditorState extends MusicBeatState
 	function updateOffset()
 	{
 		var char:MenuCharacter = grpWeekCharacters.members[curTypeSelected];
-		char.offset.set(characterFile.position[0], characterFile.position[1]);
-		txtOffsets.text = '' + characterFile.position;
+		if (characterFile.confirm_position == null)
+			characterFile.confirm_position = [0, 0];
+
+		if (editingConfirm)
+		{
+			char.offset.set(characterFile.position[0] + characterFile.confirm_position[0], characterFile.position[1] + characterFile.confirm_position[1]);
+			txtOffsets.text = 'Confirm Offset: ' + characterFile.confirm_position;
+		}
+		else
+		{
+			char.offset.set(characterFile.position[0], characterFile.position[1]);
+			txtOffsets.text = 'Main Offset: ' + characterFile.position;
+		}
 	}
 
 	var _file:FileReference = null;
@@ -384,6 +410,8 @@ class MenuCharacterEditorState extends MusicBeatState
 					var cutName:String = _file.name.substr(0, _file.name.length - 5);
 					trace("Successfully loaded file: " + cutName);
 					characterFile = loadedChar;
+					if (characterFile.confirm_position == null)
+						characterFile.confirm_position = [0, 0];
 					reloadSelectedCharacter();
 					imageInputText.text = characterFile.image;
 					idleInputText.text = characterFile.image;

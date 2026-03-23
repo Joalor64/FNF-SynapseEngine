@@ -1,6 +1,6 @@
 package scripts;
 
-class Globals 
+class Globals
 {
 	public static var Function_Stop:Dynamic = 1;
 	public static var Function_Continue:Dynamic = 0;

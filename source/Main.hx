@@ -16,15 +16,16 @@ class Main extends Sprite
 	public static var volumeDownKeys:Array<FlxKey> = [FlxKey.NUMPADMINUS, FlxKey.MINUS];
 	public static var volumeUpKeys:Array<FlxKey> = [FlxKey.NUMPADPLUS, FlxKey.PLUS];
 
-	public final config:Dynamic = {
+	public static var fpsVar:FPS;
+
+	// this probably shouldn't be public
+	static final config:Dynamic = {
 		gameDimensions: [1280, 720],
 		initialState: InitState,
 		defaultFPS: 60,
 		skipSplash: true,
 		startFullscreen: false
 	};
-
-	public static var fpsVar:FPS;
 
 	public static function main():Void
 		Lib.current.addChild(new Main());
@@ -46,7 +47,7 @@ class Main extends Sprite
 
 	public function new()
 	{
-		untyped __cpp__('', backend.ALSoft);
+		untyped __cpp__('', ALSoft);
 
 		super();
 
@@ -88,8 +89,8 @@ class Main extends Sprite
 			System.gc();
 		});
 
-		var game:FlxGame = new FlxGame(config.gameDimensions[0], config.gameDimensions[1], config.initialState, config.defaultFPS, config.defaultFPS, config.skipSplash,
-			config.startFullscreen);
+		var game:FlxGame = new FlxGame(config.gameDimensions[0], config.gameDimensions[1], config.initialState, config.defaultFPS, config.defaultFPS,
+			config.skipSplash, config.startFullscreen);
 
 		@:privateAccess
 		game._customSoundTray = FunkinSoundTray;

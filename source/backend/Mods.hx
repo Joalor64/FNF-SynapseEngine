@@ -64,8 +64,8 @@ class Mods
 		{
 			for (folder in FileSystem.readDirectory(modsFolder))
 			{
-				var path = haxe.io.Path.join([modsFolder, folder]);
-				if (sys.FileSystem.isDirectory(path) && !ignoreModFolders.contains(folder.toLowerCase()) && !list.contains(folder))
+				var path = Path.join([modsFolder, folder]);
+				if (FileSystem.isDirectory(path) && !ignoreModFolders.contains(folder.toLowerCase()) && !list.contains(folder))
 					list.push(folder);
 			}
 		}
