@@ -2210,6 +2210,12 @@ class ChartingState extends MusicBeatState
 		reloadGridLayer();
 	}
 
+	override function destroy()
+	{
+		Note.globalRgbShaders = [];
+		super.destroy();
+	}
+
 	var lastSecBeats:Float = 0;
 	var lastSecBeatsNext:Float = 0;
 
@@ -2844,6 +2850,7 @@ class ChartingState extends MusicBeatState
 		else
 		{ // Event note
 			note.loadGraphic(Paths.image('eventArrow'));
+			note.rgbShader.enabled = false;
 			note.eventName = getEventName(i[1]);
 			note.eventLength = i[1].length;
 			if (i[1].length < 2)

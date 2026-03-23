@@ -680,6 +680,12 @@ class GameplaySubState extends BaseOptionsMenu
 			prevLine = option.getValue() / pixels.height;
 		}
 	}
+
+	override function destroy()
+	{
+		Note.globalRgbShaders = [];
+		super.destroy();
+	}
 }
 
 class MiscSubState extends BaseOptionsMenu

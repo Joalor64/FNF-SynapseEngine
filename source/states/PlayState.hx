@@ -4430,8 +4430,10 @@ class PlayState extends MusicBeatState
 		FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
 		FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
 
-		FlxG.timeScale = 1;
 		#if FLX_PITCH FlxG.sound.music.pitch = 1; #end
+		FlxG.timeScale = 1;
+
+		Note.globalRgbShaders = [];
 
 		callOnScripts('destroy', []);
 
