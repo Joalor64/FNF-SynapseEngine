@@ -132,8 +132,6 @@ class PlayState extends MusicBeatState
 	public var camZoomingMult:Float = 1;
 	public var camZoomingDecay:Float = 1;
 
-	private var curSong:String = "";
-
 	public var gfSpeed:Int = 1;
 	public var health(default, set):Float = 1;
 	public var smoothHealth:Float = 1;
@@ -735,7 +733,7 @@ class PlayState extends MusicBeatState
 		opponentStrums = new FlxTypedGroup<StrumNote>();
 		playerStrums = new FlxTypedGroup<StrumNote>();
 
-		generateSong(SONG.song);
+		generateSong();
 
 		camFollow = new FlxPoint();
 		camFollowPos = new FlxObject(0, 0, 1, 1);
@@ -1911,7 +1909,7 @@ class PlayState extends MusicBeatState
 
 	var stair:Int = 0;
 
-	private function generateSong(dataPath:String):Void
+	private function generateSong():Void
 	{
 		songSpeedType = ClientPrefs.getGameplaySetting('scrolltype', 'multiplicative');
 
@@ -1923,10 +1921,7 @@ class PlayState extends MusicBeatState
 				songSpeed = ClientPrefs.getGameplaySetting('scrollspeed', 1);
 		}
 
-		var songData = SONG;
-		Conductor.bpm = songData.bpm;
-
-		curSong = songData.song;
+		Conductor.bpm = SONG.bpm;
 
 		if (SONG.needsVoices)
 			vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song));
@@ -1943,7 +1938,7 @@ class PlayState extends MusicBeatState
 		var noteData:Array<SwagSection>;
 
 		// NEW SHIT
-		noteData = songData.notes;
+		noteData = SONG.notes;
 
 		var file:String = Paths.json('songs/' + songName + '/events');
 		#if MODS_ALLOWED
@@ -2099,7 +2094,7 @@ class PlayState extends MusicBeatState
 					noteTypes.push(swagNote.noteType);
 			}
 		}
-		for (event in songData.events) // Event Notes
+		for (event in SONG.events) // Event Notes
 		{
 			for (i in 0...event[1].length)
 			{
@@ -3249,19 +3244,9 @@ class PlayState extends MusicBeatState
 				var newValue:Float = SONG.speed * ClientPrefs.getGameplaySetting('scrollspeed', 1) * val1;
 
 				if (val2 <= 0)
-				{
 					songSpeed = newValue;
-				}
 				else
-				{
-					songSpeedTween = FlxTween.tween(this, {songSpeed: newValue}, val2 / playbackRate, {
-						ease: FlxEase.linear,
-						onComplete: function(twn:FlxTween)
-						{
-							songSpeedTween = null;
-						}
-					});
-				}
+					songSpeedTween = FlxTween.tween(this, {songSpeed: newValue}, val2 / playbackRate, {ease: FlxEase.linear, onComplete: _ -> songSpeedTween = null});
 
 			case 'Popup':
 				FlxG.sound.music.pause();
@@ -3342,13 +3327,9 @@ class PlayState extends MusicBeatState
 				});
 			case "Toggle Screen Bop":
 				if (value1.toLowerCase() == 'off' || value1 == '0' || value1.toLowerCase() == 'false')
-				{
 					camZooming = false;
-				}
 				else
-				{
 					camZooming = true;
-				}
 		}
 		stagesFunc(function(stage:BaseStage) stage.eventCalled(eventName, value1, value2, flValue1, flValue2, strumTime));
 		callOnLuas('onEvent', [eventName, value1, value2, strumTime]);
@@ -3394,30 +3375,14 @@ class PlayState extends MusicBeatState
 			camFollow.y += boyfriend.cameraPosition[1] + boyfriendCameraOffset[1];
 
 			if (songName == 'tutorial' && cameraTwn == null && FlxG.camera.zoom != 1)
-			{
-				cameraTwn = FlxTween.tween(FlxG.camera, {zoom: 1}, (Conductor.stepCrochet * 4 / 1000), {
-					ease: FlxEase.elasticInOut,
-					onComplete: function(twn:FlxTween)
-					{
-						cameraTwn = null;
-					}
-				});
-			}
+				cameraTwn = FlxTween.tween(FlxG.camera, {zoom: 1}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut, onComplete: _ -> cameraTwn = null});
 		}
 	}
 
 	inline public function tweenCamIn()
 	{
 		if (songName == 'tutorial' && cameraTwn == null && FlxG.camera.zoom != 1.3)
-		{
-			cameraTwn = FlxTween.tween(FlxG.camera, {zoom: 1.3}, (Conductor.stepCrochet * 4 / 1000), {
-				ease: FlxEase.elasticInOut,
-				onComplete: function(twn:FlxTween)
-				{
-					cameraTwn = null;
-				}
-			});
-		}
+			cameraTwn = FlxTween.tween(FlxG.camera, {zoom: 1.3}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut, onComplete: _ -> cameraTwn = null});
 	}
 
 	inline function snapCamFollowToPos(x:Float, y:Float)

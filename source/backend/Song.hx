@@ -112,9 +112,10 @@ class Song
 		}
 
 		while (!rawJson.endsWith("}"))
-		{
 			rawJson = rawJson.substr(0, rawJson.length - 1);
-		}
+
+		if (rawJson == null)
+			throw "JSON not found in: songs/" + formattedFolder;
 
 		var songJson:Dynamic = parseJSONshit(rawJson);
 		if (jsonInput != 'events')

@@ -379,10 +379,8 @@ class Character extends FlxSprite
 		animationNotes.sort(sortAnims);
 	}
 
-	function sortAnims(Obj1:Array<Dynamic>, Obj2:Array<Dynamic>):Int
-	{
+	inline function sortAnims(Obj1:Array<Dynamic>, Obj2:Array<Dynamic>):Int
 		return FlxSort.byValues(FlxSort.ASCENDING, Obj1[0], Obj2[0]);
-	}
 
 	public var danceEveryNumBeats:Int = 2;
 
@@ -394,9 +392,7 @@ class Character extends FlxSprite
 		danceIdle = (animation.getByName('danceLeft' + idleSuffix) != null && animation.getByName('danceRight' + idleSuffix) != null);
 
 		if (settingCharacterUp)
-		{
 			danceEveryNumBeats = (danceIdle ? 1 : 2);
-		}
 		else if (lastDanceIdle != danceIdle)
 		{
 			var calc:Float = danceEveryNumBeats;
@@ -411,14 +407,10 @@ class Character extends FlxSprite
 	}
 
 	public function addOffset(name:String, x:Float = 0, y:Float = 0)
-	{
 		animOffsets[name] = [x, y];
-	}
 
 	public function quickAnimAdd(name:String, anim:String)
-	{
 		animation.addByPrefix(name, anim, 24, false);
-	}
 
 	inline public function isAnimationNull():Bool
 		return animation.curAnim == null;
