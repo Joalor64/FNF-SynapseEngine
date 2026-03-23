@@ -2,6 +2,7 @@ package objects;
 
 import shaders.RGBPalette;
 import flixel.math.FlxRect;
+import backend.NoteTypesConfig;
 import backend.animation.PsychAnimationController;
 
 typedef EventNote =
@@ -174,6 +175,8 @@ class Note extends FlxSprite
 				case 'GF Sing':
 					gfNote = true;
 			}
+			if (value != null && value.length > 1)
+				NoteTypesConfig.applyNoteTypeData(this, value);
 			noteType = value;
 		}
 		return value;

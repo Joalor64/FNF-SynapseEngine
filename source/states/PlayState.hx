@@ -4434,6 +4434,7 @@ class PlayState extends MusicBeatState
 		FlxG.timeScale = 1;
 
 		Note.globalRgbShaders = [];
+		backend.NoteTypesConfig.clearNoteTypesData();
 
 		callOnScripts('destroy', []);
 
