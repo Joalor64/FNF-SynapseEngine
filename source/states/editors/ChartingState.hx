@@ -203,7 +203,7 @@ class ChartingState extends MusicBeatState
 			_song = PlayState.SONG;
 		else
 		{
-			CoolUtil.difficulties = CoolUtil.defaultDifficulties.copy();
+			Difficulty.resetList();
 
 			_song = {
 				song: 'Test',
@@ -3126,15 +3126,15 @@ class ChartingState extends MusicBeatState
 		var poop:String = Highscore.formatSong(songLowercase, PlayState.storyDifficulty);
 		function findAndLoadJson()
 		{
-			if (CoolUtil.difficulties[PlayState.storyDifficulty] != CoolUtil.defaultDifficulty)
+			if (Difficulty.getString() != Difficulty.getDefault())
 			{
-				if (CoolUtil.difficulties[PlayState.storyDifficulty] == null)
+				if (Difficulty.getString() == null)
 				{
 					PlayState.SONG = Song.loadFromJson(song.toLowerCase(), song.toLowerCase());
 				}
 				else
 				{
-					PlayState.SONG = Song.loadFromJson(song.toLowerCase() + "-" + CoolUtil.difficulties[PlayState.storyDifficulty], song.toLowerCase());
+					PlayState.SONG = Song.loadFromJson(song.toLowerCase() + "-" + Difficulty.getString(), song.toLowerCase());
 				}
 			}
 			else

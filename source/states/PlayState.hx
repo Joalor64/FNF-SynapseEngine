@@ -388,7 +388,7 @@ class PlayState extends MusicBeatState
 		Conductor.bpm = SONG.bpm;
 
 		#if desktop
-		storyDifficultyText = CoolUtil.difficulties[storyDifficulty];
+		storyDifficultyText = Difficulty.getString();
 
 		// String that contains the mode defined here so it isn't necessary to call changePresence for each mode
 		if (isStoryMode)
@@ -787,7 +787,7 @@ class PlayState extends MusicBeatState
 		scoreTxt.visible = !ClientPrefs.data.hideHud;
 		add(scoreTxt);
 
-		versionTxt = new FlxText(4, FlxG.height - 40, 0, '${SONG.song} - ${CoolUtil.difficultyString()}\nSynapse Engine v${Constants.SYNAPSE_ENGINE_VERSION}',
+		versionTxt = new FlxText(4, FlxG.height - 40, 0, '${SONG.song} - ${Difficulty.getString.toUpperCase()}\nSynapse Engine v${Constants.SYNAPSE_ENGINE_VERSION}',
 			12);
 		versionTxt.scrollFactor.set();
 		versionTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
@@ -3508,7 +3508,7 @@ class PlayState extends MusicBeatState
 				}
 				else
 				{
-					var difficulty:String = CoolUtil.getDifficultyFilePath();
+					var difficulty:String = Difficulty.getFilePath();
 
 					trace('LOADING NEXT SONG');
 					trace(Paths.formatToSongPath(PlayState.storyPlaylist[0]) + difficulty);
@@ -4717,7 +4717,7 @@ class PlayState extends MusicBeatState
 			{
 				if (isStoryMode
 					&& campaignMisses + songMisses < 1
-					&& CoolUtil.difficultyString().toUpperCase() == 'HARD'
+					&& Difficulty.getString().toUpperCase() == 'HARD'
 					&& storyPlaylist.length <= 1
 					&& !changedDifficulty
 					&& !usedPractice)

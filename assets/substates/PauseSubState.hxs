@@ -39,7 +39,7 @@ function new(x:Float, y:Float)
 {
 	curTime = Math.max(0, Conductor.songPosition);
 
-	if (CoolUtil.difficulties.length < 2)
+	if (Difficulty.list.length < 2)
 		menuItemsOG.remove('Change Difficulty');
 
 	if (PlayState.chartingMode)
@@ -54,9 +54,10 @@ function new(x:Float, y:Float)
 	}
 	menuItems = menuItemsOG;
 
-	for (i in 0...CoolUtil.difficulties.length)
+	for (i in 0...Difficulty.list.length)
 	{
-		difficultyChoices.push('' + CoolUtil.difficulties[i]);
+		var diff:String = Difficulty.getString(i);
+		difficultyChoices.push(diff);
 	}
 	difficultyChoices.push('BACK');
 }
@@ -73,7 +74,7 @@ function create()
 	levelInfo.updateHitbox();
 	add(levelInfo);
 
-	levelDifficulty = new FlxText(20, 15 + 32, 0, CoolUtil.difficultyString(), 32);
+	levelDifficulty = new FlxText(20, 15 + 32, 0, Difficulty.getString().toUpperCase(), 32);
 	levelDifficulty.setFormat(Paths.font('vcr.ttf'), 32);
 	add(levelDifficulty);
 

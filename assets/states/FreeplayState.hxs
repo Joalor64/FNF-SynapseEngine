@@ -8,7 +8,7 @@ import backend.Song;
 var songs:Array<Dynamic> = [];
 var curSelected:Int = 0;
 var curDifficulty:Int = 0;
-var lastDifficultyName:String = '';
+var lastDifficultyName:String = Difficulty.getDefault();
 
 var colorArray:Array<Int> = [
 	FlxColor.fromRGB(0, 255, 0),
@@ -85,7 +85,8 @@ function create()
 				week: i,
 				songCharacter: songChar,
 				color: FlxColor.fromRGB(colors[0], colors[1], colors[2]),
-				folder: Mods.currentModDirectory != null ? Mods.currentModDirectory : ''
+				folder: Mods.currentModDirectory != null ? Mods.currentModDirectory : '',
+				lastDifficulty: null
 			});
 		}
 	}
@@ -141,11 +142,7 @@ function create()
 	bg.color = songs[curSelected].color;
 	intendedColor = bg.color;
 
-	if (lastDifficultyName == '')
-	{
-		lastDifficultyName = CoolUtil.defaultDifficulty;
-	}
-	curDifficulty = Math.round(Math.max(0, CoolUtil.defaultDifficulties.indexOf(lastDifficultyName)));
+	curDifficulty = Math.round(Math.max(0, Difficulty.defaultList.indexOf(lastDifficultyName)));
 
 	changeSelection(0, false);
 	changeDiff(0);
@@ -221,12 +218,16 @@ function update(elapsed:Float)
 		}
 	}
 
-	if (Controls.instance.UI_LEFT_P)
+	if (controls.UI_LEFT_P)
+	{
 		changeDiff(-1);
-	else if (Controls.instance.UI_RIGHT_P)
+		updateSongLastDifficulty();
+	}
+	else if (controls.UI_RIGHT_P)
+	{
 		changeDiff(1);
-	else if (Controls.instance.UI_UP_P || Controls.instance.UI_DOWN_P)
-		changeDiff(0);
+		updateSongLastDifficulty();
+	}
 
 	if (Controls.instance.BACK)
 	{
@@ -312,6 +313,8 @@ function changeSelection(change:Int, playSound:Bool)
 		curSelected = songs.length - 1;
 	if (curSelected >= songs.length)
 		curSelected = 0;
+	
+	updateSongLastDifficulty();
 
 	var newColor:Int = songs[curSelected].color;
 	if (newColor != intendedColor)
@@ -348,60 +351,26 @@ function changeSelection(change:Int, playSound:Bool)
 
 	Mods.currentModDirectory = songs[curSelected].folder;
 	PlayState.storyWeek = songs[curSelected].week;
+	Difficulty.loadFromWeek();
 
-	updateDifficulties();
-}
-
-function updateDifficulties()
-{
-	CoolUtil.difficulties = CoolUtil.defaultDifficulties.copy();
-	var diffStr:String = WeekData.getCurrentWeek().difficulties;
-
-	if (diffStr != null && diffStr.length > 0)
-	{
-		diffStr = StringTools.trim(diffStr);
-		var diffs:Array<String> = diffStr.split(',');
-		var i:Int = diffs.length - 1;
-		while (i >= 0)
-		{
-			if (diffs[i] != null)
-			{
-				diffs[i] = StringTools.trim(diffs[i]);
-				if (diffs[i].length < 1)
-					diffs.splice(i, 1);
-			}
-			i--;
-		}
-		if (diffs.length > 0 && diffs[0].length > 0)
-		{
-			CoolUtil.difficulties = diffs;
-		}
-	}
-
-	if (CoolUtil.difficulties.contains(CoolUtil.defaultDifficulty))
-	{
-		curDifficulty = Math.round(Math.max(0, CoolUtil.defaultDifficulties.indexOf(CoolUtil.defaultDifficulty)));
-	}
+	var savedDiff:String = songs[curSelected].lastDifficulty;
+	var lastDiff:Int = Difficulty.list.indexOf(lastDifficultyName);
+	if (savedDiff != null && Difficulty.list.contains(savedDiff))
+		curDifficulty = Math.round(Math.max(0, Difficulty.list.indexOf(savedDiff)));
+	else if (lastDiff > -1)
+		curDifficulty = lastDiff;
+	else if (Difficulty.list.contains(Difficulty.getDefault()))
+		curDifficulty = Math.round(Math.max(0, Difficulty.defaultList.indexOf(Difficulty.getDefault())));
 	else
-	{
 		curDifficulty = 0;
-	}
-
-	var newPos:Int = CoolUtil.difficulties.indexOf(lastDifficultyName);
-	if (newPos > -1)
-		curDifficulty = newPos;
 
 	changeDiff(0);
+	updateSongLastDifficulty();
 }
 
 function changeDiff(change:Int)
 {
-	curDifficulty += change;
-
-	if (curDifficulty < 0)
-		curDifficulty = CoolUtil.difficulties.length - 1;
-	if (curDifficulty >= CoolUtil.difficulties.length)
-		curDifficulty = 0;
+	curDifficulty = FlxMath.wrap(curDifficulty + change, 0, Difficulty.list.length - 1);
 
 	lastDifficultyName = CoolUtil.difficulties[curDifficulty];
 
@@ -409,7 +378,13 @@ function changeDiff(change:Int)
 	intendedRating = Highscore.getRating(songs[curSelected].songName, curDifficulty);
 
 	PlayState.storyDifficulty = curDifficulty;
-	diffText.text = '< ' + CoolUtil.difficultyString() + ' >';
+
+	lastDifficultyName = Difficulty.getString(curDifficulty, false);
+	var displayDiff:String = Difficulty.getString(curDifficulty);
+	if (Difficulty.list.length > 1)
+		diffText.text = '< ' + displayDiff.toUpperCase() + ' >';
+	else
+		diffText.text = displayDiff.toUpperCase();
 
 	if (diffTween != null)
 		diffTween.cancel();
@@ -432,6 +407,11 @@ function positionHighscore()
 	scoreBG.x = FlxG.width - (scoreBG.scale.x / 2);
 	diffText.x = Std.int(scoreBG.x + (scoreBG.width / 2));
 	diffText.x -= diffText.width / 2;
+}
+
+function updateSongLastDifficulty()
+{
+	songs[curSelected].lastDifficulty = Difficulty.getString(curDifficulty, false);
 }
 
 function playPreviewMusic()

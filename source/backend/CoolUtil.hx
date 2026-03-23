@@ -3,27 +3,10 @@ package backend;
 @:keep
 class CoolUtil
 {
-	public static final defaultDifficulties:Array<String> = ['Easy', 'Normal', 'Hard'];
-	public static final defaultDifficulty:String = 'Normal';
-
-	public static var difficulties:Array<String> = [];
-
 	inline public static function quantize(f:Float, snap:Float)
 	{
 		var m:Float = Math.fround(f * snap);
 		return (m / snap);
-	}
-
-	public static inline function getDifficultyFilePath(num:Null<Int> = null)
-	{
-		if (num == null)
-			num = PlayState.storyDifficulty;
-		return Paths.formatToSongPath((difficulties[num] != defaultDifficulty) ? '-' + difficulties[num] : '');
-	}
-
-	public static inline function difficultyString():String
-	{
-		return difficulties[PlayState.storyDifficulty].toUpperCase();
 	}
 
 	inline public static function boundTo(value:Float, min:Float, max:Float):Float

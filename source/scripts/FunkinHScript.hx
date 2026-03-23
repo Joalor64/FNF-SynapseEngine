@@ -321,10 +321,7 @@ class FunkinHScript extends FlxBasic
 		#if DISCORD_ALLOWED
 		setVariable('DiscordClient', DiscordClient);
 		#end
-		#if VIDEOS_ALLOWED
-		setVariable('VideoSprite', VideoSprite);
-		setVariable('VideoState', VideoState);
-		#end
+		setVariable('Difficulty', Difficulty);
 		#if LUA_ALLOWED
 		setVariable('FunkinLua', FunkinLua);
 		#end
@@ -340,6 +337,10 @@ class FunkinHScript extends FlxBasic
 		setVariable('PlayState', PlayState);
 		setVariable('ScriptedState', ScriptedState);
 		setVariable('ScriptedSubState', ScriptedSubState);
+		#if VIDEOS_ALLOWED
+		setVariable('VideoSprite', VideoSprite);
+		setVariable('VideoState', VideoState);
+		#end
 
 		// you can't access these unless they're exposed to hscript???
 		// i mean, i'm pretty sure that should be obvious, but cmon bruh
