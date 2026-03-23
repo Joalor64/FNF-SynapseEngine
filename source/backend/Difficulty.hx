@@ -61,9 +61,7 @@ class Difficulty
 	inline public static function getString(?num:Null<Int> = null):String
 	{
 		var diffName:String = list[num == null ? PlayState.storyDifficulty : num];
-		if (diffName == null)
-			diffName = defaultDifficulty;
-		return diffName;
+		return (diffName == null ? defaultDifficulty : diffName);
 	}
 
 	inline public static function getDefault():String
