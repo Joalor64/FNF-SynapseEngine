@@ -323,7 +323,7 @@ class FunkinHScript extends FlxBasic
 		#end
 		#if VIDEOS_ALLOWED
 		setVariable('VideoSprite', VideoSprite);
-		// setVariable('VideoState', VideoState);
+		setVariable('VideoState', VideoState);
 		#end
 		#if LUA_ALLOWED
 		setVariable('FunkinLua', FunkinLua);
