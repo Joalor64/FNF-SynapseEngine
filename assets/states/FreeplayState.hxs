@@ -218,12 +218,12 @@ function update(elapsed:Float)
 		}
 	}
 
-	if (controls.UI_LEFT_P)
+	if (Controls.instance.UI_LEFT_P)
 	{
 		changeDiff(-1);
 		updateSongLastDifficulty();
 	}
-	else if (controls.UI_RIGHT_P)
+	else if (Controls.instance.UI_RIGHT_P)
 	{
 		changeDiff(1);
 		updateSongLastDifficulty();
