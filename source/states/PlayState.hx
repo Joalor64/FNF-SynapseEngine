@@ -787,7 +787,7 @@ class PlayState extends MusicBeatState
 		scoreTxt.visible = !ClientPrefs.data.hideHud;
 		add(scoreTxt);
 
-		versionTxt = new FlxText(4, FlxG.height - 40, 0, '${SONG.song} - ${Difficulty.getString.toUpperCase()}\nSynapse Engine v${Constants.SYNAPSE_ENGINE_VERSION}',
+		versionTxt = new FlxText(4, FlxG.height - 40, 0, '${SONG.song} - ${Difficulty.getString().toUpperCase()}\nSynapse Engine v${Constants.SYNAPSE_ENGINE_VERSION}',
 			12);
 		versionTxt.scrollFactor.set();
 		versionTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
