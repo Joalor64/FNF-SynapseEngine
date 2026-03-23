@@ -184,6 +184,6 @@ class GameOverSubstate extends MusicBeatSubstate
 	override function destroy()
 	{
 		instance = null;
-		super.deatroy();
+		super.destroy();
 	}
 }
