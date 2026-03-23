@@ -2397,31 +2397,38 @@ class FunkinLua
 		}
 			return false;
 		});
-		Lua_helper.add_callback(lua, "startVideo", function(videoFile:String)
-		{
-			#if VIDEOS_ALLOWED
-			if (FileSystem.exists(Paths.video(videoFile)))
+		Lua_helper.add_callback(lua, "startVideo",
+			function(videoFile:String, ?canSkip:Bool = true, ?forMidSong:Bool = false, ?shouldLoop:Bool = false, ?playOnLoad:Bool = true)
 			{
-				PlayState.instance.startVideo(videoFile);
+				#if VIDEOS_ALLOWED
+				if (FileSystem.exists(Paths.video(videoFile)))
+				{
+					if (PlayState.instance.videoCutscene != null)
+					{
+						PlayState.instance.remove(PlayState.instance.videoCutscene);
+						PlayState.instance.videoCutscene.destroy();
+					}
+					PlayState.instance.videoCutscene = PlayState.instance.startVideo(videoFile, forMidSong, canSkip, shouldLoop, playOnLoad);
+					return true;
+				}
+				else
+				{
+					LuaUtils.luaTrace(lua, 'startVideo: Video file not found: ' + videoFile, false, false, FlxColor.RED);
+				}
+				return false;
+				#else
+				PlayState.instance.inCutscene = true;
+				new FlxTimer().start(0.1, function(tmr:FlxTimer)
+				{
+					PlayState.instance.inCutscene = false;
+					if (PlayState.instance.endingSong)
+						PlayState.instance.endSong();
+					else
+						PlayState.instance.startCountdown();
+				});
 				return true;
-			}
-			else
-			{
-				LuaUtils.luaTrace(lua, 'startVideo: Video file not found: ' + videoFile, false, false, FlxColor.RED);
-			}
-			return false;
-			#else
-			if (PlayState.instance.endingSong)
-			{
-				PlayState.instance.endSong();
-			}
-			else
-			{
-				PlayState.instance.startCountdown();
-			}
-			return true;
-			#end
-		});
+				#end
+			});
 
 		Lua_helper.add_callback(lua, "playMusic", function(sound:String, volume:Float = 1, loop:Bool = false)
 		{

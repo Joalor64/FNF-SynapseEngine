@@ -26,7 +26,7 @@ import scripts.Globals;
 import scripts.FunkinLua;
 import scripts.FunkinHScript;
 #if VIDEOS_ALLOWED
-import hxvlc.flixel.FlxVideoSprite;
+import objects.VideoSprite;
 #end
 
 class PlayState extends MusicBeatState
@@ -1136,6 +1136,10 @@ class PlayState extends MusicBeatState
 		FlxG.timeScale = value;
 		trace('Anim speed: ' + FlxG.timeScale);
 		Conductor.safeZoneOffset = (ClientPrefs.data.safeFrames / 60) * 1000 * value;
+		#if VIDEOS_ALLOWED
+		if (videoCutscene != null && videoCutscene.videoSprite != null)
+			videoCutscene.videoSprite.bitmap.rate = value;
+		#end
 		setOnLuas('playbackRate', playbackRate);
 		#else
 		playbackRate = 1.0;
@@ -1311,66 +1315,73 @@ class PlayState extends MusicBeatState
 		char.y += char.positionArray[1];
 	}
 
-	public var video:FlxVideoSprite = null;
+	public var videoCutscene:VideoSprite = null;
 
-	private var videoCallback:Void->Void = null;
-	private var continueAfterVid:Bool = true;
-
-	public function startVideo(name:String, ?customCallback:Void->Void = null, ?cont:Bool = true)
+	public function startVideo(name:String, forMidSong:Bool = false, canSkip:Bool = true, loop:Bool = false, playOnLoad:Bool = true)
 	{
 		#if VIDEOS_ALLOWED
-		inCutscene = true;
+		inCutscene = !forMidSong;
+		canPause = forMidSong;
 
-		videoCallback = customCallback;
-		continueAfterVid = cont;
+		var foundFile:Bool = false;
+		var fileName:String = Paths.video(name);
 
-		var filepath:String = Paths.video(name);
 		#if sys
-		if (!FileSystem.exists(filepath))
+		if (FileSystem.exists(fileName))
 		#else
-		if (!Assets.exists(filepath))
+		if (Assets.exists(fileName))
 		#end
+		foundFile = true;
+
+		if (foundFile)
 		{
-			FlxG.log.warn('Couldnt find video file: ' + name);
-			startAndEnd();
-			return;
-		}
-		video = new FlxVideoSprite();
-		video.scrollFactor.set();
-		video.antialiasing = ClientPrefs.data.globalAntialiasing;
-		video.bitmap.onFormatSetup.add(function()
-		{
-			if (video.bitmap != null && video.bitmap.bitmapData != null)
+			videoCutscene = new VideoSprite(fileName, forMidSong, canSkip, loop);
+			if (forMidSong)
+				videoCutscene.videoSprite.bitmap.rate = playbackRate;
+
+			// Finish callback
+			if (!forMidSong)
 			{
-				video.setGraphicSize(FlxG.width, FlxG.height);
-				video.updateHitbox();
-				video.screenCenter();
+				function onVideoEnd()
+				{
+					if (!isDead
+						&& generatedMusic
+						&& PlayState.SONG.notes[Std.int(curStep / 16)] != null
+						&& !endingSong
+						&& !isCameraOnForcedPos)
+					{
+						moveCameraSection();
+						FlxG.camera.snapToTarget();
+					}
+					videoCutscene = null;
+					canPause = true;
+					inCutscene = false;
+					startAndEnd();
+				}
+				videoCutscene.finishCallback = onVideoEnd;
+				videoCutscene.onSkip = onVideoEnd;
 			}
-		});
-		video.cameras = [camOther];
-		add(video);
-		video.load(filepath);
-		video.play();
-		video.bitmap.onEndReached.add(() ->
-		{
-			onVideoFinish(continueAfterVid);
-			if (videoCallback != null)
-				videoCallback();
-		});
+			if (GameOverSubstate.instance != null && isDead)
+				GameOverSubstate.instance.add(videoCutscene);
+			else
+				add(videoCutscene);
+
+			if (playOnLoad)
+				videoCutscene.play();
+			return videoCutscene;
+		}
+		#if (LUA_ALLOWED || HSCRIPT_ALLOWED)
+		else
+			addTextToDebug("Video not found: " + fileName, FlxColor.RED);
+		#else
+		else
+			FlxG.log.error("Video not found: " + fileName);
+		#end
 		#else
 		FlxG.log.warn('Platform not supported!');
 		startAndEnd();
-		return;
 		#end
-	}
-
-	public function onVideoFinish(cont:Bool = true)
-	{
-		video.stop();
-		video.destroy();
-		video.visible = false;
-		if (cont)
-			startAndEnd();
+		return null;
 	}
 
 	inline function startAndEnd()
@@ -2420,16 +2431,6 @@ class PlayState extends MusicBeatState
 		callOnLuas('onUpdate', [elapsed]);
 		callOnScripts('update', [elapsed]);
 
-		if (FlxG.keys.justPressed.Z && inCutscene)
-		{
-			onVideoFinish(continueAfterVid);
-			if (videoCallback != null)
-			{
-				videoCallback();
-				videoCallback = null;
-			}
-		}
-
 		if (!inCutscene)
 		{
 			final lerpVal:Float = CoolUtil.boundTo(elapsed * 2.4 * cameraSpeed * playbackRate, 0, 1);
@@ -2934,12 +2935,21 @@ class PlayState extends MusicBeatState
 				deathCounter++;
 
 				paused = true;
+				canPause = false;
 
 				vocals.stop();
 				FlxG.sound.music.stop();
 
 				if (SONG.song.toLowerCase() == 'tutorial')
 					trace('how tf did you die on tutorial');
+
+				#if VIDEOS_ALLOWED
+				if (videoCutscene != null)
+				{
+					videoCutscene.destroy();
+					videoCutscene = null;
+				}
+				#end
 
 				persistentUpdate = persistentDraw = false;
 
@@ -3246,7 +3256,8 @@ class PlayState extends MusicBeatState
 				if (val2 <= 0)
 					songSpeed = newValue;
 				else
-					songSpeedTween = FlxTween.tween(this, {songSpeed: newValue}, val2 / playbackRate, {ease: FlxEase.linear, onComplete: _ -> songSpeedTween = null});
+					songSpeedTween = FlxTween.tween(this, {songSpeed: newValue}, val2 / playbackRate,
+						{ease: FlxEase.linear, onComplete: _ -> songSpeedTween = null});
 
 			case 'Popup':
 				FlxG.sound.music.pause();
@@ -3375,14 +3386,16 @@ class PlayState extends MusicBeatState
 			camFollow.y += boyfriend.cameraPosition[1] + boyfriendCameraOffset[1];
 
 			if (songName == 'tutorial' && cameraTwn == null && FlxG.camera.zoom != 1)
-				cameraTwn = FlxTween.tween(FlxG.camera, {zoom: 1}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut, onComplete: _ -> cameraTwn = null});
+				cameraTwn = FlxTween.tween(FlxG.camera, {zoom: 1}, (Conductor.stepCrochet * 4 / 1000),
+					{ease: FlxEase.elasticInOut, onComplete: _ -> cameraTwn = null});
 		}
 	}
 
 	inline public function tweenCamIn()
 	{
 		if (songName == 'tutorial' && cameraTwn == null && FlxG.camera.zoom != 1.3)
-			cameraTwn = FlxTween.tween(FlxG.camera, {zoom: 1.3}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut, onComplete: _ -> cameraTwn = null});
+			cameraTwn = FlxTween.tween(FlxG.camera, {zoom: 1.3}, (Conductor.stepCrochet * 4 / 1000),
+				{ease: FlxEase.elasticInOut, onComplete: _ -> cameraTwn = null});
 	}
 
 	inline function snapCamFollowToPos(x:Float, y:Float)
@@ -4391,6 +4404,14 @@ class PlayState extends MusicBeatState
 		#end
 
 		stagesFunc(function(stage:BaseStage) stage.destroy());
+
+		#if VIDEOS_ALLOWED
+		if (videoCutscene != null)
+		{
+			videoCutscene.destroy();
+			videoCutscene = null;
+		}
+		#end
 
 		FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
 		FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, onKeyRelease);

@@ -322,8 +322,8 @@ class FunkinHScript extends FlxBasic
 		setVariable('DiscordClient', DiscordClient);
 		#end
 		#if VIDEOS_ALLOWED
-		setVariable('FlxVideoSprite', FlxVideoSprite);
-		setVariable('VideoState', VideoState);
+		setVariable('VideoSprite', VideoSprite);
+		// setVariable('VideoState', VideoState);
 		#end
 		#if LUA_ALLOWED
 		setVariable('FunkinLua', FunkinLua);
