@@ -372,8 +372,6 @@ function changeDiff(change:Int)
 {
 	curDifficulty = FlxMath.wrap(curDifficulty + change, 0, Difficulty.list.length - 1);
 
-	lastDifficultyName = CoolUtil.difficulties[curDifficulty];
-
 	intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
 	intendedRating = Highscore.getRating(songs[curSelected].songName, curDifficulty);
 
