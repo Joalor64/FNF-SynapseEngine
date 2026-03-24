@@ -9,6 +9,7 @@ import debug.FPS;
 #if linux
 import hxgamemode.GamemodeClient;
 #end
+import hxwindowmode.WindowColorMode;
 
 class Main extends Sprite
 {
@@ -28,7 +29,11 @@ class Main extends Sprite
 	};
 
 	public static function main():Void
+	{
+		WindowColorMode.setDarkMode();
+		WindowColorMode.redrawWindowHeader(); // needed for windows 10
 		Lib.current.addChild(new Main());
+	}
 
 	private static function __init__():Void
 	{
@@ -56,10 +61,6 @@ class Main extends Sprite
 		#if cpp
 		untyped __global__.__hxcpp_set_critical_error_handler(onFatalCrash);
 		#end
-		#end
-
-		#if windows
-		backend.external.WindowsAPI.darkMode(true);
 		#end
 
 		#if VIDEOS_ALLOWED
