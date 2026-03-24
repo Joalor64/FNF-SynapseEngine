@@ -2433,24 +2433,19 @@ class PlayState extends MusicBeatState
 
 		if (!inCutscene)
 		{
-			if (isPixelStage)
+			final lerpVal:Float = CoolUtil.boundTo(elapsed * 2.4 * cameraSpeed * playbackRate, 0, 1);
+    		var targetX:Float = FlxMath.lerp(camFollowPos.x + moveCamTo[0] / 102, camFollow.x + moveCamTo[0] / 102, lerpVal);
+    		var targetY:Float = FlxMath.lerp(camFollowPos.y + moveCamTo[1] / 102, camFollow.y + moveCamTo[1] / 102, lerpVal);
+    
+    		if (isPixelStage)
     		{
-        		final lerpVal:Float = CoolUtil.boundTo(elapsed * 8 * cameraSpeed * playbackRate, 0, 1);
-        		var targetX:Float = FlxMath.lerp(camFollowPos.x, camFollow.x + moveCamTo[0] / 102, lerpVal);
-        		var targetY:Float = FlxMath.lerp(camFollowPos.y, camFollow.y + moveCamTo[1] / 102, lerpVal);
-        
         		var pixelZoom:Float = PlayState.daPixelZoom;
-        		camFollowPos.setPosition(
-            		Math.round(targetX / pixelZoom) * pixelZoom,
-            		Math.round(targetY / pixelZoom) * pixelZoom
-        		);
-   			}
-    		else
-    		{
-        		final lerpVal:Float = CoolUtil.boundTo(elapsed * 2.4 * cameraSpeed * playbackRate, 0, 1);
-        		camFollowPos.setPosition(FlxMath.lerp(camFollowPos.x + moveCamTo[0] / 102, camFollow.x + moveCamTo[0] / 102, lerpVal),
-            		FlxMath.lerp(camFollowPos.y + moveCamTo[1] / 102, camFollow.y + moveCamTo[1] / 102, lerpVal));
-   			}
+        		targetX = Math.round(targetX / pixelZoom) * pixelZoom;
+        		targetY = Math.round(targetY / pixelZoom) * pixelZoom;
+    		}
+    
+    		camFollowPos.setPosition(targetX, targetY);
+			
 			if (!startingSong
 				&& !endingSong
 				&& boyfriend.animation.curAnim != null
