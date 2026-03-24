@@ -53,7 +53,8 @@ class NoteSplash extends FlxSprite
 
 	var maxAnims:Int = 2;
 
-	public function setupNoteSplash(x:Float, y:Float, direction:Int = 0, ?note:Note = null)
+	public function setupNoteSplash(x:Float, y:Float, direction:Int = 0, ?note:Note = null, redColor:FlxColor = 0, greenColor:FlxColor = 0,
+			blueColor:FlxColor = 0)
 	{
 		setPosition(x - Note.swagWidth * 0.95, y - Note.swagWidth);
 
@@ -78,13 +79,20 @@ class NoteSplash extends FlxSprite
 		{
 			if (note != null && !note.noteSplashData.useGlobalShader)
 			{
-				tempShader = new RGBPalette();
-    
-    			tempShader.r = (note.noteSplashData.r != -1) ? note.noteSplashData.r : note.rgbShader.r;
-    			tempShader.g = (note.noteSplashData.g != -1) ? note.noteSplashData.g : note.rgbShader.g;
-    			tempShader.b = (note.noteSplashData.b != -1) ? note.noteSplashData.b : note.rgbShader.b;
-    			tempShader.mult = note.rgbShader.mult;
-    			tempShader.enabled = note.rgbShader.enabled;
+				// did i do this weirdly?
+				// honestly, yeah
+				if (note.noteType == 'Hurt Note')
+				{
+					rgbShader.r = 0xFFFF0000;
+					rgbShader.g = 0xFF101010;
+				}
+				else
+				{
+					rgbShader.r = redColor;
+					rgbShader.g = greenColor;
+					rgbShader.b = blueColor;
+				}
+				shader = rgbShader.shader;
 			}
 			else
 				tempShader = Note.globalRgbShaders[direction];
@@ -92,9 +100,7 @@ class NoteSplash extends FlxSprite
 
 		alpha = ClientPrefs.data.splashAlpha;
 		if (note != null)
-			alpha = note.noteSplashData.a;
-
-		rgbShader.copyValues(tempShader);
+			alpha = note.noteSplashData.alpha;
 
 		antialiasing = ClientPrefs.data.globalAntialiasing;
 		if (note != null)
