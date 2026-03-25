@@ -127,6 +127,7 @@ class PlayState extends MusicBeatState
 	public var opponentStrums:FlxTypedGroup<StrumNote>;
 	public var playerStrums:FlxTypedGroup<StrumNote>;
 	public var grpNoteSplashes:FlxTypedGroup<NoteSplash>;
+	public var grpHoldSplashes:FlxTypedGroup<SustainSplash>;
 
 	public var camZooming:Bool = false;
 	public var camZoomingMult:Float = 1;
@@ -373,6 +374,7 @@ class PlayState extends MusicBeatState
 		FlxG.cameras.add(camHUD, false);
 		FlxG.cameras.add(camOther, false);
 		grpNoteSplashes = new FlxTypedGroup<NoteSplash>(8);
+		grpHoldSplashes = new FlxTypedGroup<SustainSplash>();
 
 		@:privateAccess
 		FlxCamera._defaultCameras = [camGame];
@@ -729,6 +731,12 @@ class PlayState extends MusicBeatState
 		var splash:NoteSplash = new NoteSplash(100, 100, 0);
 		grpNoteSplashes.add(splash);
 		splash.alpha = 0.0;
+
+		SustainSplash.startCrochet = Conductor.stepCrochet;
+		SustainSplash.frameRate = Math.floor(24 / 100 * SONG.bpm);
+		var splash:SustainSplash = new SustainSplash();
+		grpHoldSplashes.add(splash);
+		splash.alpha = 0.0001;
 
 		opponentStrums = new FlxTypedGroup<StrumNote>();
 		playerStrums = new FlxTypedGroup<StrumNote>();
@@ -4176,6 +4184,8 @@ class PlayState extends MusicBeatState
 		StrumPlayAnim(true, Std.int(Math.abs(note.noteData)), time, note);
 		note.hitByOpponent = true;
 
+		spawnHoldSplashOnNote(note);
+
 		callOnLuas('opponentNoteHit', [
 			notes.members.indexOf(note),
 			Math.abs(note.noteData),
@@ -4344,6 +4354,7 @@ class PlayState extends MusicBeatState
 			var leType:String = note.noteType;
 			callOnLuas('goodNoteHit', [notes.members.indexOf(note), leData, leType, isSus]);
 			callOnScripts('goodNoteHit', [notes.members.indexOf(note), leData, leType, isSus]);
+			spawnHoldSplashOnNote(note);
 			stagesFunc(function(stage:BaseStage)(stage.goodNoteHit(note)));
 
 			if (!note.isSustainNote)
@@ -4352,6 +4363,34 @@ class PlayState extends MusicBeatState
 				note.destroy();
 			}
 		}
+	}
+
+	public function spawnHoldSplashOnNote(note:Note)
+	{
+		if (!note.isSustainNote && note.tail.length != 0 && note.tail[note.tail.length - 1].extraData['holdSplash'] == null)
+		{
+			spawnHoldSplash(note);
+		}
+		else if (note.isSustainNote)
+		{
+			final end:Note = StringTools.endsWith(note.animation.curAnim.name, 'end') ? note : note.parent.tail[note.parent.tail.length - 1];
+			if (end != null)
+			{
+				var leSplash:SustainSplash = end.extraData['holdSplash'];
+				if (leSplash == null && !end.parent.wasGoodHit)
+					spawnHoldSplash(end);
+				else if (leSplash != null)
+					leSplash.visible = true;
+			}
+		}
+	}
+
+	public function spawnHoldSplash(note:Note)
+	{
+		var end:Note = note.isSustainNote ? note.parent.tail[note.parent.tail.length - 1] : note.tail[note.tail.length - 1];
+		var splash:SustainSplash = grpHoldSplashes.recycle(SustainSplash);
+		splash.setupSusSplash(strumLineNotes.members[note.noteData + (note.mustPress ? 4 : 0)], note, playbackRate);
+		grpHoldSplashes.add(end.extraData['holdSplash'] = splash);
 	}
 
 	public function spawnNoteSplashOnNote(note:Note)
