@@ -721,6 +721,7 @@ class PlayState extends MusicBeatState
 		add(strumLineNotes);
 
 		add(grpNoteSplashes);
+		add(grpHoldSplashes);
 
 		if (ClientPrefs.data.timeBarType == 'Song Name')
 		{
