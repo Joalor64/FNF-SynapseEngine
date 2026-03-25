@@ -31,7 +31,7 @@
 
 ### Low Priority
 * [X] Noteskins
-* [ ] Hold Note Cover
+* [X] Hold Note Cover
 
 ## V0.2.0
 ### High Priority

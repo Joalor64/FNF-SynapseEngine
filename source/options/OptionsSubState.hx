@@ -457,6 +457,14 @@ class GameplaySubState extends BaseOptionsMenu
 		option.decimals = 1;
 		addOption(option);
 
+		var option:Option = new Option('Sustain Splash Opacity', 'How much transparent should the Sustain Splashes be.', 'susSplashAlpha', 'percent');
+		option.scrollSpeed = 1.6;
+		option.minValue = 0.0;
+		option.maxValue = 1;
+		option.changeValue = 0.1;
+		option.decimals = 1;
+		addOption(option);
+
 		// I'd suggest using "Downscroll" as an example for making your own option since it is the simplest here
 		var option:Option = new Option('Downscroll', // Name
 			'If checked, notes go Down instead of Up, simple enough.', // Description

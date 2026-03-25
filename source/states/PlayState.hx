@@ -796,8 +796,8 @@ class PlayState extends MusicBeatState
 		scoreTxt.visible = !ClientPrefs.data.hideHud;
 		add(scoreTxt);
 
-		versionTxt = new FlxText(4, FlxG.height - 40, 0, '${SONG.song} - ${Difficulty.getString().toUpperCase()}\nSynapse Engine v${Constants.SYNAPSE_ENGINE_VERSION}',
-			12);
+		versionTxt = new FlxText(4, FlxG.height - 40, 0,
+			'${SONG.song} - ${Difficulty.getString().toUpperCase()}\nSynapse Engine v${Constants.SYNAPSE_ENGINE_VERSION}', 12);
 		versionTxt.scrollFactor.set();
 		versionTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionTxt);
@@ -2446,7 +2446,7 @@ class PlayState extends MusicBeatState
 			final lerpVal:Float = CoolUtil.boundTo(elapsed * 2.4 * cameraSpeed * playbackRate, 0, 1);
 			camFollowPos.setPosition(FlxMath.lerp(camFollowPos.x + moveCamTo[0] / 102, camFollow.x + moveCamTo[0] / 102, lerpVal),
 				FlxMath.lerp(camFollowPos.y + moveCamTo[1] / 102, camFollow.y + moveCamTo[1] / 102, lerpVal));
-			
+
 			if (!startingSong
 				&& !endingSong
 				&& boyfriend.animation.curAnim != null
@@ -4768,7 +4768,7 @@ class PlayState extends MusicBeatState
 				Achievements.unlock(name);
 		}
 	}
-} 
+}
 
 class RatingSprite extends FlxSprite
 {
