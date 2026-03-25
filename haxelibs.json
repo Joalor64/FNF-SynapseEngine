@@ -10,13 +10,12 @@
     },
     {
       "name": "flixel",
-      "type": "haxelib",
-      "version": "6.1.2"
+      "type": "haxelib"
     },
     {
       "name": "flixel-addons",
       "type": "haxelib",
-      "version": "4.0.1"
+      "version": "3.3.2"
     },
     {
       "name": "flixel-ui",
