@@ -78,14 +78,22 @@ class ScriptedSubState extends MusicBeatSubstate
 
 		if (script != null)
 		{
-			scriptSet('substate', this);
-			scriptSet('add', this.add);
-			scriptSet('insert', this.insert);
-			scriptSet('remove', this.remove);
-			scriptSet('members', this.members);
+			try
+			{
+				scriptSet('substate', this);
+				scriptSet('add', this.add);
+				scriptSet('insert', this.insert);
+				scriptSet('remove', this.remove);
+				scriptSet('members', this.members);
 
-			scriptExecute('new', scriptArgs);
-			scriptExecute('create', []);
+				scriptExecute('new', scriptArgs);
+				scriptExecute('create', []);
+			}
+			catch (e:Dynamic)
+			{
+				trace('SCRIPT ERROR: $e');
+				Lib.application.window.alert(Std.string(e), 'Script Error');
+			}
 		}
 	}
 
