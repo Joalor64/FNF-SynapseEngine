@@ -81,30 +81,22 @@ class ScriptedState extends MusicBeatState
 
 		if (script != null)
 		{
-			try
+			scriptSet('state', this);
+			scriptSet('add', this.add);
+			scriptSet('insert', this.insert);
+			scriptSet('remove', this.remove);
+			scriptSet('members', this.members);
+			scriptSet('openSubState', function(sub:FlxSubState)
 			{
-				scriptSet('state', this);
-				scriptSet('add', this.add);
-				scriptSet('insert', this.insert);
-				scriptSet('remove', this.remove);
-				scriptSet('members', this.members);
-				scriptSet('openSubState', function(sub:FlxSubState)
-				{
-					this.openSubState(sub);
-				});
-				scriptSet('closeSubState', function()
-				{
-					this.closeSubState();
-				});
+				this.openSubState(sub);
+			});
+			scriptSet('closeSubState', function()
+			{
+				this.closeSubState();
+			});
 
-				scriptExecute('new', scriptArgs);
-				scriptExecute('create', []);
-			}
-			catch (e:Dynamic)
-			{
-				trace('SCRIPT ERROR: $e');
-				Lib.application.window.alert(Std.string(e), 'Script Error');
-			}
+			scriptExecute('new', scriptArgs);
+			scriptExecute('create', []);
 		}
 	}
 
