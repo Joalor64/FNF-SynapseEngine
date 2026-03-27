@@ -38,8 +38,10 @@ var titleJSON = {
 
 function getIntroTextShit()
 {
-	var fullText:String = Assets.getText(Paths.txt('introText'));
-	var firstArray:Array<String> = fullText.split('\n');
+	// kind of a stupid workaround, but it works i guess
+	var modsClass = state.scriptGet('Mods');
+	var firstArray:Array<String> = (modsClass != null) ? modsClass.mergeAllTextsNamed('introText.txt') : Assets.getText(Paths.txt('introText')).split('\n');
+
 	var swagGoodArray:Array<Array<String>> = [];
 	for (i in firstArray)
 		swagGoodArray.push(i.split('--'));
@@ -65,7 +67,7 @@ function create()
 	Conductor.bpm = titleJSON.bpm;
 	Conductor.songPosition = 0;
 
-	if (titleJSON.backgroundSprite != null && titleJSON.backgroundSprite.trim().length > 0)
+	if (titleJSON.backgroundSprite != null && titleJSON.backgroundSprite.length > 0)
 	{
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image(titleJSON.backgroundSprite));
 		bg.antialiasing = ClientPrefs.data.globalAntialiasing;

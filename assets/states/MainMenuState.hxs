@@ -98,8 +98,7 @@ function create()
 	FlxG.camera.follow(camFollow, null, 0.15);
 
 	var versionArray:Array<String> = [
-		'Synapse Engine v${Constants.SYNAPSE_ENGINE_VERSION}'
-		#if debug + ' [${Constants.GIT_COMMIT_HASH}]' #end,
+		'Synapse Engine v${Constants.SYNAPSE_ENGINE_VERSION}' + ' [${Constants.GIT_COMMIT_HASH}]',
 		'Psych Engine v${Constants.PSYCH_ENGINE_VERSION}',
 		"Friday Night Funkin' v" + Application.current.meta.get('version')
 	];
