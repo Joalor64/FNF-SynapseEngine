@@ -11,8 +11,6 @@ class GameOverSubstate extends MusicBeatSubstate
 	var updateCamera:Bool = false;
 	var playingDeathSound:Bool = false;
 
-	var stageSuffix:String = "";
-
 	public static var characterName:String = 'bf-dead';
 	public static var deathSoundName:String = 'fnf_loss_sfx';
 	public static var loopSoundName:String = 'gameOver';

@@ -150,11 +150,11 @@ class ScriptedState extends MusicBeatState
 		}
 	}
 
-	public function scriptGet(key:String):Void
+	public function scriptGet(key:String):Dynamic
 	{
 		try
 		{
-			script?.getVariable(key);
+			return script?.getVariable(key);
 		}
 		catch (e:Dynamic)
 		{

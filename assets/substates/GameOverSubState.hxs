@@ -1,16 +1,52 @@
 // WORK IN PROGRESS!!
-import backend.MusicBeatState;
-import states.ScriptedState;
+import objects.Character;
 import backend.Controls;
 import backend.Paths;
 
 var cameraX:Float = 0;
 var cameraY:Float = 0;
 
-function new(x:Float, y:Float, camX:Float, camY:Float)
+var boyfriend:Character;
+var camFollow:FlxPoint;
+var camFollowPos:FlxObject;
+var updateCamera:Bool = false;
+var playingDeathSound:Bool = false;
+
+var gameOverData = {
+	characterName: 'bf-dead',
+	deathSoundName: 'fnf_loss_sfx',
+	loopSoundName: 'gameOver',
+	endSoundName: 'gameOverEnd'
+};
+
+function new(x:Float, y:Float, camX:Float, camY:Float, data:Dynamic)
 {
 	cameraX = camX;
 	cameraY = camY;
+
+	var song = PlayState.SONG;
+	if (song != null)
+	{
+		if (song.gameOverChar != null && song.gameOverChar.trim().length > 0)
+			gameOverData.characterName = song.gameOverChar;
+		if (song.gameOverSound != null && song.gameOverSound.trim().length > 0)
+			gameOverData.deathSoundName = song.gameOverSound;
+		if (song.gameOverLoop != null && song.gameOverLoop.trim().length > 0)
+			gameOverData.loopSoundName = song.gameOverLoop;
+		if (song.gameOverEnd != null && song.gameOverEnd.trim().length > 0)
+			gameOverData.endSoundName = song.gameOverEnd;
+	}
+	else if (data != null)
+	{
+		if (data.characterName != null)
+			gameOverData.characterName = data.characterName;
+		if (data.deathSoundName != null)
+			gameOverData.deathSoundName = data.deathSoundName;
+		if (data.loopSoundName != null)
+			gameOverData.loopSoundName = data.loopSoundName;
+		if (data.endSoundName != null)
+			gameOverData.endSoundName = data.endSoundName;
+	}
 }
 
 function create()
