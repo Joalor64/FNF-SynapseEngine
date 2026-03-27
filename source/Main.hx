@@ -9,7 +9,9 @@ import debug.FPS;
 #if linux
 import hxgamemode.GamemodeClient;
 #end
+#if windows
 import hxwindowmode.WindowColorMode;
+#end
 
 class Main extends Sprite
 {
@@ -30,8 +32,10 @@ class Main extends Sprite
 
 	public static function main():Void
 	{
+		#if windows
 		WindowColorMode.setDarkMode();
 		WindowColorMode.redrawWindowHeader(); // needed for windows 10
+		#end
 		Lib.current.addChild(new Main());
 	}
 
