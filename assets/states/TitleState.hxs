@@ -40,7 +40,9 @@ function getIntroTextShit()
 {
 	// kind of a stupid workaround, but it works i guess
 	var modsClass = state.scriptGet('Mods');
-	var firstArray:Array<String> = (modsClass != null) ? modsClass.mergeAllTextsNamed('introText.txt') : Assets.getText(Paths.txt('introText')).split('\n');
+	var firstArray:Array<String> = (modsClass != null) ? modsClass.mergeAllTextsNamed('introText.txt') : Assets.getText(Paths.txt('introText'))
+		.split('\n')
+		.filter(function(s:String) return s != '');
 
 	var swagGoodArray:Array<Array<String>> = [];
 	for (i in firstArray)
