@@ -56,7 +56,7 @@ class Main extends Sprite
 
 	public function new()
 	{
-		untyped __cpp__('', ALSoft);
+		untyped __cpp__('', ALSoftConfig);
 
 		super();
 
