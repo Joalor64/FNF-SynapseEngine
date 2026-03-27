@@ -274,8 +274,13 @@ class PlayState extends MusicBeatState
 	public var startCallback:Void->Void = null;
 	public var endCallback:Void->Void = null;
 
+	public static var lastLoadedModDirectory:String = '';
+	public static var nextReloadAll:Bool = false;
+
 	override public function create()
 	{
+		lastLoadedModDirectory = Mods.currentModDirectory;
+
 		canSelectMods = false;
 		fromPlayState = false;
 
@@ -285,6 +290,9 @@ class PlayState extends MusicBeatState
 		System.gc();
 
 		Paths.clearStoredMemory();
+		if (nextReloadAll)
+			Paths.clearUnusedMemory();
+		nextReloadAll = false;
 
 		// for lua
 		instance = this;

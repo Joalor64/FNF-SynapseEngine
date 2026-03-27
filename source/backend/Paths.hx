@@ -87,6 +87,51 @@ class Paths
 		compress();
 	}
 
+	public static function freeGraphicsFromMemory()
+	{
+		var protectedGfx:Array<FlxGraphic> = [];
+		function checkForGraphics(spr:Dynamic)
+		{
+			try
+			{
+				var grp:Array<Dynamic> = Reflect.getProperty(spr, 'members');
+				if (grp != null)
+				{
+					for (member in grp)
+						checkForGraphics(member);
+					return;
+				}
+			}
+			
+			try
+			{
+				var gfx:FlxGraphic = Reflect.getProperty(spr, 'graphic');
+				if (gfx != null)
+					protectedGfx.push(gfx);
+			}
+		}
+
+		for (member in FlxG.state.members)
+			checkForGraphics(member);
+
+		if (FlxG.state.subState != null)
+			for (member in FlxG.state.subState.members)
+				checkForGraphics(member);
+
+		for (key in currentTrackedAssets.keys())
+		{
+			if (!dumpExclusions.contains(key))
+			{
+				var graphic:FlxGraphic = currentTrackedAssets.get(key);
+				if (!protectedGfx.contains(graphic))
+				{
+					destroyGraphic(graphic);
+					currentTrackedAssets.remove(key);
+				}
+			}
+		}
+	}
+
 	inline static function destroyGraphic(graphic:FlxGraphic)
 	{
 		if (graphic != null && graphic.bitmap != null && graphic.bitmap.__texture != null)

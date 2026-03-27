@@ -312,6 +312,11 @@ function selectWeek()
 		PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + diffic, PlayState.storyPlaylist[0].toLowerCase());
 		PlayState.campaignScore = 0;
 		PlayState.campaignMisses = 0;
+		if (PlayState.lastLoadedModDirectory != Mods.currentModDirectory)
+		{
+			trace('CHANGED MOD DIRECTORY, RELOADING STUFF');
+			Paths.freeGraphicsFromMemory();
+		}
 		new FlxTimer().start(1, function(tmr:FlxTimer)
 		{
 			LoadingState.loadAndSwitchState(new PlayState(), true);
