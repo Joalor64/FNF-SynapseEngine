@@ -148,6 +148,7 @@ class ScriptedSubState extends MusicBeatSubstate
 		catch (e:Dynamic)
 		{
 			trace('Error getting script variable $key: $e');
+			return null;
 		}
 	}
 
