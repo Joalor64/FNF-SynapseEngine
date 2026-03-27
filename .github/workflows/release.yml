@@ -9,6 +9,59 @@ on:
   workflow_dispatch:
 
 jobs:
+  buildLinux:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@main
+
+      - uses: krdlab/setup-haxe@master
+        with:
+          haxe-version: 4.3.7
+
+      - name: Restore Previous Cache
+        id: cache-build-restore
+        uses: actions/cache/restore@main
+        with:
+          path: |
+            .haxelib/
+            export/release/linux/haxe/
+            export/release/linux/obj/
+          key: cache-linux-release
+
+      - name: Installing Libraries
+        run: |
+          sudo apt-get install libvlc-dev
+          sudo apt-get install libvlccore-dev
+          haxe --interp -cp ./actions/libs-installer -D analyzer-optimize -main Main
+
+      - name: Create Version Tag
+        run: echo "${{github.run_id}}" > VERSION
+
+      - name: Compile
+        run: haxelib run lime build linux
+
+      - name: Clear Previous Cache
+        uses: actions/github-script@main
+        with:
+          script: await require('./actions/cache/clear-cache.js')({github, context}, 'cache-linux-release');
+
+      - name: Save Current Cache
+        uses: actions/cache@main
+        with:
+          key: cache-linux-release
+          path: |
+            .haxelib/
+            export/release/linux/haxe/
+            export/release/linux/obj/
+          restore-keys: |
+            cache-linux-release
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@main
+        with:
+          name: linuxBuild
+          path: export/release/linux/bin
   buildWindows:
     runs-on: windows-latest
 
@@ -63,3 +116,55 @@ jobs:
         with:
           name: windowsBuild
           path: export/release/windows/bin
+  buildMac:
+    runs-on: macos-15
+
+    steps:
+      - uses: actions/checkout@main
+
+      - uses: krdlab/setup-haxe@master
+        with:
+          haxe-version: 4.3.7
+
+      - name: Restore Previous Cache
+        id: cache-build-restore
+        uses: actions/cache/restore@main
+        with:
+          path: |
+            .haxelib/
+            export/release/macos/haxe/
+            export/release/macos/obj/
+          key: cache-macos-release
+
+      - name: Installing Libraries
+        run: haxe --interp -cp ./actions/libs-installer -D analyzer-optimize -main Main
+
+      - name: Create Version Tag
+        run: echo "${{github.run_id}}" > VERSION
+
+      - name: Compile
+        run: haxelib run lime build mac
+
+      - name: Clear Previous Cache
+        uses: actions/github-script@main
+        with:
+          script: await require('./actions/cache/clear-cache.js')({github, context}, 'cache-macos-release');
+
+      - name: Save Current Cache
+        uses: actions/cache@main
+        with:
+          key: cache-macos-release
+          path: |
+            .haxelib/
+            export/release/macos/haxe/
+            export/release/macos/obj/
+          restore-keys: |
+            cache-macos-release
+
+      - name: Tar files
+        run: tar -zcvf SynapseEngine.tar.gz export/release/macos/bin
+      - name: Upload Artifact
+        uses: actions/upload-artifact@main
+        with:
+          name: macBuild
+          path: SynapseEngine.tar.gz
