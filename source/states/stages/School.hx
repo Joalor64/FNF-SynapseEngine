@@ -10,7 +10,6 @@ class School extends BaseStage
 
 	override function create()
 	{
-		var _song = PlayState.SONG;
 		GameOverSubstate.deathSoundName = 'fnf_loss_sfx-pixel';
 		GameOverSubstate.loopSoundName = 'gameOver-pixel';
 		GameOverSubstate.endSoundName = 'gameOverEnd-pixel';
