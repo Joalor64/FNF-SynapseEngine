@@ -122,10 +122,10 @@ class CoolUtil
 	inline public static function browserLoad(site:String)
 	{
 		#if linux
-		var cmd = Sys.command("xdg-open", [url]);
+		var cmd = Sys.command("xdg-open", [site]);
 		if (cmd != 0)
-			cmd = Sys.command("/usr/bin/xdg-open", [url]);
-		Sys.command('/usr/bin/xdg-open', [url]);
+			cmd = Sys.command("/usr/bin/xdg-open", [site]);
+		Sys.command('/usr/bin/xdg-open', [site]);
 		#else
 		FlxG.openURL(site);
 		#end

@@ -72,7 +72,7 @@
 	<haxelib name="hxgamemode" if="linux" />
 	<haxelib name="hxdiscord_rpc" if="DISCORD_ALLOWED" />
 	<haxelib name="hxcpp-debug-server" if="desktop debug" />
-	<haxelib name="hxWindowColorMode" />
+	<haxelib name="hxWindowColorMode" if="windows" />
 
 	<!-- ______________________________ Haxedefines _____________________________ -->
 
