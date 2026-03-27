@@ -117,7 +117,7 @@ jobs:
           name: windowsBuild
           path: export/release/windows/bin
   buildMac:
-    runs-on: macos-15
+    runs-on: macos-14
 
     steps:
       - uses: actions/checkout@main
