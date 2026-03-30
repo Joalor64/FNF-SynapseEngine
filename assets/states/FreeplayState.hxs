@@ -9,12 +9,7 @@ var curSelected:Int = 0;
 var curDifficulty:Int = 0;
 var lastDifficultyName:String = Difficulty.getDefault();
 
-var colorArray:Array<Int> = [
-	FlxColor.fromRGB(0, 255, 0),
-	FlxColor.fromRGB(255, 255, 0),
-	FlxColor.fromRGB(255, 0, 0)
-];
-
+var diffToCol:Array<Array<Dynamic>> = [["easy", [0, 255, 0]], ["normal", [255, 255, 0]], ["hard", [255, 0, 0]]];
 var diffTween:FlxTween = null;
 var colorTween:FlxTween = null;
 
@@ -324,7 +319,7 @@ function changeSelection(change:Int, playSound:Bool)
 		curSelected = songs.length - 1;
 	if (curSelected >= songs.length)
 		curSelected = 0;
-	
+
 	updateSongLastDifficulty();
 
 	var newColor:Int = songs[curSelected].color;
@@ -398,7 +393,7 @@ function changeDiff(change:Int)
 	if (diffTween != null)
 		diffTween.cancel();
 
-	var targetColor:Int = colorArray[Std.int(Math.min(curDifficulty, colorArray.length - 1))];
+	var targetColor:Int = getDifficultyColor(Difficulty.getString(curDifficulty, false));
 	if (diffText.color != targetColor)
 	{
 		diffTween = FlxTween.color(diffText, 0.3, diffText.color, targetColor, {
@@ -407,6 +402,19 @@ function changeDiff(change:Int)
 	}
 
 	positionHighscore();
+}
+
+function getDifficultyColor(diffName:String):Int
+{
+	for (diff in diffToCol)
+	{
+		if (diff[0] == diffName.toLowerCase())
+		{
+			var rgb:Array<Int> = diff[1];
+			return FlxColor.fromRGB(rgb[0], rgb[1], rgb[2]);
+		}
+	}
+	return FlxColor.WHITE;
 }
 
 function positionHighscore()

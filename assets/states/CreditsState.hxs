@@ -22,14 +22,22 @@ function create()
 	for (mod in Mods.parseList().enabled)
 	{
 		var modPath:String = Paths.mods(mod + '/credits.json');
+		var txtPath:String = Paths.mods(mod + '/credits.txt'); // For backwards compatibility
+
 		if (FileSystem.exists(modPath))
 			parseCreditsJson(modPath, mod);
+		else if (FileSystem.exists(txtPath))
+			parseCreditsTxt(txtPath, mod);
 	}
 	#end
 
 	var path:String = Paths.getPath('credits.json');
+	var txtPath:String = Paths.getPath('credits.txt');
+
 	if (Paths.exists(path))
 		parseCreditsJson(path);
+	else if (Paths.exists(txtPath))
+		parseCreditsTxt(txtPath);
 
 	bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 	bg.screenCenter();
@@ -103,6 +111,42 @@ function parseCreditsJson(path:String, ?modFolder:String = '')
 			creditsStuff.push(['']);
 		}
 	}
+}
+
+function parseCreditsTxt(path:String, ?modFolder:String = '')
+{
+	var rawTxt:String = #if sys File.getContent(path) #else Assets.getText(path) #end;
+	var lines:Array<String> = rawTxt.split('\n');
+
+	var currentCategory:String = null;
+
+	for (line in lines)
+	{
+		line = StringTools.trim(line);
+
+		if (line.length == 0 || StringTools.startsWith(line, '//'))
+			continue;
+
+		if (line.indexOf('::') == -1)
+		{
+			creditsStuff.push([line]);
+			currentCategory = line;
+			continue;
+		}
+
+		var parts:Array<String> = line.split('::');
+
+		var name:String = parts[0] != null ? StringTools.trim(parts[0]) : 'Unknown';
+		var icon:String = parts[1] != null ? StringTools.trim(parts[1]) : 'unknown';
+		var desc:String = parts[2] != null ? StringTools.trim(parts[2]) : '';
+		var link:String = parts[3] != null && StringTools.trim(parts[3]).length > 0 ? StringTools.trim(parts[3]) : 'nolink';
+		var color:String = parts[4] != null && StringTools.trim(parts[4]).length > 0 ? StringTools.trim(parts[4]) : '444444';
+
+		creditsStuff.push([name, icon, desc, link, color, modFolder]);
+	}
+
+	if (creditsStuff.length > 0 && creditsStuff[creditsStuff.length - 1].length > 1)
+		creditsStuff.push(['']);
 }
 
 function update(elapsed:Float)

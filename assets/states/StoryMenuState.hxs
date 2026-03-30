@@ -6,6 +6,7 @@ import backend.MusicBeatState;
 import objects.MenuCharacter;
 import objects.MenuItem;
 import states.LoadingState;
+import flixel.util.FlxStringUtil;
 
 var tweenDifficulty:FlxTween;
 
@@ -193,7 +194,7 @@ function update(elapsed:Float)
 	if (Math.abs(intendedScore - lerpScore) < 10)
 		lerpScore = intendedScore;
 
-	scoreText.text = "WEEK SCORE:" + lerpScore;
+	scoreText.text = "WEEK SCORE:" + FlxStringUtil.formatMoney(lerpScore, false);
 
 	if (!movedBack && !selectedWeek)
 	{

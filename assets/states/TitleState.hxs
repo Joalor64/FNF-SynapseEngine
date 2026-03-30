@@ -68,7 +68,7 @@ function create()
 	Conductor.bpm = titleJSON.bpm;
 	Conductor.songPosition = 0;
 
-	if (titleJSON.backgroundSprite != null && titleJSON.backgroundSprite.length > 0)
+	if (titleJSON.backgroundSprite != null && StringTools.trim(titleJSON.backgroundSprite).length > 0)
 	{
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image(titleJSON.backgroundSprite));
 		bg.antialiasing = ClientPrefs.data.globalAntialiasing;
