@@ -11,13 +11,13 @@ In pack.json, you can define the mod name, the mod's description, etc.
 Here's an example of a valid mod metadata file:
 ```json
 {
-	"name": "Name",
-	"description": "Description",
-	"restart": false,
-	"runsGlobally": false,
-	"color": [170, 0, 255],
-	"discordRPC": "863222024192262205",
-	"iconFramerate": 10
+	"name": "Name", // Mod name
+	"description": "Description", // Mod description
+	"restart": false, // If the mod should restart the game when enabled/disabled
+	"runsGlobally": false, // Whether the mod's scripts, if any, run globally or not
+	"color": [170, 0, 255], // The background color for the mod (RGB)
+	"discordRPC": "863222024192262205", // A custom Discord RPC ID for the mod
+	"iconFramerate": 10 // The framerate of the mod's icon, if it's animated
 }
 ```
 
@@ -50,8 +50,8 @@ Each folder in your mod should be used as follows:
 * `videos` - Custom videos used for cutscenes or other stuff.
 * `weeks` - Week files.
 
-Additionally, you can also include customization files, located in the mod's root folder.
+Additionally, you can also add customization files, located in the mod's root folder.
 
 * `achievements.json` - For custom achievements, see more [here](https://github.com/Joalor64GH/FNF-SynapseEngine/wiki).
 * `credits.json` - For custom credits, see more [here](https://github.com/Joalor64GH/FNF-SynapseEngine/wiki).
-`settings.json` - For custom settings, see more [here](https://github.com/Joalor64GH/FNF-SynapseEngine/wiki).
+* `settings.json` - For custom settings, see more [here](https://github.com/Joalor64GH/FNF-SynapseEngine/wiki).
