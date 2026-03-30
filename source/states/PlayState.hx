@@ -128,8 +128,9 @@ class PlayState extends MusicBeatState
 	public var gf:Character = null;
 	public var boyfriend:Character = null;
 
-	var grpCrossFade:FlxTypedGroup<CrossFade>;
-	var grpBFCrossFade:FlxTypedGroup<CrossFade>;
+	public var grpCrossFade:FlxTypedGroup<CrossFade>;
+	public var grpGFCrossFade:FlxTypedGroup<CrossFade>;
+	public var grpBFCrossFade:FlxTypedGroup<CrossFade>;
 
 	public var notes:FlxTypedGroup<Note>;
 	public var unspawnNotes:Array<Note> = [];
@@ -538,12 +539,18 @@ class PlayState extends MusicBeatState
 		else
 			grpCrossFade = new FlxTypedGroup<CrossFade>(4); // limit
 
+		if (ClientPrefs.data.crossFadeLimit != null)
+			grpGFCrossFade = new FlxTypedGroup<CrossFade>(ClientPrefs.data.crossFadeLimit); // limit
+		else
+			grpGFCrossFade = new FlxTypedGroup<CrossFade>(4); // limit
+
 		if (ClientPrefs.data.boyfriendCrossFadeLimit != null)
 			grpBFCrossFade = new FlxTypedGroup<CrossFade>(ClientPrefs.data.boyfriendCrossFadeLimit); // limit
 		else
 			grpBFCrossFade = new FlxTypedGroup<CrossFade>(1); // limit
 
 		add(grpCrossFade);
+		add(grpGFCrossFade);
 		add(grpBFCrossFade);
 
 		if (stageData.objects != null && stageData.objects.length > 0)
@@ -2521,6 +2528,12 @@ class PlayState extends MusicBeatState
 			grpCrossFade.remove(img, true);
 		});
 
+		grpGFCrossFade.update(elapsed);
+		grpGFCrossFade.forEachDead(function(img:CrossFade)
+		{
+			grpGFCrossFade.remove(img, true);
+		});
+
 		grpBFCrossFade.update(elapsed);
 		grpBFCrossFade.forEachDead(function(img:CrossFade)
 		{
@@ -4273,6 +4286,14 @@ class PlayState extends MusicBeatState
 				}
 			}
 
+			if (note.noteType == 'GF Cross Fade')
+			{
+				if (ClientPrefs.data.crossFadeMode != 'Off')
+				{
+					new CrossFade(gf, grpGFCrossFade, false);
+				}
+			}
+
 			var char:Character = dad;
 			var animToPlay:String = singAnimations[Std.int(Math.abs(note.noteData))] + altAnim;
 			if (note.gfNote)
@@ -4442,6 +4463,11 @@ class PlayState extends MusicBeatState
 					if (ClientPrefs.data.crossFadeMode != 'Off')
 					{
 						new CrossFade(boyfriend, grpBFCrossFade, false);
+					}
+				case 'GF Cross Fade': // GFCF note
+					if (ClientPrefs.data.crossFadeMode != 'Off')
+					{
+						new CrossFade(gf, grpGFCrossFade, false);
 					}
 			}
 
