@@ -36,6 +36,20 @@ class DiscordClient
 	}
 	#end
 
+	public static function check()
+	{
+		if (ClientPrefs.data.discordRPC)
+			load();
+		else if (initialized)
+			shutdown();
+	}
+
+	public static function prepare()
+	{
+		if (!initialized && ClientPrefs.data.discordRPC)
+			load();
+	}
+
 	public static function load():Void
 	{
 		if (initialized)

@@ -120,7 +120,7 @@ class Main extends Sprite
 		#end
 
 		#if DISCORD_ALLOWED
-		DiscordClient.load();
+		DiscordClient.prepare();
 		#end
 
 		FlxG.signals.gameResized.add(function(w, h)

@@ -84,7 +84,7 @@ class LoadingState extends MusicBeatState
 		barWidth = Std.int(barBack.width - 10);
 
 		#if HSCRIPT_ALLOWED
-		if (Mods.currentModDirectory != null && Mods.currentModDirectory.length > 0)
+		if (Mods.currentModDirectory != null && Mods.currentModDirectory.trim().length > 0)
 		{
 			var scriptPath:String = 'mods/${Mods.currentModDirectory}/LoadingScreen.hx'; // mods/My-Mod/LoadingScreen.hx
 			if (FileSystem.exists(scriptPath))

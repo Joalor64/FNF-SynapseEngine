@@ -86,6 +86,7 @@ import backend.Controls;
 	public var badWindow:Int = 135;
 	public var shitWindow:Int = 205;
 	public var safeFrames:Float = 10;
+	public var discordRPC:Bool = true;
 }
 
 class ClientPrefs
@@ -193,6 +194,10 @@ class ClientPrefs
 			FlxG.sound.volume = FlxG.save.data.volume;
 		if (FlxG.save.data.mute != null)
 			FlxG.sound.muted = FlxG.save.data.mute;
+
+		#if DISCORD_ALLOWED
+		DiscordClient.check();
+		#end
 
 		var save:FlxSave = new FlxSave();
 		save.bind('controls_v3', CoolUtil.getSavePath());
