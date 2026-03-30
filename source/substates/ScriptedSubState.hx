@@ -2,16 +2,18 @@ package substates;
 
 class ScriptedSubState extends MusicBeatSubstate
 {
+	public var tag:String = null;
 	public var path:String = '';
 	public var script:FunkinHScript = null;
 	public var scriptArgs:Array<Dynamic> = null;
 
 	public static var instance:ScriptedSubState = null;
 
-	public function new(_path:String = null, ?args:Array<Dynamic>):Void
+	public function new(_path:String = null, ?args:Array<Dynamic>, ?_tag:String = null):Void
 	{
 		if (_path != null)
 			path = _path;
+		tag = _tag;
 		scriptArgs = args;
 		instance = this;
 
@@ -125,6 +127,17 @@ class ScriptedSubState extends MusicBeatSubstate
 	{
 		scriptExecute('onFocusLost', []);
 		super.onFocusLost();
+	}
+
+	public static function getSubStateByTag(tag:String):ScriptedSubState
+	{
+		if (FlxG.state.subState is ScriptedSubState)
+		{
+			var sub:ScriptedSubState = cast FlxG.state.subState;
+			if (sub.tag == tag)
+				return sub;
+		}
+		return null;
 	}
 
 	public function scriptSet(key:String, value:Dynamic):Void

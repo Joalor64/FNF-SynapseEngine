@@ -1,6 +1,5 @@
 import backend.MusicBeatState;
 import states.ScriptedState;
-import backend.Controls;
 import backend.Paths;
 import backend.CoolUtil;
 import backend.Conductor;
@@ -124,9 +123,9 @@ function update(elapsed:Float)
 
 	updateSkipTextStuff();
 
-	if (Controls.instance.UI_UP_P)
+	if (controls.UI_UP_P)
 		changeSelection(-1);
-	if (Controls.instance.UI_DOWN_P)
+	if (controls.UI_DOWN_P)
 		changeSelection(1);
 
 	if (menuItems[curSelected] == 'Skip Time')
@@ -137,25 +136,25 @@ function update(elapsed:Float)
 			skipTimeText.y = skipTimeTracker.y;
 		}
 
-		if (Controls.instance.UI_LEFT_P)
+		if (controls.UI_LEFT_P)
 		{
 			FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 			curTime -= 1000;
 			updateSkipTimeText();
 		}
-		if (Controls.instance.UI_RIGHT_P)
+		if (controls.UI_RIGHT_P)
 		{
 			FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 			curTime += 1000;
 			updateSkipTimeText();
 		}
 
-		if (Controls.instance.UI_LEFT || Controls.instance.UI_RIGHT)
+		if (controls.UI_LEFT || controls.UI_RIGHT)
 		{
 			holdTime += elapsed;
 			if (holdTime > 0.5)
 			{
-				curTime += 45000 * elapsed * (Controls.instance.UI_LEFT ? -1 : 1);
+				curTime += 45000 * elapsed * (controls.UI_LEFT ? -1 : 1);
 			}
 
 			if (curTime >= FlxG.sound.music.length)
@@ -170,7 +169,7 @@ function update(elapsed:Float)
 			curTime = FlxG.sound.music.length - 1000;
 	}
 
-	if (Controls.instance.ACCEPT && cantUnpause <= 0)
+	if (controls.ACCEPT && cantUnpause <= 0)
 	{
 		var daSelected:String = menuItems[curSelected];
 
@@ -198,6 +197,9 @@ function update(elapsed:Float)
 			switch (daSelected)
 			{
 				case "Exit to Freeplay":
+					#if DISCORD_ALLOWED
+					DiscordClient.resetClientID();
+					#end
 					PlayState.deathCounter = 0;
 					PlayState.seenCutscene = false;
 					Mods.loadTheFirstEnabledMod();
@@ -206,6 +208,9 @@ function update(elapsed:Float)
 					FlxG.sound.playMusic(Paths.music('freakyMenu'));
 					PlayState.chartingMode = false;
 				case "Exit to Menu":
+					#if DISCORD_ALLOWED
+					DiscordClient.resetClientID();
+					#end
 					PlayState.deathCounter = 0;
 					PlayState.seenCutscene = false;
 					Mods.loadTheFirstEnabledMod();

@@ -41,6 +41,11 @@ class BaseStage extends FlxBasic
 	public var defaultCamZoom(get, set):Float;
 	public var camFollow(get, never):FlxPoint;
 
+	public var characterName(get, set):String;
+	public var deathSoundName(get, set):String;
+	public var loopSoundName(get, set):String;
+	public var endSoundName(get, set):String;
+
 	public function new()
 	{
 		this.game = MusicBeatState.getState();
@@ -294,4 +299,40 @@ class BaseStage extends FlxBasic
 
 	inline private function get_camFollowPos():FlxObject
 		return game.camFollowPos;
+
+	inline private function get_characterName():String
+		return game.characterName;
+
+	inline private function get_deathSoundName():String
+		return game.deathSoundName;
+
+	inline private function get_loopSoundName():String
+		return game.loopSoundName;
+
+	inline private function get_endSoundName():String
+		return game.endSoundName;
+
+	inline private function set_characterName(value:String):String
+	{
+		game.characterName = value;
+		return game.characterName;
+	}
+
+	inline private function set_deathSoundName(value:String):String
+	{
+		game.deathSoundName = value;
+		return game.deathSoundName;
+	}
+
+	inline private function set_loopSoundName(value:String):String
+	{
+		game.loopSoundName = value;
+		return game.loopSoundName;
+	}
+
+	inline private function set_endSoundName(value:String):String
+	{
+		game.endSoundName = value;
+		return game.endSoundName;
+	}
 }

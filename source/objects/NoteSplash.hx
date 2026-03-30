@@ -79,19 +79,9 @@ class NoteSplash extends FlxSprite
 		{
 			if (note != null && !note.noteSplashData.useGlobalShader)
 			{
-				// did i do this weirdly?
-				// honestly, yeah
-				if (note.noteType == 'Hurt Note')
-				{
-					rgbShader.r = 0xFFFF0000;
-					rgbShader.g = 0xFF101010;
-				}
-				else
-				{
-					rgbShader.r = redColor;
-					rgbShader.g = greenColor;
-					rgbShader.b = blueColor;
-				}
+				rgbShader.r = (note.noteSplashData.r != -1) ? note.noteSplashData.r : redColor;
+				rgbShader.g = (note.noteSplashData.g != -1) ? note.noteSplashData.g : greenColor;
+				rgbShader.b = (note.noteSplashData.b != -1) ? note.noteSplashData.b : blueColor;
 				shader = rgbShader.shader;
 			}
 			else
@@ -100,7 +90,7 @@ class NoteSplash extends FlxSprite
 
 		alpha = ClientPrefs.data.splashAlpha;
 		if (note != null)
-			alpha = note.noteSplashData.alpha;
+			alpha = note.noteSplashData.a;
 
 		antialiasing = ClientPrefs.data.globalAntialiasing;
 		if (note != null)

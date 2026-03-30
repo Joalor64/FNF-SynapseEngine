@@ -1,5 +1,4 @@
 import flixel.util.FlxSort;
-import backend.Controls;
 import backend.Achievements;
 import backend.MusicBeatState;
 import states.ScriptedState;
@@ -162,9 +161,9 @@ function update(elapsed:Float)
 	if (!goingBack && options.length > 1)
 	{
 		var add:Int = 0;
-		if (Controls.instance.UI_LEFT_P)
+		if (controls.UI_LEFT_P)
 			add = -1;
-		else if (Controls.instance.UI_RIGHT_P)
+		else if (controls.UI_RIGHT_P)
 			add = 1;
 
 		if (add != 0)
@@ -190,9 +189,9 @@ function update(elapsed:Float)
 		if (options.length > MAX_PER_ROW)
 		{
 			var add:Int = 0;
-			if (Controls.instance.UI_UP_P)
+			if (controls.UI_UP_P)
 				add = -1;
-			else if (Controls.instance.UI_DOWN_P)
+			else if (controls.UI_DOWN_P)
 				add = 1;
 
 			if (add != 0)
@@ -214,13 +213,13 @@ function update(elapsed:Float)
 			}
 		}
 
-		if (Controls.instance.RESET && (options[curSelected].unlocked || options[curSelected].curProgress > 0))
+		if (controls.RESET && (options[curSelected].unlocked || options[curSelected].curProgress > 0))
 		{
 			openSubState(new ResetAchievementSubState(options[curSelected], curSelected));
 		}
 	}
 
-	if (Controls.instance.BACK)
+	if (controls.BACK)
 	{
 		FlxG.sound.play(Paths.sound('cancelMenu'));
 		MusicBeatState.switchState(new ScriptedState('MainMenuState', []));

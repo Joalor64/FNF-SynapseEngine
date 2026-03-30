@@ -1,4 +1,3 @@
-import backend.Controls;
 import backend.Constants;
 import backend.Achievements;
 import states.LoadingState;
@@ -141,26 +140,26 @@ function update(elapsed:Float)
 
 	if (!selectedSomethin)
 	{
-		if (Controls.instance.UI_UP_P)
+		if (controls.UI_UP_P)
 		{
 			FlxG.sound.play(Paths.sound('scrollMenu'));
 			changeItem(-1);
 		}
 
-		if (Controls.instance.UI_DOWN_P)
+		if (controls.UI_DOWN_P)
 		{
 			FlxG.sound.play(Paths.sound('scrollMenu'));
 			changeItem(1);
 		}
 
-		if (Controls.instance.BACK)
+		if (controls.BACK)
 		{
 			selectedSomethin = true;
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 			MusicBeatState.switchState(new ScriptedState('TitleState', []));
 		}
 
-		if (Controls.instance.ACCEPT)
+		if (controls.ACCEPT)
 		{
 			if (optionShit[curSelected] == 'donate')
 			{
@@ -212,7 +211,7 @@ function update(elapsed:Float)
 									{
 										PlayState.SONG.arrowSkin = null;
 										PlayState.SONG.splashSkin = null;
-										PlayState.isPixelStage = false;
+										PlayState.stageUI = 'normal';
 									}
 							}
 						});

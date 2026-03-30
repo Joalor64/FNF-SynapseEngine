@@ -1,7 +1,7 @@
 {
 	"directory": "week6",
 	"defaultZoom": 1.05,
-	"isPixelStage": true,
+	"stageUI": "pixel",
 
 	"boyfriend": [970, 320],
 	"girlfriend": [580, 430],
@@ -11,5 +11,11 @@
 	"camera_boyfriend": [-100, -100],
 	"camera_opponent": [0, 0],
 	"camera_girlfriend": [0, 0],
-	"camera_speed": 1
+	"camera_speed": 1,
+
+	"preload": {
+		"images/stages/school/animatedEvilSchool_low": 1,
+		"images/stages/school/animatedEvilSchool": 2,
+		"images/stages/school/bgGhouls": 2
+	}
 }

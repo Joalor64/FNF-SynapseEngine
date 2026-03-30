@@ -1,7 +1,7 @@
 {
 	"directory": "week4",
 	"defaultZoom": 0.9,
-	"isPixelStage": false,
+	"stageUI": "",
 
 	"boyfriend": [1030, -120],
 	"girlfriend": [400, 130],
@@ -11,5 +11,14 @@
 	"camera_boyfriend": [-200, 0],
 	"camera_opponent": [0, 0],
 	"camera_girlfriend": [0, 0],
-	"camera_speed": 1
+	"camera_speed": 1,
+
+	"preload": {
+		"images/stages/limo/limoDancer": 2,
+		"images/stages/limo/limoDrive": 2,
+		"images/stages/limo/gore/": 2,
+		"images/stages/limo/fastCarLol": 3,
+		"images/stages/limo/limoSunset": 3,
+		"images/stages/limo/bgLimo": 3
+	}
 }

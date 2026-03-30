@@ -218,6 +218,14 @@ class ClientPrefs
 		return (data.gameplaySettings.exists(name) ? data.gameplaySettings.get(name) : defaultValue);
 	}
 
+	public static function reloadVolumeKeys()
+	{
+		Main.muteKeys = keyBinds.get('volume_mute').copy();
+		Main.volumeDownKeys = keyBinds.get('volume_down').copy();
+		Main.volumeUpKeys = keyBinds.get('volume_up').copy();
+		toggleVolumeKeys(true);
+	}
+
 	public static function toggleVolumeKeys(turnOn:Bool)
 	{
 		FlxG.sound.muteKeys = turnOn ? Main.muteKeys : [];

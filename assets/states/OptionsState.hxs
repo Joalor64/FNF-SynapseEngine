@@ -1,4 +1,3 @@
-import backend.Controls;
 import backend.ClientPrefs;
 import backend.StageData;
 import states.LoadingState;
@@ -61,16 +60,16 @@ function create()
 
 function update(elapsed:Float)
 {
-	if (Controls.instance.UI_UP_P)
+	if (controls.UI_UP_P)
 	{
 		changeSelection(-1);
 	}
-	if (Controls.instance.UI_DOWN_P)
+	if (controls.UI_DOWN_P)
 	{
 		changeSelection(1);
 	}
 
-	if (Controls.instance.BACK)
+	if (controls.BACK)
 	{
 		FlxG.sound.play(Paths.sound('cancelMenu'));
 		if (fromPlayState)
@@ -84,7 +83,7 @@ function update(elapsed:Float)
 			MusicBeatState.switchState(new ScriptedState('MainMenuState', []));
 	}
 
-	if (Controls.instance.ACCEPT)
+	if (controls.ACCEPT)
 	{
 		openSelectedSubstate(options[curSelected]);
 	}

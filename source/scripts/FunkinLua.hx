@@ -88,6 +88,8 @@ class FunkinLua
 		set('songLength', FlxG.sound.music.length);
 		set('songName', PlayState.SONG.song);
 		set('songPath', Paths.formatToSongPath(PlayState.SONG.song));
+		set('loadedSongName', Song.loadedSongName);
+		set('loadedSongPath', Paths.formatToSongPath(Song.loadedSongName));
 		set('startedCountdown', false);
 		set('curStage', PlayState.SONG.stage);
 
@@ -175,19 +177,7 @@ class FunkinLua
 		set('scriptName', scriptName);
 		set('currentModDirectory', Mods.currentModDirectory);
 
-		#if windows
-		set('buildTarget', 'windows');
-		#elseif linux
-		set('buildTarget', 'linux');
-		#elseif mac
-		set('buildTarget', 'mac');
-		#elseif html5
-		set('buildTarget', 'browser');
-		#elseif android
-		set('buildTarget', 'android');
-		#else
-		set('buildTarget', 'unknown');
-		#end
+		set('buildTarget', LuaUtils.getBuildTarget());
 
 		// custom substate
 		Lua_helper.add_callback(lua, "openCustomSubstate", function(name:String, pauseGame:Bool = false)
@@ -1674,6 +1664,10 @@ class FunkinLua
 			else
 				MusicBeatState.switchState(new ScriptedState('FreeplayState', []));
 
+			#if DISCORD_ALLOWED
+			DiscordClient.resetClientID();
+			#end
+
 			FlxG.sound.playMusic(Paths.music('freakyMenu'));
 			PlayState.changedDifficulty = false;
 			PlayState.chartingMode = false;
@@ -2055,9 +2049,16 @@ class FunkinLua
 					}
 					else
 					{
-						if (PlayState.instance.isDead)
+						var gameOverSub = ScriptedSubState.getSubStateByTag('gameover');
+
+						if (PlayState.instance.isDead && gameOverSub != null)
 						{
-							GameOverSubstate.instance.insert(GameOverSubstate.instance.members.indexOf(GameOverSubstate.instance.boyfriend), shit);
+							var bf = gameOverSub.scriptGet('boyfriend');
+
+							if (bf != null)
+								gameOverSub.insert(gameOverSub.members.indexOf(bf), shit);
+							else
+								gameOverSub.add(shit);
 						}
 						else
 						{
@@ -3602,6 +3603,20 @@ class ModchartSprite extends FlxSprite
 	{
 		super(x, y);
 		antialiasing = ClientPrefs.data.globalAntialiasing;
+	}
+
+	public function playAnim(name:String, forced:Bool = false, ?reverse:Bool = false, ?startFrame:Int = 0)
+	{
+		animation.play(name, forced, reverse, startFrame);
+
+		var daOffset = animOffsets.get(name);
+		if (animOffsets.exists(name))
+			offset.set(daOffset[0], daOffset[1]);
+	}
+
+	public function addOffset(name:String, x:Float, y:Float)
+	{
+		animOffsets.set(name, [x, y]);
 	}
 }
 

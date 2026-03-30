@@ -5,7 +5,7 @@
     * [X] Custom States + Substates
 * [X] Crossfades
 * [X] New Events
-* [ ] Softcoding
+* [X] Softcoding
     * [X] Menu States
         * [X] Title
         * [X] Main Menu
@@ -14,7 +14,7 @@
         * [X] Awards
         * [X] Credits
         * [X] Options
-    * [ ] Game Over
+    * [X] Game Over
     * [X] Pause Menu
 * [X] Custom Options
 * [X] Custom Achievements
@@ -39,14 +39,14 @@
 * [ ] In-Game Crash Handler
 * [ ] Lil' Buddies (From FPS+)
 * [ ] Support for Separated Vocals
-* [ ] Potentially Backport Newer Psych Stuff
+* [ ] Potentially Backport Newer Psych Stuff (i mean, i've BEEN doing this anyways)
 * [ ] Deprecate `animateatlas` in favor of `flxanimate`
 
 ### Low Priority
 * [ ] Extra Keys
 * [ ] Erect Mixes
 * [ ] New Editor UI
-* [ ] Le Sserafim Collab
 * [ ] Controller Support
 * [ ] Time Signature Support
+* [ ] Python Scripting (using `Hython`)
 * [ ] Potentially Backport V-Slice Stuff

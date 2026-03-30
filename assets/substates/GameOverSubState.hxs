@@ -1,16 +1,12 @@
-// WORK IN PROGRESS!!
 import objects.Character;
-import backend.Controls;
-import backend.Paths;
-
-var cameraX:Float = 0;
-var cameraY:Float = 0;
 
 var boyfriend:Character;
+
 var camFollow:FlxPoint;
-var camFollowPos:FlxObject;
 var updateCamera:Bool = false;
+
 var playingDeathSound:Bool = false;
+var isEnding:Bool = false;
 
 var gameOverData = {
 	characterName: 'bf-dead',
@@ -19,24 +15,9 @@ var gameOverData = {
 	endSoundName: 'gameOverEnd'
 };
 
-function new(x:Float, y:Float, camX:Float, camY:Float, data:Dynamic)
+function new(?data:Dynamic)
 {
-	cameraX = camX;
-	cameraY = camY;
-
-	var song = PlayState.SONG;
-	if (song != null)
-	{
-		if (song.gameOverChar != null && song.gameOverChar.trim().length > 0)
-			gameOverData.characterName = song.gameOverChar;
-		if (song.gameOverSound != null && song.gameOverSound.trim().length > 0)
-			gameOverData.deathSoundName = song.gameOverSound;
-		if (song.gameOverLoop != null && song.gameOverLoop.trim().length > 0)
-			gameOverData.loopSoundName = song.gameOverLoop;
-		if (song.gameOverEnd != null && song.gameOverEnd.trim().length > 0)
-			gameOverData.endSoundName = song.gameOverEnd;
-	}
-	else if (data != null)
+	if (data != null)
 	{
 		if (data.characterName != null)
 			gameOverData.characterName = data.characterName;
@@ -51,22 +32,120 @@ function new(x:Float, y:Float, camX:Float, camY:Float, data:Dynamic)
 
 function create()
 {
-	var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
-	bg.alpha = 0.6;
-	bg.scrollFactor.set();
-	add(bg);
+	Conductor.songPosition = 0;
 
-	var text:FlxText = new FlxText(0, 0, FlxG.width, "GAME OVER", 48);
-	text.color = FlxColor.WHITE;
-	text.scrollFactor.set();
-	add(text);
+	boyfriend = new Character(PlayState.instance.boyfriend.getScreenPosition().x, PlayState.instance.boyfriend.getScreenPosition().y,
+		gameOverData.characterName, true);
+	boyfriend.x += boyfriend.positionArray[0] - PlayState.instance.boyfriend.positionArray[0];
+	boyfriend.y += boyfriend.positionArray[1] - PlayState.instance.boyfriend.positionArray[1];
+	add(boyfriend);
+
+	FlxG.sound.play(Paths.sound(gameOverData.deathSoundName));
+
+	FlxG.camera.scroll.set();
+	FlxG.camera.target = null;
+
+	boyfriend.playAnim('firstDeath');
+
+	camFollow = new FlxObject(0, 0, 1, 1);
+	camFollow.setPosition(boyfriend.getGraphicMidpoint().x + boyfriend.cameraPosition[0], boyfriend.getGraphicMidpoint().y + boyfriend.cameraPosition[1]);
+	FlxG.camera.focusOn(new FlxPoint(FlxG.camera.scroll.x + (FlxG.camera.width / 2), FlxG.camera.scroll.y + (FlxG.camera.height / 2)));
+	add(camFollow);
+
+	PlayState.instance.setOnLuas('inGameOver', true);
+	PlayState.instance.callOnLuas('onGameOverStart', []);
+	PlayState.instance.callOnScripts('onGameOverStart', []);
 }
 
 function update(elapsed:Float)
 {
-	if (Controls.instance.BACK)
+	PlayState.instance.callOnLuas('onUpdate', [elapsed]);
+	PlayState.instance.callOnScripts('onUpdate', [elapsed]);
+
+	if (boyfriend.animation.curAnim != null && boyfriend.animation.curAnim.name == 'firstDeath')
 	{
+		if (boyfriend.animation.curAnim.curFrame >= 12 && !updateCamera)
+		{
+			FlxG.camera.follow(camFollow, FlxCameraFollowStyle.LOCKON, 0.05);
+			updateCamera = true;
+		}
+
+		if (boyfriend.animation.curAnim.finished && !playingDeathSound)
+		{
+			boyfriend.playAnim('deathLoop');
+			var week7:Bool = PlayState.SONG.stage == 'tank';
+
+			coolStartDeath(week7 ? 0.2 : 1.0);
+
+			if (week7)
+			{
+				playingDeathSound = true;
+				coolStartDeath(0.2);
+
+				FlxG.sound.play(Paths.sound('jeffGameover/jeffGameover-' + FlxG.random.int(1, 25)), 1, false, null, true, function()
+				{
+					if (!isEnding)
+						FlxG.sound.music.fadeIn(0.2, 1, 4);
+				});
+			}
+		}
+	}
+
+	if (controls.ACCEPT)
+	{
+		endBullshit();
+	}
+
+	if (controls.BACK)
+	{
+		#if DISCORD_ALLOWED
+		DiscordClient.resetClientID();
+		#end
+		FlxG.sound.music.stop();
+		PlayState.deathCounter = 0;
+		PlayState.seenCutscene = false;
+		PlayState.chartingMode = false;
+
+		Mods.loadTheFirstEnabledMod();
+		if (PlayState.isStoryMode)
+			MusicBeatState.switchState(new ScriptedState('StoryMenuState', []));
+		else
+			MusicBeatState.switchState(new ScriptedState('FreeplayState', []));
+
 		FlxG.sound.playMusic(Paths.music('freakyMenu'));
-		MusicBeatState.switchState(new ScriptedState('MainMenuState', []));
+		PlayState.instance.callOnLuas('onGameOverConfirm', [false]);
+		PlayState.instance.callOnScripts('onGameOverConfirm', [false]);
+	}
+
+	if (FlxG.sound.music != null && FlxG.sound.music.playing)
+		Conductor.songPosition = FlxG.sound.music.time;
+
+	PlayState.instance.callOnLuas('onUpdatePost', [elapsed]);
+	PlayState.instance.callOnScripts('onUpdatePost', [elapsed]);
+}
+
+function coolStartDeath(?volume:Float)
+{
+	playingDeathSound = true;
+	FlxG.sound.playMusic(Paths.music(gameOverData.loopSoundName), volume);
+}
+
+function endBullshit()
+{
+	if (!isEnding)
+	{
+		isEnding = true;
+
+		boyfriend.playAnim('deathConfirm', true);
+		FlxG.sound.music.stop();
+		FlxG.sound.play(Paths.music(gameOverData.endSoundName));
+
+		new FlxTimer().start(0.7, function(tmr)
+		{
+			FlxG.camera.fade(FlxColor.BLACK, 2, false, function()
+			{
+				FlxG.resetState();
+			});
+		});
 	}
 }

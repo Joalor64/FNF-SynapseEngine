@@ -2,9 +2,11 @@ package scripts;
 
 import rulescript.*;
 import rulescript.parsers.*;
+import backend.BaseStage;
 import cutscenes.CutsceneHandler;
 import options.OptionsSubState;
 import options.*;
+import flixel.math.FlxPoint;
 #if VIDEOS_ALLOWED
 import hxvlc.flixel.FlxVideoSprite;
 #end
@@ -117,6 +119,9 @@ class FunkinHScript extends FlxBasic
 		setVariable('Sound', openfl.media.Sound);
 
 		// Flixel
+		#if flxanimate
+		setVariable('FlxAnimate', FlxAnimate);
+		#end
 		setVariable('FlxAxes', {
 			'X': FlxAxes.X,
 			'Y': FlxAxes.Y,
@@ -266,7 +271,10 @@ class FunkinHScript extends FlxBasic
 		});
 		setVariable('FlxMath', FlxMath);
 		setVariable('FlxObject', FlxObject);
+		setVariable('FlxPoint', FlxPoint.FlxBasePoint); // grr abstract classes...
+		#if (!flash && sys)
 		setVariable('FlxRuntimeShader', FlxRuntimeShader);
+		#end
 		setVariable('FlxSound', FlxSound);
 		setVariable('FlxSprite', FlxSprite);
 		setVariable('FlxSpriteGroup', FlxSpriteGroup);
@@ -306,6 +314,8 @@ class FunkinHScript extends FlxBasic
 		if (FlxG.state is PlayState && PlayState.instance != null)
 			setVariable('game', PlayState.instance);
 
+		setVariable('controls', Controls.instance);
+
 		#if ACHIEVEMENTS_ALLOWED
 		setVariable('Achievements', Achievements);
 		#end
@@ -317,6 +327,7 @@ class FunkinHScript extends FlxBasic
 		setVariable('Conductor', Conductor);
 		setVariable('Constants', Constants);
 		setVariable('CoolUtil', CoolUtil);
+		setVariable('Countdown', BaseStage.Countdown);
 		setVariable('CutsceneHandler', CutsceneHandler);
 		#if DISCORD_ALLOWED
 		setVariable('DiscordClient', DiscordClient);
@@ -324,6 +335,9 @@ class FunkinHScript extends FlxBasic
 		setVariable('Difficulty', Difficulty);
 		#if LUA_ALLOWED
 		setVariable('FunkinLua', FunkinLua);
+		#end
+		#if SHOW_LOADING_SCREEN
+		setVariable('LoadingState', LoadingState);
 		#end
 		#if MODS_ALLOWED
 		setVariable('Mods', Mods);

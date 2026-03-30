@@ -1,5 +1,4 @@
 import flixel.graphics.frames.FlxAtlasFrames;
-import backend.Controls;
 import backend.Conductor;
 import backend.ClientPrefs;
 import backend.MusicBeatState;
@@ -205,7 +204,7 @@ function update(elapsed:Float)
 
 	state.canSelectMods = skippedIntro;
 
-	if (Controls.instance.ACCEPT)
+	if (controls.ACCEPT)
 	{
 		if (!skippedIntro)
 		{

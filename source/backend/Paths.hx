@@ -102,7 +102,7 @@ class Paths
 					return;
 				}
 			}
-			
+
 			try
 			{
 				var gfx:FlxGraphic = Reflect.getProperty(spr, 'graphic');
@@ -320,6 +320,35 @@ class Paths
 		}
 		#end
 		return (Assets.exists(getPath(key, false)));
+	}
+
+	static public function getAtlas(key:String, ?allowGPU:Bool = true):FlxAtlasFrames
+	{
+		var useMod = false;
+		var imageLoaded:FlxGraphic = image(key, allowGPU);
+
+		var myXml:Dynamic = getPath('images/$key.xml', true);
+		if (Assets.exists(myXml) #if MODS_ALLOWED || (FileSystem.exists(myXml) && (useMod = true)) #end)
+		{
+			#if MODS_ALLOWED
+			return FlxAtlasFrames.fromSparrow(imageLoaded, (useMod ? File.getContent(myXml) : myXml));
+			#else
+			return FlxAtlasFrames.fromSparrow(imageLoaded, myXml);
+			#end
+		}
+		else
+		{
+			var myJson:Dynamic = getPath('images/$key.json', true);
+			if (Assets.exists(myJson) #if MODS_ALLOWED || (FileSystem.exists(myJson) && (useMod = true)) #end)
+			{
+				#if MODS_ALLOWED
+				return FlxAtlasFrames.fromTexturePackerJson(imageLoaded, (useMod ? File.getContent(myJson) : myJson));
+				#else
+				return FlxAtlasFrames.fromTexturePackerJson(imageLoaded, myJson);
+				#end
+			}
+		}
+		return getPackerAtlas(key);
 	}
 
 	inline static public function getSparrowAtlas(key:String, ?allowGPU:Bool = true):FlxAtlasFrames

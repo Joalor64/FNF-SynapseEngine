@@ -25,6 +25,8 @@
 	<define name="HSCRIPT_ALLOWED" if="desktop" />
 	<define name="LUA_ALLOWED" if="desktop" />
 	<define name="ACHIEVEMENTS_ALLOWED" />
+	<define name="MULTITHREADED_LOADING" />
+	<define name="SHOW_LOADING_SCREEN" />
 	<define name="VIDEOS_ALLOWED" if="windows || linux || android || mac" unless="32bits" />
 	<define name="DISCORD_ALLOWED" if="desktop" />
 	<define name="CRASH_HANDLER" if="desktop release" />

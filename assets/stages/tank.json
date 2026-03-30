@@ -1,9 +1,28 @@
 {
 	"directory": "week7",
 	"defaultZoom": 0.9,
-	"isPixelStage": false,
+	"stageUI": "",
 
 	"boyfriend": [810, 100],
 	"girlfriend": [200, 65],
-	"opponent": [20, 100]
+	"opponent": [20, 100],
+
+	"preload": {
+		"images/stages/tank/tank0": 3,
+		"images/stages/tank/tank1": 2,
+		"images/stages/tank/tank2": 3,
+		"images/stages/tank/tank3": 2,
+		"images/stages/tank/tank4": 2,
+		"images/stages/tank/tank5": 3,
+		"images/stages/tank/tankClouds": 2,
+		"images/stages/tank/tankMountains": 2,
+		"images/stages/tank/tankBuildings": 2,
+		"images/stages/tank/smokeLeft": 2,
+		"images/stages/tank/smokeRight": 2,
+		"images/stages/tank/tankWatchtower": 2,
+		"images/stages/tank/tankGround": 3,
+		"images/stages/tank/tankRolling": 3,
+		"images/stages/tank/tankRuins": 3,
+		"images/stages/tank/tankSky": 3
+	}
 }

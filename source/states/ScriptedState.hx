@@ -2,16 +2,18 @@ package states;
 
 class ScriptedState extends MusicBeatState
 {
+	public var tag:String = null;
 	public var path:String = '';
 	public var script:FunkinHScript = null;
 	public var scriptArgs:Array<Dynamic> = null;
 
 	public static var instance:ScriptedState = null;
 
-	public function new(_path:String = null, ?args:Array<Dynamic>):Void
+	public function new(_path:String = null, ?args:Array<Dynamic>, ?_tag:String = null):Void
 	{
 		if (_path != null)
 			path = _path;
+		tag = _tag;
 		scriptArgs = args;
 		instance = this;
 
@@ -136,6 +138,18 @@ class ScriptedState extends MusicBeatState
 	{
 		scriptExecute('onFocusLost', []);
 		super.onFocusLost();
+	}
+
+	public static function getStateByTag(tag:String):ScriptedState
+	{
+		if (FlxG.state is ScriptedState)
+		{
+			// avoid naming issue cause FlxG.state lol
+			var scriptState:ScriptedState = cast FlxG.state;
+			if (scriptState.tag == tag)
+				return scriptState;
+		}
+		return null;
 	}
 
 	public function scriptSet(key:String, value:Dynamic):Void

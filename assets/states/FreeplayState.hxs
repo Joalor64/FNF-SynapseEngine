@@ -2,7 +2,6 @@ import states.LoadingState;
 import objects.HealthIcon;
 import backend.WeekData;
 import backend.Highscore;
-import backend.Controls;
 import backend.Song;
 
 var songs:Array<Dynamic> = [];
@@ -173,7 +172,7 @@ function update(elapsed:Float)
 	if (Math.abs(lerpRating - intendedRating) <= 0.01)
 		lerpRating = intendedRating;
 
-	var ratingSplit:Array<String> = Std.string(Highscore.floorDecimal(lerpRating * 100, 2)).split('.');
+	var ratingSplit:Array<String> = Std.string(CoolUtil.floorDecimal(lerpRating * 100, 2)).split('.');
 	if (ratingSplit.length < 2)
 		ratingSplit.push('');
 	while (ratingSplit[1].length < 2)
@@ -186,18 +185,18 @@ function update(elapsed:Float)
 
 	if (songs.length > 1)
 	{
-		if (Controls.instance.UI_UP_P)
+		if (controls.UI_UP_P)
 		{
 			changeSelection(-shiftMult, true);
 			holdTime = 0;
 		}
-		if (Controls.instance.UI_DOWN_P)
+		if (controls.UI_DOWN_P)
 		{
 			changeSelection(shiftMult, true);
 			holdTime = 0;
 		}
 
-		if (Controls.instance.UI_DOWN || Controls.instance.UI_UP)
+		if (controls.UI_DOWN || controls.UI_UP)
 		{
 			var checkLastHold:Int = Math.floor((holdTime - 0.5) * 10);
 			holdTime += elapsed;
@@ -205,7 +204,7 @@ function update(elapsed:Float)
 
 			if (holdTime > 0.5 && checkNewHold - checkLastHold > 0)
 			{
-				changeSelection((checkNewHold - checkLastHold) * (Controls.instance.UI_UP ? -shiftMult : shiftMult), true);
+				changeSelection((checkNewHold - checkLastHold) * (controls.UI_UP ? -shiftMult : shiftMult), true);
 				changeDiff(0);
 			}
 		}
@@ -218,18 +217,18 @@ function update(elapsed:Float)
 		}
 	}
 
-	if (Controls.instance.UI_LEFT_P)
+	if (controls.UI_LEFT_P)
 	{
 		changeDiff(-1);
 		updateSongLastDifficulty();
 	}
-	else if (Controls.instance.UI_RIGHT_P)
+	else if (controls.UI_RIGHT_P)
 	{
 		changeDiff(1);
 		updateSongLastDifficulty();
 	}
 
-	if (Controls.instance.BACK)
+	if (controls.BACK)
 	{
 		state.persistentUpdate = false;
 		if (colorTween != null)
@@ -249,7 +248,7 @@ function update(elapsed:Float)
 		playPreviewMusic();
 	}
 
-	if (Controls.instance.ACCEPT)
+	if (controls.ACCEPT)
 	{
 		state.persistentUpdate = false;
 		var songLowercase:String = Paths.formatToSongPath(songs[curSelected].songName);
@@ -265,17 +264,29 @@ function update(elapsed:Float)
 		FlxG.sound.music.stop();
 		destroyFreeplayVocals();
 
+		if (PlayState.lastLoadedModDirectory != Mods.currentModDirectory)
+		{
+			trace('CHANGED MOD DIRECTORY, RELOADING STUFF');
+			Paths.freeGraphicsFromMemory();
+		}
+
 		if (FlxG.keys.pressed.SHIFT)
 		{
 			MusicBeatState.switchState(new states.editors.ChartingState());
 		}
 		else
 		{
+			LoadingState.prepareToSong();
 			LoadingState.loadAndSwitchState(new PlayState());
+			#if !SHOW_LOADING_SCREEN FlxG.sound.music.stop(); #end
 		}
+
+		#if (MODS_ALLOWED && DISCORD_ALLOWED)
+		DiscordClient.loadModRPC();
+		#end
 	}
 
-	if (Controls.instance.RESET)
+	if (controls.RESET)
 	{
 		state.persistentUpdate = false;
 		openSubState(new ResetScoreSubState(songs[curSelected].songName, curDifficulty, songs[curSelected].songCharacter));

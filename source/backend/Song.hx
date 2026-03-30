@@ -88,8 +88,12 @@ class Song
 		this.bpm = bpm;
 	}
 
+	public static var loadedSongName:String;
+
 	public static function loadFromJson(jsonInput:String, ?folder:String):SwagSong
 	{
+		loadedSongName = folder;
+		
 		var rawJson = null;
 
 		var formattedFolder:String = Paths.formatToSongPath(folder);

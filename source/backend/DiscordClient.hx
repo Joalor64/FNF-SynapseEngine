@@ -27,6 +27,15 @@ class DiscordClient
 		return newID;
 	}
 
+	#if MODS_ALLOWED
+	public static function loadModRPC()
+	{
+		var pack:Dynamic = Mods.getPack();
+		if (pack != null && pack.discordRPC != null && pack.discordRPC != clientID)
+			clientID = pack.discordRPC;
+	}
+	#end
+
 	public static function load():Void
 	{
 		if (initialized)

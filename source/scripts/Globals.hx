@@ -1,5 +1,7 @@
 package scripts;
 
+import substates.ScriptedSubState;
+
 class Globals
 {
 	public static var Function_Stop:Dynamic = 1;
@@ -8,6 +10,7 @@ class Globals
 
 	public static inline function getInstance():Dynamic
 	{
-		return PlayState.instance.isDead ? GameOverSubstate.instance : PlayState.instance;
+		var gameOver = ScriptedSubState.getSubStateByTag('gameover');
+		return (PlayState.instance.isDead && gameOver != null) ? gameOver : PlayState.instance;
 	}
 }

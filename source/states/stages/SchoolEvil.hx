@@ -2,17 +2,21 @@ package states.stages;
 
 import flixel.addons.effects.FlxTrail;
 import states.stages.objects.*;
-import substates.GameOverSubstate;
 import cutscenes.DialogueBox;
 
 class SchoolEvil extends BaseStage
 {
 	override function create()
 	{
-		GameOverSubstate.deathSoundName = 'fnf_loss_sfx-pixel';
-		GameOverSubstate.loopSoundName = 'gameOver-pixel';
-		GameOverSubstate.endSoundName = 'gameOverEnd-pixel';
-		GameOverSubstate.characterName = 'bf-pixel-dead';
+		var _song = PlayState.SONG;
+		if (_song.gameOverSound == null || _song.gameOverSound.trim().length < 1)
+			deathSoundName = 'fnf_loss_sfx-pixel';
+		if (_song.gameOverLoop == null || _song.gameOverLoop.trim().length < 1)
+			loopSoundName = 'gameOver-pixel';
+		if (_song.gameOverEnd == null || _song.gameOverEnd.trim().length < 1)
+			endSoundName = 'gameOverEnd-pixel';
+		if (_song.gameOverChar == null || _song.gameOverChar.trim().length < 1)
+			characterName = 'bf-pixel-dead';
 
 		var posX = 400;
 		var posY = 200;
