@@ -1,6 +1,6 @@
 ## JSON Structure
 Your `credits.json` should be structured as follows:
-```json
+```jsonc
 {
     "categories": [ // List of credit categories
         {

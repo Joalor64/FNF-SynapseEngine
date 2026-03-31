@@ -9,7 +9,7 @@ The mod metadata comes in two files, which are `pack.json` and `pack.png`.
 In pack.json, you can define the mod name, the mod's description, etc.
 
 Here's an example of a valid mod metadata file:
-```json
+```jsonc
 {
 	"name": "Name", // Mod name
 	"description": "Description", // Mod description
