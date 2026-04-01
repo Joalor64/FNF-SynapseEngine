@@ -24,7 +24,7 @@ class FunkinLua
 	public static var hscript:FunkinHScript = null;
 	#end
 
-	public function new(script:String)
+	public function new(scriptName:String)
 	{
 		#if LUA_ALLOWED
 		lua = LuaL.newstate();
@@ -33,7 +33,7 @@ class FunkinLua
 
 		try
 		{
-			var result:Dynamic = LuaL.dofile(lua, script);
+			var result:Dynamic = LuaL.dofile(lua, scriptName);
 			var resultStr:String = Lua.tostring(lua, result);
 			if (resultStr != null && result != 0)
 			{
@@ -41,7 +41,7 @@ class FunkinLua
 				#if windows
 				Application.current.window.alert(resultStr, 'Error on lua script!');
 				#else
-				LuaUtils.luaTrace(lua, 'Error loading lua script: "$script"\n' + resultStr, true, false, FlxColor.RED);
+				LuaUtils.luaTrace(lua, 'Error loading lua script: "$scriptName"\n' + resultStr, true, false, FlxColor.RED);
 				#end
 				lua = null;
 				return;
@@ -52,10 +52,10 @@ class FunkinLua
 			trace(e);
 			return;
 		}
-		scriptName = script;
+		this.scriptName = scriptName.trim();
 		initHaxeModule();
 
-		trace('lua file loaded succesfully:' + script);
+		trace('lua file loaded succesfully:' + scriptName);
 
 		if (lua != null)
 		{
