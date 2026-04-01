@@ -118,11 +118,7 @@ class School extends BaseStage
 	{
 		var file:String = Paths.txt('songs/' + songName + '/' + songName + 'Dialogue'); // Checks for vanilla/Senpai dialogue
 		trace(file);
-		#if MODS_ALLOWED
-		if (!FileSystem.exists(file))
-		#else
-		if (!Assets.exists(file))
-		#end
+		if (#if MODS_ALLOWED !FileSystem.exists(file) #else !Assets.exists(file) #end)
 		{
 			startCountdown();
 			return;
