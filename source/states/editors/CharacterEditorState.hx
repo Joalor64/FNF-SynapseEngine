@@ -120,9 +120,9 @@ class CharacterEditorState extends MusicBeatState
 		camFollow.screenCenter();
 		add(camFollow);
 
-		var tipTextArray:Array<String> = "E/Q - Camera Zoom In/Out
+		var tipTextArray:Array<String> = "E/Q or Scroll - Camera Zoom In/Out
 		\nR - Reset Camera Zoom
-		\nJKLI - Move Camera
+		\nJKLI or Hold and Drag RMB - Move Camera
 		\nW/S - Previous/Next Animation
 		\nSpace - Play Animation
 		\nArrow Keys - Move Character Offset
@@ -1082,6 +1082,9 @@ class CharacterEditorState extends MusicBeatState
 		#end
 	}
 
+	private var lastPosition:FlxPoint = new FlxPoint();
+	private var mouseDiff:FlxPoint = new FlxPoint();
+
 	override function update(elapsed:Float)
 	{
 		MusicBeatState.camBeat = FlxG.camera;
@@ -1142,6 +1145,8 @@ class CharacterEditorState extends MusicBeatState
 			if (FlxG.keys.justPressed.R)
 			{
 				FlxG.camera.zoom = 1;
+				if (FlxG.keys.pressed.SHIFT)
+					camFollow.screenCenter();
 			}
 
 			if (FlxG.keys.pressed.E && FlxG.camera.zoom < 3)
@@ -1249,6 +1254,42 @@ class CharacterEditorState extends MusicBeatState
 		}
 		ghostChar.setPosition(char.x, char.y);
 		super.update(elapsed);
+
+		if (FlxG.mouse.justPressedRight)
+		{
+			lastPosition.set(CoolUtil.boundTo(FlxG.mouse.getScreenPosition().x, 0, FlxG.width),
+				CoolUtil.boundTo(FlxG.mouse.getScreenPosition().y, 0, FlxG.height));
+		}
+
+		if (FlxG.mouse.pressedRight) // draggable camera with mouse movement
+		{
+			FlxG.mouse.visible = false;
+
+			mouseDiff.set((lastPosition.x - FlxG.mouse.getScreenPosition().x), (lastPosition.y - FlxG.mouse.getScreenPosition().y));
+
+			if (FlxG.mouse.justMoved)
+			{
+				var mult:Float = 1;
+
+				if (FlxG.keys.pressed.SHIFT)
+					mult = 4;
+
+				camFollow.x = camFollow.x - -CoolUtil.boundTo(mouseDiff.x, -FlxG.width, FlxG.width) * mult;
+				camFollow.y = camFollow.y - -CoolUtil.boundTo(mouseDiff.y, -FlxG.height, FlxG.height) * mult;
+
+				lastPosition.set(CoolUtil.boundTo(FlxG.mouse.getScreenPosition().x, 0, FlxG.width),
+					CoolUtil.boundTo(FlxG.mouse.getScreenPosition().y, 0, FlxG.height));
+			}
+		}
+		else
+		{
+			FlxG.mouse.visible = true;
+		}
+
+		if (FlxG.mouse.wheel != 0)
+		{
+			FlxG.camera.zoom += FlxG.mouse.wheel / 10;
+		}
 	}
 
 	var _file:FileReference;
