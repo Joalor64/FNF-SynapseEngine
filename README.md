@@ -1,6 +1,6 @@
 > [!NOTE]
-> This engine is currently in early development.
-> Though it is stable for the most part, expect bugs and possibly breaking changes!
+> This engine is currently in early development.\
+> Though it is stable for the most part, expect bugs and possibly breaking changes!\
 > If you want to, you can help by reporting an [issue](../../issues) or making a [pull request](../../pulls)!
 
 # Friday Night Funkin' - Synapse Engine
