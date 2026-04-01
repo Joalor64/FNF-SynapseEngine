@@ -107,10 +107,14 @@
 	],
 	"no_antialiasing": false,
 	"image": "characters/picoSpeaker",
+	"trail_length": 4,
+	"trail_delay": 24,
 	"position": [
 		120,
 		-125
 	],
+	"trail_diff": 0,
+	"trail_alpha": 1,
 	"healthicon": "pico",
 	"flip_x": false,
 	"healthbar_colors": [

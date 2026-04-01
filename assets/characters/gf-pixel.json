@@ -69,10 +69,14 @@
 	],
 	"no_antialiasing": true,
 	"image": "characters/gfPixel",
+	"trail_length": null,
+	"trail_delay": null,
 	"position": [
 		0,
 		0
 	],
+	"trail_diff": null,
+	"trail_alpha": null,
 	"healthicon": "gf",
 	"flip_x": false,
 	"healthbar_colors": [

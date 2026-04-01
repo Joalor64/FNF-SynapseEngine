@@ -124,10 +124,14 @@
 	],
 	"no_antialiasing": false,
 	"image": "characters/tankmanCaptain",
+	"trail_length": 4,
+	"trail_delay": 24,
 	"position": [
 		0,
 		240
 	],
+	"trail_diff": 0,
+	"trail_alpha": 1,
 	"healthicon": "tankman",
 	"flip_x": true,
 	"healthbar_colors": [
