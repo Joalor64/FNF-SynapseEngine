@@ -20,22 +20,24 @@ class WarningState extends MusicBeatState
 	{
 		super.create();
 
+		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		bg.screenCenter();
+		bg.color = FlxColor.GRAY;
+		bg.alpha = 0.6;
+		add(bg);
+
 		switch (warnType)
 		{
 			case 'flashing':
 				warning = "WARNING!\n\n" + "This mod contains some flashing lights!\n" + "Would you like to keep them on anyways?\n\n"
 					+ "ENTER - Yes | ESCAPE - No\n" + "(You can change this later in the options menu!)";
 			case 'outdated':
-				warning = "HEY YOU!\n\n"
-					+ "You're running an outdated version of Synapse Engine!\n"
-					+ "The current version is v"
-					+ Constants.SYNAPSE_ENGINE_VERSION
-					+ ",\n"
-					+ "while the most recent version is"
-					+ AutoUpdater.latestVersion
-					+ "!\n"
-					+ "It's highly recommended you update the game, but that's your choice!\n\n"
-					+ "ENTER - Download Update | ESCAPE - Continue";
+				warning = 'HEY YOU!\n\n'
+					+ 'You\'re running an outdated version of Synapse Engine!\n'
+					+ 'The current version is v${Constants.SYNAPSE_ENGINE_VERSION},\n'
+					+ 'while the most recent version is ${AutoUpdater.latestVersion}!\n'
+					+ 'It\'s highly recommended you update the game, but that\'s your choice!\n\n'
+					+ 'ENTER - Download Update | ESCAPE - Continue';
 		}
 
 		warnText = new FlxText(0, 0, 0, warning, 32);
@@ -62,26 +64,29 @@ class WarningState extends MusicBeatState
 		{
 			case 'flashing':
 				var accept:Bool = FlxG.keys.justPressed.ENTER;
-				if (FlxG.keys.justPressed.ESCAPE || accept)
+				var back:Bool = FlxG.keys.justPressed.ESCAPE;
+				if (back || accept)
 				{
-					FlxG.sound.play(Paths.sound('cancelMenu'));
+					var sound:String = accept ? 'confirmMenu' : 'cancelMenu';
+					FlxG.sound.play(Paths.sound(sound));
+
+					if (back)
+					{
+						ClientPrefs.data.flashing = false;
+						ClientPrefs.saveSettings();
+					}
+
 					FlxTween.tween(warnText, {alpha: 0}, 1, {
 						onComplete: function(twn:FlxTween)
 						{
 							continueToGame();
 						}
 					});
-
-					if (!accept)
-					{
-						ClientPrefs.data.flashing = false;
-						ClientPrefs.saveSettings();
-					}
 				}
 			case 'outdated':
+				leftState = true;
 				if (FlxG.keys.justPressed.ESCAPE)
 				{
-					leftState = true;
 					FlxG.sound.play(Paths.sound('cancelMenu'));
 					FlxTween.tween(warnText, {alpha: 0}, 1, {
 						onComplete: function(twn:FlxTween)
@@ -92,7 +97,6 @@ class WarningState extends MusicBeatState
 				}
 				else if (FlxG.keys.justPressed.ENTER)
 				{
-					leftState = true;
 					FlxG.sound.play(Paths.sound('confirmMenu'));
 					AutoUpdater.downloadUpdate();
 				}
