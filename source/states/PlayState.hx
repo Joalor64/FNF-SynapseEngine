@@ -700,6 +700,20 @@ class PlayState extends MusicBeatState
 				gf.visible = false;
 		}
 
+		if (dad.flixelTrail && dad.trailLength != null && dad.trailDelay != null && dad.trailAlpha != null && dad.trailDiff != null)
+		{
+			var dadTrail = new FlxTrail(dad, null, dad.trailLength, dad.trailDelay, dad.trailAlpha,
+				dad.trailDiff); // nice //target, graphic, length, delay, alpha, diff
+			insert(members.indexOf(dadGroup) - 1, dadTrail);
+		}
+
+		if (boyfriend.flixelTrail && boyfriend.trailLength != null && boyfriend.trailDelay != null && boyfriend.trailAlpha != null
+			&& boyfriend.trailDiff != null)
+		{
+			var bfTrail = new FlxTrail(boyfriend, null, boyfriend.trailLength, boyfriend.trailDelay, boyfriend.trailAlpha, boyfriend.trailDiff); // nice
+			insert(members.indexOf(boyfriendGroup) - 1, bfTrail);
+		}
+
 		stagesFunc(function(stage:BaseStage) stage.createPost());
 		callOnLuas('onCreate', []);
 		callOnScripts('onCreate', []);
