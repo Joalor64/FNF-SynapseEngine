@@ -57,7 +57,7 @@ class Mall extends BaseStage
 		switch (eventName)
 		{
 			case "Hey!":
-				switch (value1.toLowerCase())
+				switch (value1.toLowerCase().trim())
 				{
 					case 'bf' | 'boyfriend' | '0':
 						return;
