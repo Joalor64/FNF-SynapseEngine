@@ -39,14 +39,21 @@
 * [ ] In-Game Crash Handler
 * [ ] Lil' Buddies (From FPS+)
 * [ ] Support for Separated Vocals
-* [ ] Potentially Backport Newer Psych Stuff (i mean, i've BEEN doing this anyways)
+* [ ] Backport Newer Psych Stuff (i mean, i've BEEN doing this anyways)
 * [ ] Deprecate `animateatlas` in favor of `flxanimate`
+* [ ] Time Signature Support
+* [ ] Special Character Properties
+    * [ ] Floating
+    * [ ] Orbit
+    * [ ] Shake Screen
+    * [ ] Scare BF
+    * [ ] Scare GF
+* [ ] Re-add Blammed Lights
+* [ ] Python Scripting (using `Hython`)
+* [ ] Backport V-Slice Stuff
 
 ### Low Priority
 * [ ] Extra Keys
 * [ ] Erect Mixes
 * [ ] New Editor UI
 * [ ] Controller Support
-* [ ] Time Signature Support
-* [ ] Python Scripting (using `Hython`)
-* [ ] Potentially Backport V-Slice Stuff
