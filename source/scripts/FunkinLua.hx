@@ -18,6 +18,7 @@ class FunkinLua
 	#end
 	public var camTarget:FlxCamera;
 	public var scriptName:String = '';
+	public var modFolder:String = null;
 	public var closed:Bool = false;
 
 	#if HSCRIPT_ALLOWED
@@ -70,6 +71,13 @@ class FunkinLua
 				jit = nil
 			");
 		}
+
+		var myFolder:Array<String> = this.scriptName.split('/');
+		#if MODS_ALLOWED
+		if (myFolder[0] + '/' == Paths.mods()
+			&& (Mods.currentModDirectory == myFolder[1] || Mods.getGlobalMods().contains(myFolder[1]))) // is inside mods folder
+			this.modFolder = myFolder[1];
+		#end
 
 		// Lua shit
 		set('Function_StopLua', Globals.Function_Halt);
@@ -124,6 +132,7 @@ class FunkinLua
 		set('ratingName', '');
 		set('ratingFC', '');
 		set('version', Constants.SYNAPSE_ENGINE_VERSION.trim());
+		set('modFolder', this.modFolder);
 
 		set('inGameOver', false);
 		set('mustHitSection', false);
@@ -176,6 +185,13 @@ class FunkinLua
 		set('shadersEnabled', ClientPrefs.data.shaders);
 		set('scriptName', scriptName);
 		set('currentModDirectory', Mods.currentModDirectory);
+
+		set('noteSkin', ClientPrefs.data.noteSkin);
+		set('noteSkinPostfix', Note.getNoteSkinPostfix());
+		set('splashSkin', ClientPrefs.data.splashSkin);
+		set('splashSkinPostfix', NoteSplash.getSplashSkinPostfix());
+		set('splashAlpha', ClientPrefs.data.splashAlpha);
+		set('susSplashAlpha', ClientPrefs.data.susSplashAlpha);
 
 		set('buildTarget', LuaUtils.getBuildTarget());
 
@@ -2594,6 +2610,24 @@ class FunkinLua
 			}
 		});
 		#end
+
+		Lua_helper.add_callback(lua, "getModSetting", function(saveTag:String, ?modName:String = null)
+		{
+			#if MODS_ALLOWED
+			if (modName == null)
+			{
+				if (this.modFolder == null)
+				{
+					LuaUtils.luaTrace(lua, 'getModSetting: Argument #2 is null and script is not inside a packed Mod folder!', false, false, FlxColor.RED);
+					return null;
+				}
+				modName = this.modFolder;
+			}
+			return LuaUtils.getModSetting(saveTag, modName);
+			#else
+			LuaUtils.luaTrace(lua, "getModSetting: Mods are disabled in this build!", false, false, FlxColor.RED);
+			#end
+		});
 
 		Lua_helper.add_callback(lua, "debugPrint", function(text1:Dynamic = '', text2:Dynamic = '', text3:Dynamic = '', text4:Dynamic = '', text5:Dynamic = '')
 		{
