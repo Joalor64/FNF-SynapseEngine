@@ -151,11 +151,14 @@ function parseCreditsTxt(path:String, ?modFolder:String = '')
 
 function update(elapsed:Float)
 {
-	if (controls.UI_UP_P)
-		changeSelection(-1);
+	if (creditsStuff.length > 1)
+	{
+		if (controls.UI_UP_P)
+			changeSelection(-1);
 
-	if (controls.UI_DOWN_P)
-		changeSelection(1);
+		if (controls.UI_DOWN_P)
+			changeSelection(1);
+	}
 
 	if (controls.BACK)
 	{
@@ -212,11 +215,17 @@ function changeSelection(change:Int)
 		}
 	}
 
-	descText.text = creditsStuff[curSelected][2];
-	descText.y = FlxG.height - descText.height + offsetThing;
+	if (StringTools.trim(descText.text).length > 0)
+	{
+		descText.visible = descBox.visible = true;
+		descText.text = creditsStuff[curSelected][2];
+		descText.y = FlxG.height - descText.height + offsetThing;
 
-	descBox.setGraphicSize(Std.int(descText.width + 20), Std.int(descText.height + 25));
-	descBox.updateHitbox();
+		descBox.setGraphicSize(Std.int(descText.width + 20), Std.int(descText.height + 25));
+		descBox.updateHitbox();
+	}
+	else
+		descText.visible = descBox.visible = false;
 }
 
 function unselectableCheck(num:Int):Bool

@@ -95,8 +95,7 @@ class ModSettingsSubState extends BaseOptionsMenu
 
 	private function convertType(str:String):String
 	{
-		var input:String = str.toLowerCase().trim();
-		switch (input)
+		switch (str.toLowerCase().trim())
 		{
 			case 'bool', 'boolean':
 				return 'bool';

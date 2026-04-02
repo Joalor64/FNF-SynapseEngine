@@ -21,7 +21,7 @@ class AutoUpdater {
 		#elseif linux
 		"https://github.com/Joalor64GH/FNF.SynapseEngine/releases/latest/download/SynapseEngine-linux.zip"
 		#end;
-	public static var CURRENT_VERSION = Constants.SYNAPSE_ENGINE_VERSION;
+	public static var CURRENT_VERSION = Constants.SYNAPSE_ENGINE_VERSION.trim();
 
 	public static var latestVersion:String = "";
     public static var mustUpdate:Bool = false;
