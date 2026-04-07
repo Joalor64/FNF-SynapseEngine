@@ -14,7 +14,7 @@ Here's an example of a valid mod metadata file:
 	"name": "Name", // Mod name
 	"description": "Description", // Mod description
 	"restart": false, // If the mod should restart the game when enabled/disabled
-	"runsGlobally": false, // Whether the mod's scripts, if any, run globally or not
+	"runsGlobally": false, // If the mod should be active everywhere or not
 	"color": [170, 0, 255], // The background color for the mod (RGB)
 	"discordRPC": "863222024192262205", // A custom Discord RPC ID for the mod
 	"iconFramerate": 10 // The framerate of the mod's icon, if it's animated
