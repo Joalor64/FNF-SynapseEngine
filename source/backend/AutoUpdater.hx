@@ -13,14 +13,14 @@ import haxe.io.BytesOutput;
  */
 class AutoUpdater
 {
-	private static inline var VERSION_URL = "https://raw.githubusercontent.com/Joalor64GH/FNF-SynapseEngine/refs/heads/main/gitVersion.txt";
+	private static inline var VERSION_URL = "https://raw.githubusercontent.com/Joalor64/FNF-SynapseEngine/refs/heads/main/gitVersion.txt";
 	private static inline var DOWNLOAD_URL =
 		#if windows
-		"https://github.com/Joalor64GH/FNF-SynapseEngine/releases/latest/download/SynapseEngine-windows.zip"
+		"https://github.com/Joalor64/FNF-SynapseEngine/releases/latest/download/SynapseEngine-windows.zip"
 		#elseif macos
-		"https://github.com/Joalor64GH/FNF-SynapseEngine/releases/latest/download/SynapseEngine-mac.zip"
+		"https://github.com/Joalor64/FNF-SynapseEngine/releases/latest/download/SynapseEngine-mac.zip"
 		#elseif linux
-		"https://github.com/Joalor64GH/FNF-SynapseEngine/releases/latest/download/SynapseEngine-linux.zip"
+		"https://github.com/Joalor64/FNF-SynapseEngine/releases/latest/download/SynapseEngine-linux.zip"
 		#end;
 
 	#if windows
