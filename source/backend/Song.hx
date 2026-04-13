@@ -1,7 +1,5 @@
 package backend;
 
-import backend.Section.SwagSection;
-
 typedef SwagSong =
 {
 	var song:String;
@@ -20,11 +18,23 @@ typedef SwagSong =
 	@:optional var gameOverSound:String;
 	@:optional var gameOverLoop:String;
 	@:optional var gameOverEnd:String;
-	
+
 	@:optional var disableNoteRGB:Bool;
 
 	@:optional var arrowSkin:String;
 	@:optional var splashSkin:String;
+}
+
+typedef SwagSection =
+{
+	var sectionNotes:Array<Dynamic>;
+	var sectionBeats:Float;
+	var mustHitSection:Bool;
+	@:optional var gfSection:Bool;
+	@:optional var bpm:Float;
+	@:optional var changeBPM:Bool;
+	@:optional var altAnim:Bool;
+	@:optional var crossFade:Bool;
 }
 
 class Song
@@ -93,7 +103,7 @@ class Song
 	public static function loadFromJson(jsonInput:String, ?folder:String):SwagSong
 	{
 		loadedSongName = folder;
-		
+
 		var rawJson = null;
 
 		var formattedFolder:String = Paths.formatToSongPath(folder);

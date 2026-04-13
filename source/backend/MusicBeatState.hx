@@ -4,8 +4,6 @@ import flixel.addons.ui.FlxUIState;
 
 class MusicBeatState extends FlxUIState
 {
-	public var canSelectMods:Bool = true;
-
 	public var stages:Array<BaseStage> = [];
 
 	private var curSection:Int = 0;
@@ -69,11 +67,6 @@ class MusicBeatState extends FlxUIState
 		{
 			stage.update(elapsed);
 		});
-
-		#if MODS_ALLOWED
-		if (FlxG.keys.justPressed.TAB && canSelectMods)
-			MusicBeatState.switchState(new ModsMenuState());
-		#end
 
 		if (FlxG.keys.justPressed.F5)
 			FlxG.resetState();

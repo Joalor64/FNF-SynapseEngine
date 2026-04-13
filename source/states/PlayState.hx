@@ -17,7 +17,6 @@ import objects.*;
 import objects.Character;
 import objects.CrossFade;
 import objects.Note.EventNote;
-import backend.Section.SwagSection;
 import backend.Song.SwagSong;
 import backend.Achievements;
 import backend.StageData;
@@ -332,7 +331,6 @@ class PlayState extends MusicBeatState
 	{
 		lastLoadedModDirectory = Mods.currentModDirectory;
 
-		canSelectMods = false;
 		fromPlayState = false;
 
 		#if cpp
@@ -4691,8 +4689,8 @@ class PlayState extends MusicBeatState
 			notes.sort(FlxSort.byY, ClientPrefs.data.downScroll ? FlxSort.ASCENDING : FlxSort.DESCENDING);
 		}
 
-		iconP1.setGraphicSize(Std.int(iconP1.width + 30));
-		iconP2.setGraphicSize(Std.int(iconP2.width + 30));
+		iconP1.scale.set(iconP1.scale.x + 0.2, iconP1.scale.y + 0.2);
+		iconP2.scale.set(iconP2.scale.x + 0.2, iconP2.scale.y + 0.2);
 
 		iconP1.updateHitbox();
 		iconP2.updateHitbox();

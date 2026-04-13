@@ -44,8 +44,6 @@ class WeekEditorState extends MusicBeatState
 
 	override function create()
 	{
-		canSelectMods = false;
-
 		txtWeekTitle = new FlxText(FlxG.width * 0.7, 10, 0, "", 32);
 		txtWeekTitle.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, RIGHT);
 		txtWeekTitle.alpha = 0.7;
@@ -687,8 +685,6 @@ class WeekEditorFreeplayState extends MusicBeatState
 
 	override function create()
 	{
-		canSelectMods = false;
-
 		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		bg.antialiasing = ClientPrefs.data.globalAntialiasing;
 

@@ -44,7 +44,7 @@ class FunkinHScript extends FlxBasic
 			script.scriptName = ~/\.(hx|hxs|hxc|hscript)$/.replace(file.split('/').pop(), '');
 
 		parser.allowAll();
-		parser.preprocesorValues = macros.Macros.getDefines();
+		parser.preprocesorValues = getPreProcessorValues();
 
 		setVariable('this', this);
 		setVariable('Function_Stop', Globals.Function_Stop);
@@ -371,6 +371,54 @@ class FunkinHScript extends FlxBasic
 
 		if (execute && file != null)
 			this.execute(file);
+	}
+
+	public static function getPreProcessorValues()
+	{
+		// why you do this to me rulescript
+		var preprocessors:Map<String, Dynamic> = new Map();
+
+		preprocessors.set("mobile", #if mobile true #else false #end);
+		preprocessors.set("desktop", #if desktop true #else false #end);
+		preprocessors.set("web", #if web true #else false #end);
+		preprocessors.set("debug", #if debug true #else false #end);
+		preprocessors.set("release", #if !debug true #else false #end);
+
+		preprocessors.set("cpp", #if cpp true #else false #end);
+		preprocessors.set("hl", #if hl true #else false #end);
+		preprocessors.set("neko", #if neko true #else false #end);
+		preprocessors.set("js", #if js true #else false #end);
+		preprocessors.set("java", #if java true #else false #end);
+
+		preprocessors.set("windows", #if windows true #else false #end);
+		preprocessors.set("mac", #if mac true #else false #end);
+		preprocessors.set("linux", #if linux true #else false #end);
+		preprocessors.set("html5", #if html5 true #else false #end);
+		preprocessors.set("switch", #if switch true #else false #end);
+		preprocessors.set("android", #if android true #else false #end);
+		preprocessors.set("ios", #if ios true #else false #end);
+
+		preprocessors.set("sys", #if sys true #else false #end);
+
+		preprocessors.set("MODS_ALLOWED", #if MODS_ALLOWED true #else false #end);
+		preprocessors.set("LUA_ALLOWED", #if LUA_ALLOWED true #else false #end);
+		preprocessors.set("HSCRIPT_ALLOWED", #if HSCRIPT_ALLOWED true #else false #end);
+		preprocessors.set("DISCORD_ALLOWED", #if DISCORD_ALLOWED true #else false #end);
+		preprocessors.set("ACHIEVEMENTS_ALLOWED", #if ACHIEVEMENTS_ALLOWED true #else false #end);
+		preprocessors.set("SHOW_LOADING_SCREEN", #if SHOW_LOADING_SCREEN true #else false #end);
+		preprocessors.set("VIDEOS_ALLOWED", #if VIDEOS_ALLOWED true #else false #end);
+		preprocessors.set("CRASH_HANDLER", #if CRASH_HANDLER true #else false #end);
+
+		var staticDefines = macros.Macros.getDefines().copy();
+		for (key => value in staticDefines)
+		{
+			if (!preprocessors.exists(key))
+			{
+				preprocessors.set(key, value);
+			}
+		}
+
+		return preprocessors;
 	}
 
 	public function execute(file:String, ?executeCreate:Bool = true):Void

@@ -21,14 +21,18 @@
 
 	<!-- _____________________________ Custom Defines ____________________________ -->
 
-	<define name="MODS_ALLOWED" if="desktop" />
-	<define name="HSCRIPT_ALLOWED" if="desktop" />
-	<define name="LUA_ALLOWED" if="desktop" />
+	<section if="desktop">
+		<define name="MODS_ALLOWED" />
+		<define name="HSCRIPT_ALLOWED" />
+		<define name="LUA_ALLOWED" />
+		<define name="DISCORD_ALLOWED" />
+	</section>
 	<define name="ACHIEVEMENTS_ALLOWED" />
-	<define name="MULTITHREADED_LOADING" />
+	<define name="MULTITHREADED_LOADING" /> <!-- UNCOMMENTING THIS LINE WILL ENABLE MULTITHREADED
+	LOADING, WHICH IMPROVES LOADING TIMES, BUT APPARENTLY CAN FREEZE THE GAME ON SONG LOAD IN OLDER
+	PCs? -->
 	<define name="SHOW_LOADING_SCREEN" />
 	<define name="VIDEOS_ALLOWED" if="windows || linux || android || mac" unless="32bits" />
-	<define name="DISCORD_ALLOWED" if="desktop" />
 	<define name="CRASH_HANDLER" if="desktop release" />
 	<define name="CHECK_FOR_UPDATES" if="desktop release" />
 
@@ -119,7 +123,7 @@
 	<haxeflag name="--macro" value="allowPackage('flash')" />
 	<haxeflag name="--macro" value="include('my.pack')" />
 	<haxeflag name="--macro"
-		value="include('flixel', true, ['flixel.addons.editors.spine.*', 'flixel.addons.nape.*', 'flixel.system.macros.*'])" />
+		value="include('flixel', true, ['flixel.addons.editors.spine.*', 'flixel.addons.nape.*', 'flixel.addons.tile.FlxRayCastTilemap', 'flixel.system.macros.*'])" />
 
 	<!-- _________________________________ Custom _______________________________ -->
 

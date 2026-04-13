@@ -202,8 +202,6 @@ function update(elapsed:Float)
 	if (FlxG.sound.music != null)
 		Conductor.songPosition = FlxG.sound.music.time;
 
-	state.canSelectMods = skippedIntro;
-
 	if (controls.ACCEPT)
 	{
 		if (!skippedIntro)

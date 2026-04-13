@@ -1,7 +1,5 @@
 package scripts;
 
-import substates.ScriptedSubState;
-
 class Globals
 {
 	public static var Function_Stop:Dynamic = 1;

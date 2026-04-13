@@ -58,8 +58,6 @@ class CharacterEditorState extends MusicBeatState
 
 	override function create()
 	{
-		canSelectMods = false;
-
 		camEditor = new FlxCamera();
 		camHUD = new FlxCamera();
 		camHUD.bgColor.alpha = 0;
@@ -153,6 +151,7 @@ class CharacterEditorState extends MusicBeatState
 
 		var tabs = [
 			{name: 'Character', label: 'Character'},
+			{name: 'Misc', label: 'Misc'},
 			{name: 'Animations', label: 'Animations'},
 		];
 		UI_characterbox = new FlxUITabMenu(null, tabs, true);
@@ -170,6 +169,7 @@ class CharacterEditorState extends MusicBeatState
 
 		addCharacterUI();
 		addAnimationsUI();
+		addMiscUI();
 		UI_characterbox.selected_tab_id = 'Character';
 
 		FlxG.mouse.visible = true;
@@ -724,6 +724,56 @@ class CharacterEditorState extends MusicBeatState
 		UI_characterbox.addGroup(tab_group);
 	}
 
+	var trailLengthStepper:FlxUINumericStepper;
+	var trailDelayStepper:FlxUINumericStepper;
+	var trailAlphaStepper:FlxUINumericStepper;
+	var trailDiffStepper:FlxUINumericStepper;
+
+	var flixelTrailCheckBox:FlxUICheckBox;
+
+	function addMiscUI()
+	{
+		var tab_group = new FlxUI(null, UI_box);
+		tab_group.name = "Misc";
+
+		flixelTrailCheckBox = new FlxUICheckBox(15, 60, null, null, "Trail", 50);
+		flixelTrailCheckBox.checked = char.flixelTrail;
+		flixelTrailCheckBox.callback = function()
+		{
+			char.flixelTrail = false;
+			if (flixelTrailCheckBox.checked)
+			{
+				char.flixelTrail = true;
+			}
+			char.flixelTrail = flixelTrailCheckBox.checked;
+			ghostChar.flixelTrail = char.flixelTrail;
+		};
+
+		trailLengthStepper = new FlxUINumericStepper(flixelTrailCheckBox.x + 60, flixelTrailCheckBox.y, 1, 4, 1, 24, 1);
+		if (Reflect.getProperty(trailLengthStepper, 'name') == null)
+			Reflect.setProperty(trailLengthStepper, 'name', 'trailLengthStepper');
+		trailDelayStepper = new FlxUINumericStepper(trailLengthStepper.x + 70, flixelTrailCheckBox.y, 1, 24, 0, 90, 1);
+		if (Reflect.getProperty(trailDelayStepper, 'name') == null)
+			Reflect.setProperty(trailDelayStepper, 'name', 'trailDelayStepper');
+		trailAlphaStepper = new FlxUINumericStepper(trailDelayStepper.x + 70, flixelTrailCheckBox.y, 0.1, 0.3, 0, 1, 3);
+		if (Reflect.getProperty(trailAlphaStepper, 'name') == null)
+			Reflect.setProperty(trailAlphaStepper, 'name', 'trailAlphaStepper');
+		trailDiffStepper = new FlxUINumericStepper(trailAlphaStepper.x + 70, flixelTrailCheckBox.y, 0.05, 0.069, 0, 1, 4);
+		if (Reflect.getProperty(trailDiffStepper, 'name') == null)
+			Reflect.setProperty(trailDiffStepper, 'name', 'trailDiffStepper');
+
+		tab_group.add(new FlxText(trailLengthStepper.x, trailLengthStepper.y - 18, 0, 'Trail Length:'));
+		tab_group.add(new FlxText(trailDelayStepper.x, trailDelayStepper.y - 18, 0, 'Trail Delay:'));
+		tab_group.add(new FlxText(trailAlphaStepper.x, trailAlphaStepper.y - 18, 0, 'Trail Alpha:'));
+		tab_group.add(new FlxText(trailDiffStepper.x, trailDiffStepper.y - 18, 0, 'Trail Diff:'));
+		tab_group.add(trailLengthStepper);
+		tab_group.add(trailDelayStepper);
+		tab_group.add(trailAlphaStepper);
+		tab_group.add(trailDiffStepper);
+		tab_group.add(flixelTrailCheckBox);
+		UI_characterbox.addGroup(tab_group);
+	}
+
 	override function getEvent(id:String, sender:Dynamic, data:Dynamic, ?params:Array<Dynamic>)
 	{
 		if (id == FlxUIInputText.CHANGE_EVENT && (sender is FlxUIInputText))
@@ -741,62 +791,60 @@ class CharacterEditorState extends MusicBeatState
 		}
 		else if (id == FlxUINumericStepper.CHANGE_EVENT && (sender is FlxUINumericStepper))
 		{
-			if (sender == scaleStepper)
+			var idkSteppa:String = Reflect.getProperty(sender, 'name');
+			switch (idkSteppa)
 			{
-				reloadCharacterImage();
-				char.jsonScale = sender.value;
-				char.setGraphicSize(Std.int(char.width * char.jsonScale));
-				char.updateHitbox();
-				ghostChar.setGraphicSize(Std.int(ghostChar.width * char.jsonScale));
-				ghostChar.updateHitbox();
-				reloadGhost();
-				updatePointerPos();
+				case 'scaleStepper':
+					reloadCharacterImage();
+					char.jsonScale = sender.value;
+					char.setGraphicSize(Std.int(char.width * char.jsonScale));
+					char.updateHitbox();
+					ghostChar.setGraphicSize(Std.int(ghostChar.width * char.jsonScale));
+					ghostChar.updateHitbox();
+					reloadGhost();
+					updatePointerPos();
 
-				if (char.animation.curAnim != null)
-				{
-					char.playAnim(char.animation.curAnim.name, true);
-				}
-			}
-			else if (sender == positionXStepper)
-			{
-				char.positionArray[0] = positionXStepper.value;
-				char.x = char.positionArray[0] + OFFSET_X + 100;
-				updatePointerPos();
-			}
-			else if (sender == singDurationStepper)
-			{
-				char.singDuration = singDurationStepper.value; // ermm you forgot this??
-			}
-			else if (sender == positionYStepper)
-			{
-				char.positionArray[1] = positionYStepper.value;
-				char.y = char.positionArray[1];
-				updatePointerPos();
-			}
-			else if (sender == positionCameraXStepper)
-			{
-				char.cameraPosition[0] = positionCameraXStepper.value;
-				updatePointerPos();
-			}
-			else if (sender == positionCameraYStepper)
-			{
-				char.cameraPosition[1] = positionCameraYStepper.value;
-				updatePointerPos();
-			}
-			else if (sender == healthColorStepperR)
-			{
-				char.healthColorArray[0] = Math.round(healthColorStepperR.value);
-				resetHealthBarColor();
-			}
-			else if (sender == healthColorStepperG)
-			{
-				char.healthColorArray[1] = Math.round(healthColorStepperG.value);
-				resetHealthBarColor();
-			}
-			else if (sender == healthColorStepperB)
-			{
-				char.healthColorArray[2] = Math.round(healthColorStepperB.value);
-				resetHealthBarColor();
+					if (char.animation.curAnim != null)
+					{
+						char.playAnim(char.animation.curAnim.name, true);
+					}
+				case 'positionXStepper':
+					char.positionArray[0] = positionXStepper.value;
+					char.x = char.positionArray[0] + OFFSET_X + 100;
+					updatePointerPos();
+				case 'singDurationStepper':
+					char.singDuration = sender.value;
+				case 'positionYStepper':
+					char.positionArray[1] = positionYStepper.value;
+					char.y = char.positionArray[1];
+					updatePointerPos();
+				case 'positionCameraXStepper':
+					char.cameraPosition[0] = positionCameraXStepper.value;
+					updatePointerPos();
+				case 'positionCameraYStepper':
+					char.cameraPosition[1] = positionCameraYStepper.value;
+					updatePointerPos();
+				case 'healthColorStepperR':
+					char.healthColorArray[0] = Math.round(healthColorStepperR.value);
+					resetHealthBarColor();
+				case 'healthColorStepperG':
+					char.healthColorArray[1] = Math.round(healthColorStepperG.value);
+					resetHealthBarColor();
+				case 'healthColorStepperB':
+					char.healthColorArray[2] = Math.round(healthColorStepperB.value);
+					resetHealthBarColor();
+				case 'trailLengthStepper':
+					char.trailLength = Std.int(sender.value);
+					ghostChar.trailLength = char.trailLength;
+				case 'trailDelayStepper':
+					char.trailDelay = Std.int(sender.value);
+					ghostChar.trailDelay = char.trailDelay;
+				case 'trailAlphaStepper':
+					char.trailAlpha = sender.value;
+					ghostChar.trailAlpha = char.trailAlpha;
+				case 'trailDiffStepper':
+					char.trailDiff = sender.value;
+					ghostChar.trailDiff = char.trailDiff;
 			}
 		}
 	}
@@ -983,6 +1031,11 @@ class CharacterEditorState extends MusicBeatState
 			healthIconInputText.text = char.healthIcon;
 			singDurationStepper.value = char.singDuration;
 			scaleStepper.value = char.jsonScale;
+			trailLengthStepper.value = char.trailLength;
+			trailDelayStepper.value = char.trailDelay;
+			trailAlphaStepper.value = char.trailAlpha;
+			trailDiffStepper.value = char.trailDiff;
+			flixelTrailCheckBox.checked = char.flixelTrail;
 			flipXCheckBox.checked = char.originalFlipX;
 			noAntialiasingCheckBox.checked = char.noAntialiasing;
 			resetHealthBarColor();

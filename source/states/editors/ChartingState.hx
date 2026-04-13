@@ -197,8 +197,6 @@ class ChartingState extends MusicBeatState
 
 	override function create()
 	{
-		canSelectMods = false;
-
 		if (PlayState.SONG != null)
 			_song = PlayState.SONG;
 		else
@@ -2980,17 +2978,15 @@ class ChartingState extends MusicBeatState
 		return spr;
 	}
 
-	private function addSection(sectionBeats:Float = 4, lengthInSteps:Int = 16):Void
+	private function addSection(sectionBeats:Float = 4):Void
 	{
 		var sec:SwagSection = {
 			sectionBeats: sectionBeats,
-			lengthInSteps: lengthInSteps,
 			bpm: _song.bpm,
 			changeBPM: false,
 			mustHitSection: true,
 			gfSection: false,
 			sectionNotes: [],
-			typeOfSection: 0,
 			altAnim: false,
 			crossFade: false
 		};

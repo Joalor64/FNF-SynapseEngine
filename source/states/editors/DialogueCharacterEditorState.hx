@@ -54,8 +54,6 @@ class DialogueCharacterEditorState extends MusicBeatState
 
 	override function create()
 	{
-		canSelectMods = false;
-
 		persistentUpdate = persistentDraw = true;
 		camGame = new FlxCamera();
 		camHUD = new FlxCamera();

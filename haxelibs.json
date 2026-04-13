@@ -14,8 +14,7 @@
     },
     {
       "name": "flixel-addons",
-      "type": "haxelib",
-      "version": "3.3.2"
+      "type": "haxelib"
     },
     {
       "name": "flixel-ui",
@@ -41,7 +40,9 @@
     },
     {
       "name": "rulescript",
-      "type": "haxelib"
+      "type": "git",
+      "ref": "dev",
+      "url": "https://github.com/Kriptel/RuleScript"
     },
     {
       "name": "hxvlc",

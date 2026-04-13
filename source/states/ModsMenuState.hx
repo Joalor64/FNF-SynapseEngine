@@ -40,8 +40,6 @@ class ModsMenuState extends MusicBeatState
 
 	override function create()
 	{
-		canSelectMods = false;
-
 		Paths.clearStoredMemory();
 		Paths.clearUnusedMemory();
 		persistentUpdate = false;

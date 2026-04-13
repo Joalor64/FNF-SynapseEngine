@@ -58,7 +58,7 @@ import backend.Conductor.BPMChangeEvent;
 import backend.BaseStage.Countdown;
 import backend.Controls;
 import backend.Difficulty;
-import backend.Section;
+import backend.Song.SwagSection;
 import backend.Song;
 import backend.Mods;
 import backend.Paths;

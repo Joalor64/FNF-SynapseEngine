@@ -18,7 +18,6 @@
     * [X] Pause Menu
 * [X] Custom Options
 * [X] Custom Achievements
-* [ ] Optimizations
 * [X] RGB Notes
 * [X] Rewrite Controls
 * [X] FlxAnimate Support
@@ -51,6 +50,8 @@
 * [ ] Re-add Blammed Lights
 * [ ] Python Scripting (using `Hython`)
 * [ ] Backport V-Slice Stuff
+* [ ] Add Newer Lua Stuff
+* [ ] Scripted Class Support
 
 ### Low Priority
 * [ ] Extra Keys
