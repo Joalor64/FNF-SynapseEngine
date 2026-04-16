@@ -2,18 +2,29 @@ name: Release Build
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
   workflow_dispatch:
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
-  buildLinux:
-    runs-on: ubuntu-latest
+  build:
+    strategy:
+      matrix:
+        include:
+          - target: windows
+            title: Windows
+            runs-on: windows-latest
+          - target: macos
+            title: Mac
+            runs-on: macos-14
+          - target: linux
+            title: Linux
+            runs-on: ubuntu-latest
+
+    name: build${{ matrix.title }}
+    runs-on: ${{ matrix.runs-on }}
 
     steps:
       - uses: actions/checkout@main
@@ -28,116 +39,26 @@ jobs:
         with:
           path: |
             .haxelib/
-            export/release/linux/haxe/
-            export/release/linux/obj/
-          key: cache-linux-release
+            export/release/${{ matrix.target }}/haxe/
+            export/release/${{ matrix.target }}/obj/
+          key: cache-${{ matrix.target }}-release
 
-      - name: Installing Libraries
-        run: |
-          sudo apt-get install libvlc-dev
-          sudo apt-get install libvlccore-dev
-          haxe --interp -cp ./actions/libs-installer -D analyzer-optimize -main Main
-
-      - name: Create Version Tag
-        run: echo "${{github.run_id}}" > VERSION
-
-      - name: Compile
-        run: haxelib run lime build linux
-
-      - name: Clear Previous Cache
-        uses: actions/github-script@main
-        with:
-          script: await require('./actions/cache/clear-cache.js')({github, context}, 'cache-linux-release');
-
-      - name: Save Current Cache
-        uses: actions/cache@main
-        with:
-          key: cache-linux-release
-          path: |
-            .haxelib/
-            export/release/linux/haxe/
-            export/release/linux/obj/
-          restore-keys: |
-            cache-linux-release
-
-      - name: Upload Artifact
-        uses: actions/upload-artifact@main
-        with:
-          name: linuxBuild
-          path: export/release/linux/bin
-  buildWindows:
-    runs-on: windows-latest
-
-    steps:
-      - uses: actions/checkout@main
-
-      - uses: krdlab/setup-haxe@master
-        with:
-          haxe-version: 4.3.7
-
-      - name: Restore Previous Cache
-        id: cache-build-restore
-        uses: actions/cache/restore@main
-        with:
-          path: |
-            .haxelib/
-            export/release/windows/haxe/
-            export/release/windows/obj/
-          key: cache-windows-release
-
-      - name: Set Cache Status
-        id: cache-status
+      - name: Set Cache Status | In Windows
+        id: cache-status-windows
+        if: matrix.target == 'windows'
         run: echo CACHE_HIT=${{ steps.cache-build-restore.outputs.cache-hit }} | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8
         shell: powershell
 
-      - name: Installing Libraries
-        run: haxe --interp -cp ./actions/libs-installer -D analyzer-optimize -main Main
-      - name: Create Version Tag
-        run: echo "${{github.run_id}}" > VERSION
+      - name: Set Cache Status | In Unix
+        id: cache-status-unix
+        if: matrix.target != 'windows'
+        run: echo "CACHE_HIT=${{ steps.cache-build-restore.outputs.cache-hit }}" >> $GITHUB_ENV
 
-      - name: Compile
-        run: haxelib run lime build windows
-
-      - name: Clear Previous Cache
-        uses: actions/github-script@main
-        with:
-          script: await require('./actions/cache/clear-cache.js')({github, context}, 'cache-windows-release');
-
-      - name: Save Current Cache
-        uses: actions/cache@main
-        with:
-          key: cache-windows-release
-          path: |
-            .haxelib/
-            export/release/windows/haxe/
-            export/release/windows/obj/
-          restore-keys: |
-            cache-windows-release
-
-      - name: Upload Artifact
-        uses: actions/upload-artifact@main
-        with:
-          name: windowsBuild
-          path: export/release/windows/bin
-  buildMac:
-    runs-on: macos-14
-
-    steps:
-      - uses: actions/checkout@main
-
-      - uses: krdlab/setup-haxe@master
-        with:
-          haxe-version: 4.3.7
-
-      - name: Restore Previous Cache
-        id: cache-build-restore
-        uses: actions/cache/restore@main
-        with:
-          path: |
-            .haxelib/
-            export/release/macos/haxe/
-            export/release/macos/obj/
-          key: cache-macos-release
+      - name: Install dependencies
+        if: matrix.target == 'linux'
+        run: |
+          sudo apt-get install libvlc-dev
+          sudo apt-get install libvlccore-dev
 
       - name: Installing Libraries
         run: haxe --interp -cp ./actions/libs-installer -D analyzer-optimize -main Main
@@ -146,28 +67,30 @@ jobs:
         run: echo "${{github.run_id}}" > VERSION
 
       - name: Compile
-        run: haxelib run lime build mac
+        run: haxelib run lime build ${{ matrix.target }}
 
       - name: Clear Previous Cache
         uses: actions/github-script@main
         with:
-          script: await require('./actions/cache/clear-cache.js')({github, context}, 'cache-macos-release');
+          script: await require('./actions/cache/clear-cache.js')({github, context}, 'cache-${{ matrix.target }}-release');
 
       - name: Save Current Cache
         uses: actions/cache@main
         with:
-          key: cache-macos-release
+          key: cache-${{ matrix.target }}-release
           path: |
             .haxelib/
-            export/release/macos/haxe/
-            export/release/macos/obj/
+            export/release/${{ matrix.target }}/haxe/
+            export/release/${{ matrix.target }}/obj/
           restore-keys: |
-            cache-macos-release
+            cache-${{ matrix.target }}-release
 
       - name: Tar files
+        if: matrix.target == 'macos'
         run: tar -zcvf SynapseEngine.tar.gz export/release/macos/bin
+
       - name: Upload Artifact
         uses: actions/upload-artifact@main
         with:
-          name: macBuild
-          path: SynapseEngine.tar.gz
+          name: ${{ matrix.target }}Build
+          path: export/release/${{ matrix.target }}/bin
