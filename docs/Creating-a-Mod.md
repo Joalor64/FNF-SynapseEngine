@@ -52,6 +52,6 @@ Each folder in your mod should be used as follows:
 
 Additionally, you can also add customization files, located in the mod's root folder.
 
-* `achievements.json` - For custom achievements, see more [here](https://github.com/Joalor64GH/FNF-SynapseEngine/wiki/Custom-Achievements).
-* `credits.json` - For custom credits, see more [here](https://github.com/Joalor64GH/FNF-SynapseEngine/wiki/Custom-Credits).
-* `settings.json` - For custom settings, see more [here](https://github.com/Joalor64GH/FNF-SynapseEngine/wiki/Custom-Settings).
+* `achievements.json` - For custom achievements, see more [here](https://github.com/Joalor64/FNF-SynapseEngine/wiki/Custom-Achievements).
+* `credits.json` - For custom credits, see more [here](https://github.com/Joalor64/FNF-SynapseEngine/wiki/Custom-Credits).
+* `settings.json` - For custom settings, see more [here](https://github.com/Joalor64/FNF-SynapseEngine/wiki/Custom-Settings).

@@ -58,3 +58,4 @@
 * [ ] Erect Mixes
 * [ ] New Editor UI
 * [ ] Controller Support
+* [ ] Multi-Atlas Support

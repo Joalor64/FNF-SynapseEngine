@@ -226,12 +226,12 @@ class Main extends Sprite
 		Lib.application.window.alert('Uncaught Error: \n'
 			+ msg
 			+
-			'\n\nPlease report this error to the GitHub page: https://github.com/Joalor64GH/FNF-SynapseEngine/issues\n\n> Crash Handler written by: sqirra-rng',
+			'\n\nPlease report this error to the GitHub page: https://github.com/Joalor64/FNF-SynapseEngine/issues\n\n> Crash Handler written by: sqirra-rng',
 			'Error!');
 		Sys.println('Uncaught Error: \n'
 			+ msg
 			+
-			'\n\nPlease report this error to the GitHub page: https://github.com/Joalor64GH/FNF-SynapseEngine/issues\n\n> Crash Handler written by: sqirra-rng');
+			'\n\nPlease report this error to the GitHub page: https://github.com/Joalor64/FNF-SynapseEngine/issues\n\n> Crash Handler written by: sqirra-rng');
 		Sys.exit(1);
 	}
 
@@ -260,7 +260,7 @@ class Main extends Sprite
 			}
 		}
 
-		errMsg += "\n\nPlease report this error to the GitHub page: https://github.com/Joalor64GH/FNF-SynapseEngine/issues\n\n> Crash Handler written by: sqirra-rng";
+		errMsg += "\n\nPlease report this error to the GitHub page: https://github.com/Joalor64/FNF-SynapseEngine/issues\n\n> Crash Handler written by: sqirra-rng";
 
 		if (!FileSystem.exists("./crash/"))
 			FileSystem.createDirectory("./crash/");
