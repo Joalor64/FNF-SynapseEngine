@@ -20,7 +20,7 @@ Before doing anything else, make sure to install [Haxe](https://haxe.org/downloa
 
 > [!CAUTION]
 > Linux and Mac builds have not been tested! <br>
-> So if something goes wrong, report it in the [issues](https://github.com/Joalor64GH/FNF-SynapseEngine/issues) tab!
+> So if something goes wrong, report it in the [issues](https://github.com/Joalor64/FNF-SynapseEngine/issues) tab!
 
 ## Linux
 1. Install `g++`.

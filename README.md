@@ -15,7 +15,7 @@ Synapse Engine is a fork of Psych Engine 0.6.3, which has the main goal of being
 Additionally, you can check out the [To-Do List](./TODO.md) for any planned features!
 
 ## Documentation (WIP)
-If you want to figure out how the engine works, check out the [documentation](https://github.com/Joalor64GH/FNF-SynapseEngine/wiki/)!
+If you want to figure out how the engine works, check out the [documentation](https://github.com/Joalor64/FNF-SynapseEngine/wiki/)!
 
 **NOTE: The documentation is mostly incomplete. So, for now, I suggest looking through the `assets/` folder for examples.**
 
