@@ -63,12 +63,12 @@ class Spooky extends BaseStage
 
 		if (boyfriend.animOffsets.exists('scared'))
 		{
-			boyfriend.playAnim('scared', true);
+			boyfriend.playAnim('scared');
 		}
 
 		if (dad.animOffsets.exists('scared'))
 		{
-			dad.playAnim('scared', true);
+			dad.playAnim('scared');
 		}
 
 		if (gf != null && gf.animOffsets.exists('scared'))

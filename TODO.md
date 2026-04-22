@@ -47,6 +47,8 @@
     * [ ] Shake Screen
     * [ ] Scare BF
     * [ ] Scare GF
+    * [ ] Health Drain
+    * [ ] Noteskin
 * [ ] Re-add Blammed Lights
 * [ ] Python Scripting (using `Hython`)
 * [ ] Backport V-Slice Stuff

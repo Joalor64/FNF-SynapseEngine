@@ -1845,7 +1845,7 @@ class PlayState extends MusicBeatState
 		callOnScripts('onUpdateScore', [miss]);
 	}
 
-	// credits to js engene for this
+	// credits to js engine for this
 	public static function formatCompactNumber(number:Float):String
 	{
 		var suffixes1:Array<String> = ['', 'mi', 'bi', 'tri', 'quadri', 'quinti', 'sexti', 'septi', 'octi', 'noni'];
