@@ -1,6 +1,5 @@
 # Synapse Engine Wiki
-The documentation is a HEAVY work in progress! I'll probably try to get the basics in soon!\
-Like how to build the game, mod and script creation, etc...
+Welcome to the Synapse Engine wiki!
 
 ## Getting Started
 To get started, see [Creating a Mod](https://github.com/Joalor64/FNF-SynapseEngine/wiki/Creating-a-Mod) first.

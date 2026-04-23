@@ -8,6 +8,4 @@
     * [Custom Settings](https://github.com/Joalor64/FNF-SynapseEngine/wiki/Custom-Settings)
     * [Custom Achievements](https://github.com/Joalor64/FNF-SynapseEngine/wiki/Custom-Achievements)
     * [Custom Loading Screen](https://github.com/Joalor64/FNF-SynapseEngine/wiki/Custom-Loading-Screen)
-* HScript API
-    * General
-    * States and Substates
+* [HScript API](https://github.com/Joalor64/FNF-SynapseEngine/wiki/HScript-API)

@@ -29,7 +29,7 @@ switch (Paths.formatToSongPath(PlayState.SONG.song))
 ### Methods
 * `getLoaded()` - Get the current amount files that have been successfully loaded or failed to load.
 * `getLoadMax()` - Get an amount of files it's supposed to load.
-* `addBehindBar(obj:FlxBasic)` - Inserts an instance behind the Progress Bar, recommended over add
+* `addBehindBar(obj:FlxBasic)` - Inserts an instance behind the progress bar, recommended over `add()`.
 
 ### Variables
 * `intendedPercent` - Same as getLoaded() / getLoadMax(), ranges from 0 to 1.
