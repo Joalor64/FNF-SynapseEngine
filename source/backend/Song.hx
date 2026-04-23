@@ -57,6 +57,8 @@ class Song
 	public var player2:String = 'dad';
 	public var gfVersion:String = 'gf';
 
+	public static var psychV1Chart:Bool = false;
+
 	private static function onLoadJson(songJson:Dynamic)
 	{
 		if (songJson.gfVersion == null)
@@ -88,28 +90,67 @@ class Song
 						i++;
 				}
 			}
-		}
-	}
 
-	public function new(song, notes, bpm)
-	{
-		this.song = song;
-		this.notes = notes;
-		this.bpm = bpm;
+			if (psychV1Chart)
+			{
+				var curBPM:Float = Conductor.bpm;
+				var susDiff = 7500 / curBPM;
+				var sectionsData:Array<SwagSection> = songJson.notes;
+				if (sectionsData == null)
+					return;
+
+				for (section in sectionsData)
+				{
+					if (section.changeBPM)
+					{
+						curBPM = section.bpm;
+						susDiff = 7500 / curBPM;
+					}
+					var beats:Null<Float> = cast section.sectionBeats;
+					if (beats == null || Math.isNaN(beats))
+					{
+						section.sectionBeats = 4;
+						if (Reflect.hasField(section, 'lengthInSteps'))
+							Reflect.deleteField(section, 'lengthInSteps');
+					}
+
+					for (note in section.sectionNotes)
+					{
+						var gottaHitNote:Bool = (note[1] < 4) ? section.mustHitSection : !section.mustHitSection;
+						note[1] = (note[1] % 4) + (gottaHitNote ? 0 : 4);
+
+						if (note[2] > 0)
+						{
+							note[2] -= susDiff;
+							note[2] = Math.fround(note[2] / susDiff) * susDiff;
+							note[2] = Math.max(note[2], 0);
+						}
+
+						if (!Std.isOfType(note[3], String))
+							note[3] = editors.ChartingState.noteTypeList[note[3]]; // Backward compatibility + compatibility with Week 7 charts
+
+						if (Std.isOfType(note[3], Bool))
+							note[3] = (note[3] || section.altAnim ? 'Alt Animation' : ''); // Compatibility with charts made by SNIFF
+					}
+				}
+			}
+		}
 	}
 
 	public static var loadedSongName:String;
 
 	public static function loadFromJson(jsonInput:String, ?folder:String):SwagSong
 	{
-		loadedSongName = folder;
+		if (folder == null)
+			folder = jsonInput;
+		var rawJson:String = null;
 
-		var rawJson = null;
+		loadedSongName = folder;
 
 		var formattedFolder:String = Paths.formatToSongPath(folder);
 		var formattedSong:String = Paths.formatToSongPath(jsonInput);
 		#if MODS_ALLOWED
-		var moddyFile:String = Paths.modsJson('songs/' + formattedFolder + '/' + formattedSong);
+		var moddyFile:String = Paths.modsJson('songs/$formattedFolder/$formattedSong');
 		if (FileSystem.exists(moddyFile))
 		{
 			rawJson = File.getContent(moddyFile).trim();
@@ -118,18 +159,14 @@ class Song
 
 		if (rawJson == null)
 		{
+			var path:String = Paths.json('songs/$formattedFolder/$formattedSong');
 			#if sys
-			rawJson = File.getContent(Paths.json('songs/' + formattedFolder + '/' + formattedSong)).trim();
-			#else
-			rawJson = Assets.getText(Paths.json('songs/' + formattedFolder + '/' + formattedSong)).trim();
+			if (FileSystem.exists(path))
+				rawJson = File.getContent(path);
+			else
 			#end
+			rawJson = Assets.getText(path);
 		}
-
-		while (!rawJson.endsWith("}"))
-			rawJson = rawJson.substr(0, rawJson.length - 1);
-
-		if (rawJson == null)
-			throw "JSON not found in: songs/" + formattedFolder;
 
 		var songJson:Dynamic = parseJSONshit(rawJson);
 		if (jsonInput != 'events')
@@ -138,8 +175,17 @@ class Song
 		return songJson;
 	}
 
-	inline public static function parseJSONshit(rawJson:String):SwagSong
+	public static function parseJSON(rawJson:String):Dynamic
 	{
-		return cast Json.parse(rawJson).song;
+		var songJson = cast Json.parse(rawJson);
+		psychV1Chart = Reflect.hasField(songJson, 'format');
+		if (psychV1Chart)
+		{
+			psychV1Chart = true;
+			Reflect.deleteField(songJson, 'format');
+			return songJson;
+		}
+		else
+			return songJson.song;
 	}
 }
