@@ -73,7 +73,7 @@ class Spooky extends BaseStage
 
 		if (gf != null && gf.animOffsets.exists('scared'))
 		{
-			gf.playAnim('scared', true);
+			gf.playAnim('scared');
 		}
 
 		if (ClientPrefs.data.camZooms)
