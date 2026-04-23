@@ -32,7 +32,7 @@ switch (Paths.formatToSongPath(PlayState.SONG.song))
 * `addBehindBar(obj:FlxBasic)` - Inserts an instance behind the progress bar, recommended over `add()`.
 
 ### Variables
-* `intendedPercent` - Same as getLoaded() / getLoadMax(), ranges from 0 to 1.
+* `intendedPercent` - Same as `getLoaded()` / `getLoadMax()`, ranges from 0 to 1.
 * `curPercent` - Progress bar's visual percentage, it slowly lerps to the intendedPercent value.
 * `barGroup` - An [FlxSpriteGroup](https://api.haxeflixel.com/flixel/group/FlxSpriteGroup.html) that contains `barBackground` and `bar`.
 * `barBackground` - Contained inside `barGroup`, it's the black background behind the moving progress bar.
