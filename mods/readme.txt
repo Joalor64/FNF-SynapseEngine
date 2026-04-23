@@ -3,10 +3,12 @@ Synapse's mods/ folder.
 Note that it differs slightly from Psych's base mods folder
 If you're a beginner, I recommend that you extract modTemplate.zip to get started on developing your mod.
 
-Also, there's little to no documentation, but you can look through assets/ for some hints.
+Check out the documentation here:
+https://github.com/Joalor64/FNF-SynapseEngine/wiki
 
 Read the Psych GitHub wiki here:
 https://github.com/ShadowMario/FNF-PsychEngine/wiki
+
 Read the Lua Script API here:
 https://shadowmario.github.io/psychengine.lua/
 
