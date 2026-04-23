@@ -127,7 +127,7 @@ class Song
 						}
 
 						if (!Std.isOfType(note[3], String))
-							note[3] = editors.ChartingState.noteTypeList[note[3]]; // Backward compatibility + compatibility with Week 7 charts
+							note[3] = states.editors.ChartingState.noteTypeList[note[3]]; // Backward compatibility + compatibility with Week 7 charts
 
 						if (Std.isOfType(note[3], Bool))
 							note[3] = (note[3] || section.altAnim ? 'Alt Animation' : ''); // Compatibility with charts made by SNIFF
@@ -168,7 +168,7 @@ class Song
 			rawJson = Assets.getText(path);
 		}
 
-		var songJson:Dynamic = parseJSONshit(rawJson);
+		var songJson:Dynamic = parseJSON(rawJson);
 		if (jsonInput != 'events')
 			StageData.loadDirectory(songJson);
 		onLoadJson(songJson);

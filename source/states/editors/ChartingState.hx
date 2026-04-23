@@ -37,8 +37,9 @@ class ChartingState extends MusicBeatState
 
 	public var ignoreWarnings = false;
 
-	var undos = [];
-	var redos = [];
+	public var undos = [];
+	public var redos = [];
+
 	var eventStuff:Array<Dynamic> = [
 		['', "Nothing. Yep, that's right."],
 		[
