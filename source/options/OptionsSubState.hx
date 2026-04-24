@@ -940,6 +940,7 @@ class NotesSubState extends MusicBeatSubstate
 	{
 		if (controls.BACK)
 		{
+			FlxG.mouse.visible = false;
 			FlxG.cameras.remove(daCam);
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 			close();
