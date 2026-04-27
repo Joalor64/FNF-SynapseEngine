@@ -49,6 +49,15 @@
     * [ ] Scare GF
     * [ ] Health Drain
     * [ ] Noteskin
+* [ ] Softcode Stages
+    * [ ] Stage
+    * [ ] Spooky
+    * [ ] Philly
+    * [ ] Limo
+    * [ ] Mall
+    * [ ] School
+    * [ ] Tank
+    * [ ] Philly Streets
 * [ ] Re-add Blammed Lights
 * [ ] Python Scripting (using `Hython`)
 * [ ] Backport V-Slice Stuff
