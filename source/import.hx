@@ -93,8 +93,6 @@ import flxanimate.PsychFlxAnimate as FlxAnimate;
 
 using StringTools;
 using backend.CoolUtil;
+#end
 
-#if !debug
-@:noDebug
-#end
-#end
+using StringTools;

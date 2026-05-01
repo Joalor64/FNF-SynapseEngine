@@ -25,6 +25,7 @@
 		<define name="MODS_ALLOWED" />
 		<define name="HSCRIPT_ALLOWED" />
 		<define name="LUA_ALLOWED" />
+		<define name="PYTHON_ALLOWED" />
 		<define name="DISCORD_ALLOWED" />
 	</section>
 	<define name="ACHIEVEMENTS_ALLOWED" />
@@ -74,6 +75,7 @@
 	<haxelib name="hscript" />
 	<haxelib name="rulescript" if="HSCRIPT_ALLOWED" />
 	<haxelib name="linc_luajit" if="LUA_ALLOWED" />
+	<haxelib name="hython" if="PYTHON_ALLOWED" />
 	<haxelib name="hxvlc" if="VIDEOS_ALLOWED" />
 	<haxelib name="hxgamemode" if="linux" />
 	<haxelib name="hxdiscord_rpc" if="DISCORD_ALLOWED" />

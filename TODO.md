@@ -63,6 +63,8 @@
 * [ ] Backport V-Slice Stuff
 * [ ] Add Newer Lua Stuff
 * [ ] Scripted Class Support
+* [ ] Custom Defines Support
+* [ ] NDLL Support
 
 ### Low Priority
 * [ ] Extra Keys
