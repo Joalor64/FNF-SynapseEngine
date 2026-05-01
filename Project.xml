@@ -28,6 +28,7 @@
 		<define name="PYTHON_ALLOWED" />
 		<define name="DISCORD_ALLOWED" />
 	</section>
+	<define name="CUSTOM_DEFINES" />
 	<define name="ACHIEVEMENTS_ALLOWED" />
 	<define name="MULTITHREADED_LOADING" /> <!-- UNCOMMENTING THIS LINE WILL ENABLE MULTITHREADED
 	LOADING, WHICH IMPROVES LOADING TIMES, BUT APPARENTLY CAN FREEZE THE GAME ON SONG LOAD IN OLDER
@@ -48,6 +49,8 @@
 	<assets path="assets" exclude="*.mp3" unless="web" />
 
 	<assets path="assets/videos" library="videos" if="VIDEOS_ALLOWED" />
+
+	<assets path="defines" if="CUSTOM_DEFINES" />
 
 	<section if="MODS_ALLOWED">
 		<assets path='mods' embed='false' type='template' unless="mac" />
