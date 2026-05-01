@@ -99,6 +99,7 @@ function update(elapsed:Float)
 	if (controls.BACK)
 		openSubState(new ScriptedSubState('name', [/* arguments, if any */])); // load custom substate
 }
+```
 
 ### Using Imported Scripts
 Script 1:
