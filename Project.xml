@@ -26,9 +26,11 @@
 		<define name="HSCRIPT_ALLOWED" />
 		<define name="LUA_ALLOWED" />
 		<define name="PYTHON_ALLOWED" />
+		<define name="NDLL_ALLOWED" />
 		<define name="DISCORD_ALLOWED" />
 	</section>
 	<define name="CUSTOM_DEFINES" />
+	<define name="TRANSLATIONS_ALLOWED" />
 	<define name="ACHIEVEMENTS_ALLOWED" />
 	<define name="MULTITHREADED_LOADING" /> <!-- UNCOMMENTING THIS LINE WILL ENABLE MULTITHREADED
 	LOADING, WHICH IMPROVES LOADING TIMES, BUT APPARENTLY CAN FREEZE THE GAME ON SONG LOAD IN OLDER
@@ -45,10 +47,18 @@
 
 	<source path="source" />
 
+	<assets path="assets/fonts" />
+
 	<assets path="assets" exclude="*.ogg" if="web" />
 	<assets path="assets" exclude="*.mp3" unless="web" />
-
+	<assets path="assets/embed" exclude="*.ogg" if="web" embed="true" />
+	<assets path="assets/embed" exclude="*.mp3" unless="web" embed="true" />
+	<assets path="assets/songs" library="songs" exclude="*.ogg" if="web" />
+	<assets path="assets/songs" library="songs" exclude="*.mp3" unless="web" />
 	<assets path="assets/videos" library="videos" if="VIDEOS_ALLOWED" />
+
+	<library name="videos" preload="true" if="VIDEOS_ALLOWED" />
+	<library name="songs" preload="true" />
 
 	<assets path="defines" if="CUSTOM_DEFINES" />
 

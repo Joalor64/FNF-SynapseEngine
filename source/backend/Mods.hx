@@ -33,6 +33,12 @@ class Mods
 		'weeks',
 		'fonts',
 		'scripts',
+		#if NDLL_ALLOWED
+		'ndlls',
+		#end
+		#if TRANSLATIONS_ALLOWED
+		'translations',
+		#end
 		'achievements'
 	];
 

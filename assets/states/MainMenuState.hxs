@@ -26,8 +26,32 @@ var magenta:FlxSprite;
 var camFollow:FlxObject;
 var debugKeys:Array<Int> = [];
 
+var stickerSubState:StickerSubState;
+
+function new(?stickers:Dynamic)
+{
+	if (stickers != null)
+	{
+		stickerSubState = stickers;
+	}
+}
+
 function create()
 {
+	if (stickerSubState != null)
+	{
+		openSubState(stickerSubState);
+		Paths.clearStoredWithoutStickers();
+		stickerSubState.degenStickers();
+		FlxG.sound.playMusic(Paths.music('freakyMenu'));
+	}
+	else
+	{
+		Paths.clearStoredMemory();
+		FlxTransitionableState.skipNextTransOut = false;
+		openSubState(new CustomFadeTransition(0.5, true));
+	}
+	
 	#if MODS_ALLOWED
 	Mods.pushGlobalMods();
 	#end

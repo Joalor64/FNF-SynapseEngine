@@ -215,17 +215,22 @@ function changeSelection(change:Int)
 		}
 	}
 
-	if (StringTools.trim(descText.text).length > 0)
+	var description:String = creditsStuff[curSelected][2] != null ? creditsStuff[curSelected][2] : '';
+
+	if (StringTools.trim(description).length > 0)
 	{
 		descText.visible = descBox.visible = true;
-		descText.text = creditsStuff[curSelected][2];
+		descText.text = description;
 		descText.y = FlxG.height - descText.height + offsetThing;
 
 		descBox.setGraphicSize(Std.int(descText.width + 20), Std.int(descText.height + 25));
 		descBox.updateHitbox();
 	}
 	else
+	{
 		descText.visible = descBox.visible = false;
+		descText.text = '';
+	}
 }
 
 function unselectableCheck(num:Int):Bool

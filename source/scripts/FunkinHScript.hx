@@ -274,6 +274,7 @@ class FunkinHScript extends FlxBasic
 		setVariable('FlxPoint', FlxPoint.FlxBasePoint); // grr abstract classes...
 		#if (!flash && sys)
 		setVariable('FlxRuntimeShader', FlxRuntimeShader);
+		setVariable('ErrorHandledRuntimeShader', ErrorHandledShader.ErrorHandledRuntimeShader);
 		#end
 		setVariable('FlxSound', FlxSound);
 		setVariable('FlxSprite', FlxSprite);
@@ -292,6 +293,7 @@ class FunkinHScript extends FlxBasic
 			'OUTLINE_FAST': FlxTextBorderStyle.OUTLINE_FAST
 		});
 		setVariable('FlxTimer', FlxTimer);
+		setVariable('FlxTransitionableState', FlxTransitionableState);
 		setVariable('FlxTween', FlxTween);
 		setVariable('FlxTypedGroup', FlxTypedGroup);
 		setVariable('createTypedGroup', function(?variable)
@@ -328,13 +330,20 @@ class FunkinHScript extends FlxBasic
 		setVariable('Constants', Constants);
 		setVariable('CoolUtil', CoolUtil);
 		setVariable('Countdown', BaseStage.Countdown);
+		setVariable('CustomFadeTransition', CustomFadeTransition);
 		setVariable('CutsceneHandler', CutsceneHandler);
+		#if CUSTOM_DEFINES
+		setVariable('Defines', Defines);
+		#end
 		#if DISCORD_ALLOWED
 		setVariable('DiscordClient', DiscordClient);
 		#end
 		setVariable('Difficulty', Difficulty);
 		#if LUA_ALLOWED
 		setVariable('FunkinLua', FunkinLua);
+		#end
+		#if TRANSLATIONS_ALLOWED
+		setVariable('Language', Language);
 		#end
 		#if SHOW_LOADING_SCREEN
 		setVariable('LoadingState', LoadingState);
@@ -351,6 +360,8 @@ class FunkinHScript extends FlxBasic
 		setVariable('PlayState', PlayState);
 		setVariable('ScriptedState', ScriptedState);
 		setVariable('ScriptedSubState', ScriptedSubState);
+		setVariable('Song', Song);
+		setVariable('StickerSubState', StickerSubState);
 		#if VIDEOS_ALLOWED
 		setVariable('VideoSprite', VideoSprite);
 		setVariable('VideoState', VideoState);
@@ -368,6 +379,7 @@ class FunkinHScript extends FlxBasic
 		setVariable('VisualsSubState', VisualsSubState);
 		setVariable('GameplaySubState', GameplaySubState);
 		setVariable('NoteOffsetState', NoteOffsetState);
+		setVariable('LanguageSubState', LanguageSubState);
 
 		if (execute && file != null)
 			this.execute(file);
@@ -403,8 +415,12 @@ class FunkinHScript extends FlxBasic
 		preprocessors.set("MODS_ALLOWED", #if MODS_ALLOWED true #else false #end);
 		preprocessors.set("LUA_ALLOWED", #if LUA_ALLOWED true #else false #end);
 		preprocessors.set("HSCRIPT_ALLOWED", #if HSCRIPT_ALLOWED true #else false #end);
+		preprocessors.set("PYTHON_ALLOWED", #if PYTHON_ALLOWED true #else false #end);
+		preprocessors.set("NDLL_ALLOWED", #if NDLL_ALLOWED true #else false #end);
 		preprocessors.set("DISCORD_ALLOWED", #if DISCORD_ALLOWED true #else false #end);
+		preprocessors.set("TRANSLATIONS_ALLOWED", #if TRANSLATIONS_ALLOWED true #else false #end);
 		preprocessors.set("ACHIEVEMENTS_ALLOWED", #if ACHIEVEMENTS_ALLOWED true #else false #end);
+		preprocessors.set("CUSTOM_DEFINES", #if CUSTOM_DEFINES true #else false #end);
 		preprocessors.set("SHOW_LOADING_SCREEN", #if SHOW_LOADING_SCREEN true #else false #end);
 		preprocessors.set("VIDEOS_ALLOWED", #if VIDEOS_ALLOWED true #else false #end);
 		preprocessors.set("CRASH_HANDLER", #if CRASH_HANDLER true #else false #end);

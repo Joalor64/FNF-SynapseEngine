@@ -86,6 +86,11 @@ class ScriptedSubState extends MusicBeatSubstate
 			scriptSet('remove', this.remove);
 			scriptSet('members', this.members);
 
+			scriptSet('openSubState', function(sub:FlxSubState)
+			{
+				this.openSubState(sub);
+			});
+
 			scriptExecute('new', scriptArgs);
 			scriptExecute('create', []);
 		}

@@ -35,20 +35,23 @@
 ## V0.2.0
 ### High Priority
 * [ ] Weekend 1
-* [ ] In-Game Crash Handler
-* [ ] Lil' Buddies (From FPS+)
-* [ ] Support for Separated Vocals
+* [X] In-Game Crash Handler
+* [X] Lil' Buddies (From FPS+)
 * [ ] Backport Newer Psych Stuff (i mean, i've BEEN doing this anyways)
-* [ ] Deprecate `animateatlas` in favor of `flxanimate`
+    * [ ] Support for Separated Vocals
+    * [X] Translations
+    * [X] Alphabet JSON
+    * [X] Add Newer Lua Stuff
+    * [X] Deprecate `animateatlas` in favor of `flxanimate`
 * [ ] Time Signature Support
 * [ ] Special Character Properties
-    * [ ] Floating
+    * [X] Floating
     * [ ] Orbit
-    * [ ] Shake Screen
-    * [ ] Scare BF
-    * [ ] Scare GF
-    * [ ] Health Drain
-    * [ ] Noteskin
+    * [X] Shake Screen
+    * [X] Scare BF
+    * [X] Scare GF
+    * [X] Health Drain
+    * [X] Noteskin
 * [ ] Softcode Stages
     * [ ] Stage
     * [ ] Spooky
@@ -58,17 +61,15 @@
     * [ ] School
     * [ ] Tank
     * [ ] Philly Streets
-* [ ] Re-add Blammed Lights
-* [ ] Python Scripting (using `Hython`)
-* [ ] Backport V-Slice Stuff
-* [ ] Add Newer Lua Stuff
+* [X] Re-add Blammed Lights
+* [X] Python Scripting (using `Hython`)
+* [X] Sticker Transition
 * [ ] Scripted Class Support
-* [ ] Custom Defines Support
-* [ ] NDLL Support
+* [X] Custom Defines Support
+* [X] NDLL Support
+* [X] Fix Downscroll Bug
 
 ### Low Priority
-* [ ] Extra Keys
-* [ ] Erect Mixes
 * [ ] New Editor UI
 * [ ] Controller Support
 * [ ] Multi-Atlas Support

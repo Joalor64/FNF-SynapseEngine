@@ -116,19 +116,26 @@ class ControlsSubState extends MusicBeatSubstate
 				var isDefaultKey:Bool = (option[0] == defaultKey);
 				var isDisplayKey:Bool = (isCentered && !isDefaultKey);
 
-				var text:Alphabet = new Alphabet(200, 300, option[0], !isDisplayKey);
+				var str:String = option[0];
+				var keyStr:String = option[1];
+				if (isDefaultKey)
+					str = Language.getPhrase(str);
+
+				var text:Alphabet = new Alphabet(475, 300, !isDisplayKey ? Language.getPhrase('key_$keyStr', str) : Language.getPhrase('keygroup_$str', str),
+					!isDisplayKey);
 				text.isMenuItem = true;
 				text.changeX = false;
 				text.distancePerItem.y = 60;
 				text.targetY = myID;
-				if (isDisplayKey)
-					grpDisplay.add(text);
-				else
+				if (!isDisplayKey)
 				{
+					text.alignment = RIGHT;
 					grpOptions.add(text);
 					curOptions.push(i);
 					curOptionsValid.push(myID);
 				}
+				else
+					grpDisplay.add(text);
 				text.ID = myID;
 				lastID = myID;
 
@@ -147,6 +154,7 @@ class ControlsSubState extends MusicBeatSubstate
 
 	function addCenteredText(text:Alphabet, option:Array<Dynamic>, id:Int)
 	{
+		text.alignment = LEFT;
 		text.screenCenter(X);
 		text.y -= 55;
 		text.startPosition.y -= 55;
@@ -179,7 +187,7 @@ class ControlsSubState extends MusicBeatSubstate
 			black.alphaMult = 0.4;
 			black.sprTracker = text;
 			black.yAdd = -6;
-			black.xAdd = textX;
+			black.xAdd = 75 + n * 300;
 			grpBlacks.add(black);
 		}
 	}
@@ -248,11 +256,13 @@ class ControlsSubState extends MusicBeatSubstate
 					FlxTween.tween(bindingBlack, {alpha: 0.6}, 0.35, {ease: FlxEase.linear});
 					add(bindingBlack);
 
-					bindingText = new Alphabet(FlxG.width / 2, 160, "Rebinding " + options[curOptions[curSelected]][2], false);
+					bindingText = new Alphabet(FlxG.width / 2, 160,
+						Language.getPhrase('controls_rebinding', 'Rebinding {1}', [options[curOptions[curSelected]][2]]), false);
 					bindingText.alignment = CENTERED;
 					add(bindingText);
 
-					bindingText2 = new Alphabet(FlxG.width / 2, 340, "Hold ESC to Cancel\nHold Backspace to Delete", true);
+					bindingText2 = new Alphabet(FlxG.width / 2, 340,
+						Language.getPhrase('controls_rebinding2', 'Hold ESC to Cancel\nHold Backspace to Delete'), true);
 					bindingText2.alignment = CENTERED;
 					add(bindingText2);
 
@@ -417,7 +427,7 @@ class GameplaySubState extends BaseOptionsMenu
 
 	public function new()
 	{
-		title = 'Gameplay Settings';
+		title = Language.getPhrase('gameplay_menu', 'Gameplay Settings');
 		rpcTitle = 'Gameplay Settings Menu'; // for Discord Rich Presence
 
 		notes = new FlxTypedGroup<StrumNote>();
@@ -536,7 +546,7 @@ class GameplaySubState extends BaseOptionsMenu
 			'bool');
 		addOption(option);
 
-		var option:Option = new Option('Health Bar Transparency', 'How much transparent should the health bar and icons be.', 'healthBarAlpha', 'percent');
+		var option:Option = new Option('Health Bar Opacity', 'How much transparent should the health bar and icons be.', 'healthBarAlpha', 'percent');
 		option.scrollSpeed = 1.6;
 		option.minValue = 0.0;
 		option.maxValue = 1;
@@ -702,14 +712,163 @@ class GameplaySubState extends BaseOptionsMenu
 	}
 }
 
+class LanguageSubState extends MusicBeatSubstate
+{
+	#if TRANSLATIONS_ALLOWED
+	var grpLanguages:FlxTypedGroup<Alphabet> = new FlxTypedGroup<Alphabet>();
+	var languages:Array<String> = [];
+	var displayLanguages:Map<String, String> = [];
+	var curSelected:Int = 0;
+
+	public function new()
+	{
+		super();
+
+		var bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		bg.color = 0xFFea71fd;
+		bg.antialiasing = ClientPrefs.data.globalAntialiasing;
+		bg.screenCenter();
+		add(bg);
+		add(grpLanguages);
+
+		languages.push(ClientPrefs.defaultData.language); // English (US)
+		displayLanguages.set(ClientPrefs.defaultData.language, Language.defaultLangName);
+		var directories:Array<String> = Mods.directoriesWithFile(Paths.getPreloadPath(), 'translations/');
+		for (directory in directories)
+		{
+			for (file in FileSystem.readDirectory(directory))
+			{
+				if (file.toLowerCase().endsWith('.lang'))
+				{
+					var langFile:String = file.substring(0, file.length - '.lang'.length).trim();
+					if (!languages.contains(langFile))
+						languages.push(langFile);
+
+					if (!displayLanguages.exists(langFile))
+					{
+						var path:String = '$directory/$file';
+						#if MODS_ALLOWED
+						var txt:String = File.getContent(path);
+						#else
+						var txt:String = Assets.getText(path);
+						#end
+
+						var id:Int = txt.indexOf('\n');
+						if (id > 0) // language display name shouldnt be an empty string or null
+						{
+							var name:String = txt.substr(0, id).trim();
+							if (!name.contains(':'))
+								displayLanguages.set(langFile, name);
+						}
+						else if (txt.trim().length > 0 && !txt.contains(':'))
+							displayLanguages.set(langFile, txt.trim());
+					}
+				}
+			}
+		}
+
+		languages.sort(function(a:String, b:String)
+		{
+			a = (displayLanguages.exists(a) ? displayLanguages.get(a) : a).toLowerCase();
+			b = (displayLanguages.exists(b) ? displayLanguages.get(b) : b).toLowerCase();
+			if (a < b)
+				return -1;
+			else if (a > b)
+				return 1;
+			return 0;
+		});
+
+		curSelected = languages.indexOf(ClientPrefs.data.language);
+		if (curSelected < 0)
+		{
+			ClientPrefs.data.language = ClientPrefs.defaultData.language;
+			curSelected = Std.int(Math.max(0, languages.indexOf(ClientPrefs.data.language)));
+		}
+
+		for (num => lang in languages)
+		{
+			var name:String = displayLanguages.get(lang);
+			if (name == null)
+				name = lang;
+
+			var text:Alphabet = new Alphabet(0, 300, name, true);
+			text.isMenuItem = true;
+			text.targetY = num;
+			text.changeX = false;
+			text.distancePerItem.y = 100;
+			if (languages.length < 7)
+			{
+				text.changeY = false;
+				text.screenCenter(Y);
+				text.y += (100 * (num - (languages.length / 2))) + 45;
+			}
+			text.screenCenter(X);
+			grpLanguages.add(text);
+		}
+		changeSelected();
+	}
+
+	var changedLanguage:Bool = false;
+
+	override function update(elapsed:Float)
+	{
+		super.update(elapsed);
+
+		var mult:Int = (FlxG.keys.pressed.SHIFT) ? 4 : 1;
+		if (controls.UI_UP_P)
+			changeSelected(-1 * mult);
+		if (controls.UI_DOWN_P)
+			changeSelected(1 * mult);
+		if (FlxG.mouse.wheel != 0)
+			changeSelected(FlxG.mouse.wheel * mult);
+
+		if (controls.BACK)
+		{
+			if (changedLanguage)
+			{
+				FlxTransitionableState.skipNextTransIn = true;
+				FlxTransitionableState.skipNextTransOut = true;
+				MusicBeatState.switchState(new ScriptedState('OptionsState', [PlayState.fromPlayState]));
+			}
+			else
+				close();
+			FlxG.sound.play(Paths.sound('cancelMenu'));
+		}
+
+		if (controls.ACCEPT)
+		{
+			FlxG.sound.play(Paths.sound('confirmMenu'), 0.6);
+			ClientPrefs.data.language = languages[curSelected];
+			ClientPrefs.saveSettings();
+			Language.reloadPhrases();
+			changedLanguage = true;
+		}
+	}
+
+	function changeSelected(change:Int = 0)
+	{
+		curSelected = FlxMath.wrap(curSelected + change, 0, languages.length - 1);
+		for (num => lang in grpLanguages)
+		{
+			lang.targetY = num - curSelected;
+			lang.alpha = 0.6;
+			if (num == curSelected)
+				lang.alpha = 1;
+			lang.color = (ClientPrefs.data.language == languages[num] ? 0xffffcc33 : FlxColor.WHITE);
+		}
+		FlxG.sound.play(Paths.sound('scrollMenu'), 0.6);
+	}
+	#end
+}
+
 class MiscSubState extends BaseOptionsMenu
 {
 	public function new()
 	{
-		title = 'Miscellaneous';
+		title = Language.getPhrase('misc_menu', 'Miscellaneous');
 		rpcTitle = 'Misc. Settings Menu'; // for Discord Rich Presence
 
-		var option:Option = new Option('Pause Screen Song:', "What song do you prefer for the Pause Screen?", 'pauseMusic', 'string',
+		var option:Option = new Option('Pause Music:', "What song do you prefer for the Pause Screen?", 'pauseMusic', 'string',
 			['None', 'Breakfast', 'Tea Time']);
 		addOption(option);
 		option.onChange = onChangePauseMusic;
@@ -880,7 +1039,7 @@ class NotesSubState extends MusicBeatSubstate
 
 		var tipX = 20;
 		var tipY = 660;
-		var tip:FlxText = new FlxText(tipX, tipY, 0, "Press RELOAD to Reset the selected Note Part.", 16);
+		var tip:FlxText = new FlxText(tipX, tipY, 0, Language.getPhrase('note_colors_tip', 'Press RESET to Reset the selected Note Part.'), 16);
 		tip.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		tip.borderSize = 2;
 		add(tip);
@@ -900,7 +1059,7 @@ class NotesSubState extends MusicBeatSubstate
 
 	function updateTip()
 	{
-		tipTxt.text = 'Hold Shift' + ' + Press RELOAD to fully reset the selected Note.';
+		tipTxt.text = Language.getPhrase('note_colors_hold_tip', 'Hold Shift + RESET key to fully reset the selected Note.');
 	}
 
 	var _storedColor:FlxColor;
@@ -1423,7 +1582,7 @@ class VisualsSubState extends BaseOptionsMenu
 {
 	public function new()
 	{
-		title = 'Visuals';
+		title = Language.getPhrase('visuals_menu', 'Visuals Settings');
 		rpcTitle = 'Visuals Settings Menu'; // for Discord Rich Presence
 
 		var option:Option = new Option('Low Quality', // Name
@@ -1454,13 +1613,13 @@ class VisualsSubState extends BaseOptionsMenu
 			['Mid-Fight Masses', 'Static', 'Eccentric', 'Off']);
 		addOption(option);
 
-		var option:Option = new Option('BF CrossFade Limit', "Determines the maximium amount of frames of CrossFade the player can have.",
+		var option:Option = new Option('BF CrossFade Limit', "Determines the maximum amount of frames of CrossFade the player can have.",
 			'boyfriendCrossFadeLimit', 'int');
 		addOption(option);
 		option.minValue = 1;
 		option.maxValue = 10;
 
-		var option:Option = new Option('Opponent CrossFade Limit', "Determines the maximium amount of frames of CrossFade the opponent can have.",
+		var option:Option = new Option('Opponent CrossFade Limit', "Determines the maximum amount of frames of CrossFade the opponent can have.",
 			'crossFadeLimit', 'int');
 		addOption(option);
 		option.minValue = 1;

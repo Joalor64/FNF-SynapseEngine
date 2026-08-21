@@ -45,8 +45,6 @@ import sys.io.*;
 #end
 
 // Engine Imports
-import animateatlas.AtlasFrameMaker;
-
 #if DISCORD_ALLOWED
 import backend.DiscordClient;
 #end

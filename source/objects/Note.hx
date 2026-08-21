@@ -216,7 +216,7 @@ class Note extends FlxSprite
 		return globalRgbShaders[idx];
 	}
 
-	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inEditor:Bool = false)
+	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inEditor:Bool = false, ?noteSkin:String = null)
 	{
 		super();
 
@@ -240,7 +240,7 @@ class Note extends FlxSprite
 
 		if (noteData > -1)
 		{
-			texture = '';
+			texture = noteSkin != null && noteSkin.length > 0 ? noteSkin : '';
 			rgbShader = new RGBPalette();
 			shader = rgbShader.shader;
 
@@ -436,6 +436,42 @@ class Note extends FlxSprite
 		animation.addByPrefix(name, prefix, framerate, doLoop);
 	}
 
+	public function followStrumNote(myStrum:StrumNote, fakeCrochet:Float, songSpeed:Float = 1)
+	{
+		var strumX:Float = myStrum.x;
+		var strumY:Float = myStrum.y;
+		var strumAngle:Float = myStrum.angle;
+		var strumAlpha:Float = myStrum.alpha;
+		var strumDirection:Float = myStrum.direction;
+
+		distance = (0.45 * (Conductor.songPosition - strumTime) * songSpeed * multSpeed);
+		if (!myStrum.downScroll)
+			distance *= -1;
+
+		var angleDir = strumDirection * Math.PI / 180;
+		if (copyAngle)
+			angle = strumDirection - 90 + strumAngle + offsetAngle;
+
+		if (copyAlpha)
+			alpha = strumAlpha * multAlpha;
+
+		if (copyX)
+			x = strumX + offsetX + Math.cos(angleDir) * distance;
+
+		if (copyY)
+		{
+			y = strumY + offsetY + correctionOffset + Math.sin(angleDir) * distance;
+			if (myStrum.downScroll && isSustainNote)
+			{
+				if (PlayState.isPixelStage)
+				{
+					y -= PlayState.daPixelZoom * 9.5;
+				}
+				y -= (frameHeight * scale.y) - (Note.swagWidth / 2);
+			}
+		}
+	}
+
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
@@ -461,6 +497,34 @@ class Note extends FlxSprite
 	{
 		super.destroy();
 		_lastValidChecked = '';
+	}
+
+	public function clipToStrumNote(myStrum:StrumNote)
+	{
+		var center:Float = myStrum.y + offsetY + Note.swagWidth / 2;
+		if ((mustPress || !ignoreNote) && (wasGoodHit || (prevNote.wasGoodHit && !canBeHit)))
+		{
+			var swagRect:FlxRect = clipRect;
+			if (swagRect == null)
+				swagRect = new FlxRect(0, 0, frameWidth, frameHeight);
+
+			if (myStrum.downScroll)
+			{
+				if (y - offset.y * scale.y + height >= center)
+				{
+					swagRect.width = frameWidth;
+					swagRect.height = (center - y) / scale.y;
+					swagRect.y = frameHeight - swagRect.height;
+				}
+			}
+			else if (y + offset.y * scale.y <= center)
+			{
+				swagRect.y = (center - y) / scale.y;
+				swagRect.width = width / scale.x;
+				swagRect.height = (height / scale.y) - swagRect.y;
+			}
+			clipRect = swagRect;
+		}
 	}
 
 	@:noCompletion override function set_clipRect(rect:FlxRect):FlxRect

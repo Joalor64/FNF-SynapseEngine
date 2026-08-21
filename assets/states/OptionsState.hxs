@@ -9,7 +9,7 @@ import backend.DiscordClient;
 // i WAS also going to softcode the submenus
 // but honestly, that would have been stupid
 // besides, i already backported the mod options thing from 0.7.3
-var options:Array<String> = ['Note Colors', 'Controls', 'Offsets', 'Visuals', 'Gameplay', 'Miscellaneous'];
+var options:Array<String> = ['Note Colors', 'Controls', 'Offsets', 'Visuals', 'Gameplay', 'Miscellaneous' #if TRANSLATIONS_ALLOWED , 'Language' #end];
 var grpOptions:FlxTypedGroup<Alphabet>;
 var curSelected:Int = 0;
 var selectorLeft:Alphabet;
@@ -39,7 +39,7 @@ function create()
 
 	for (i in 0...options.length)
 	{
-		var optionText:Alphabet = new Alphabet(0, 0, options[i], true);
+		var optionText:Alphabet = new Alphabet(0, 0, Language.getPhrase('options_' + options[i], options[i]), true);
 		optionText.screenCenter();
 		optionText.y += (100 * (i - (options.length / 2))) + 50;
 		grpOptions.add(optionText);
@@ -130,5 +130,7 @@ function openSelectedSubstate(label:String)
 			openSubState(new GameplaySubState());
 		case 'Offsets':
 			MusicBeatState.switchState(new NoteOffsetState());
+		case 'Language':
+			openSubState(new LanguageSubState());
 	}
 }

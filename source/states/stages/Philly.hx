@@ -14,8 +14,10 @@ class Philly extends BaseStage
 	var blammedLightsBlack:FlxSprite;
 	var phillyGlowGradient:PhillyGlowGradient;
 	var phillyGlowParticles:FlxTypedGroup<PhillyGlowParticle>;
-	var phillyWindowEvent:BGSprite;
 	var curLightEvent:Int = -1;
+
+	var blammedLightsBlackTween:FlxTween;
+	var phillyWindowTween:FlxTween;
 
 	override function create()
 	{
@@ -31,6 +33,7 @@ class Philly extends BaseStage
 		add(city);
 
 		phillyLightsColors = [0xFF31A2FD, 0xFF31FD8C, 0xFFFB33F5, 0xFFFD4531, 0xFFFBA633];
+
 		phillyWindow = new BGSprite('stages/philly/window', city.x, city.y, 0.3, 0.3);
 		phillyWindow.setGraphicSize(Std.int(phillyWindow.width * 0.85));
 		phillyWindow.updateHitbox();
@@ -48,6 +51,12 @@ class Philly extends BaseStage
 
 		phillyStreet = new BGSprite('stages/philly/street', -40, 50);
 		add(phillyStreet);
+
+		blammedLightsBlack = new FlxSprite(FlxG.width * -0.5, FlxG.height * -0.5);
+		blammedLightsBlack.makeGraphic(Std.int(FlxG.width * 2), Std.int(FlxG.height * 2), FlxColor.BLACK);
+		blammedLightsBlack.alpha = 0;
+		blammedLightsBlack.scrollFactor.set();
+		insert(members.indexOf(phillyStreet), blammedLightsBlack);
 	}
 
 	override function eventPushed(event:Note.EventNote)
@@ -55,16 +64,13 @@ class Philly extends BaseStage
 		switch (event.event)
 		{
 			case "Philly Glow":
-				blammedLightsBlack = new FlxSprite(FlxG.width * -0.5,
-					FlxG.height * -0.5).makeGraphic(Std.int(FlxG.width * 2), Std.int(FlxG.height * 2), FlxColor.BLACK);
-				blammedLightsBlack.visible = false;
-				insert(members.indexOf(phillyStreet), blammedLightsBlack);
-
-				phillyWindowEvent = new BGSprite('stages/philly/window', phillyWindow.x, phillyWindow.y, 0.3, 0.3);
-				phillyWindowEvent.setGraphicSize(Std.int(phillyWindowEvent.width * 0.85));
-				phillyWindowEvent.updateHitbox();
-				phillyWindowEvent.visible = false;
-				insert(members.indexOf(blammedLightsBlack) + 1, phillyWindowEvent);
+				if (blammedLightsBlack == null)
+				{
+					blammedLightsBlack = new FlxSprite(FlxG.width * -0.5,
+						FlxG.height * -0.5).makeGraphic(Std.int(FlxG.width * 2), Std.int(FlxG.height * 2), FlxColor.BLACK);
+					blammedLightsBlack.visible = false;
+					insert(members.indexOf(phillyStreet), blammedLightsBlack);
+				}
 
 				phillyGlowGradient = new PhillyGlowGradient(-400, 225);
 				phillyGlowGradient.visible = false;
@@ -76,12 +82,24 @@ class Philly extends BaseStage
 				phillyGlowParticles = new FlxTypedGroup<PhillyGlowParticle>();
 				phillyGlowParticles.visible = false;
 				insert(members.indexOf(phillyGlowGradient) + 1, phillyGlowParticles);
+
+			case "Blammed Lights":
+				if (blammedLightsBlack == null)
+				{
+					blammedLightsBlack = new FlxSprite(FlxG.width * -0.5, FlxG.height * -0.5);
+					blammedLightsBlack.makeGraphic(Std.int(FlxG.width * 2), Std.int(FlxG.height * 2), FlxColor.BLACK);
+					blammedLightsBlack.alpha = 0;
+					blammedLightsBlack.scrollFactor.set();
+					insert(members.indexOf(phillyStreet), blammedLightsBlack);
+				}
 		}
 	}
 
 	override function update(elapsed:Float)
 	{
-		phillyWindow.alpha -= (Conductor.crochet / 1000) * FlxG.elapsed * 1.5;
+		if (curLightEvent <= 0)
+			phillyWindow.alpha -= (Conductor.crochet / 1000) * FlxG.elapsed * 1.5;
+
 		if (phillyGlowParticles != null)
 		{
 			var i:Int = phillyGlowParticles.members.length - 1;
@@ -102,7 +120,8 @@ class Philly extends BaseStage
 	override function beatHit()
 	{
 		phillyTrain.beatHit(curBeat);
-		if (curBeat % 4 == 0)
+
+		if (curBeat % 4 == 0 && curLightEvent <= 0)
 		{
 			curLight = FlxG.random.int(0, phillyLightsColors.length - 1, [curLight]);
 			phillyWindow.color = phillyLightsColors[curLight];
@@ -117,6 +136,7 @@ class Philly extends BaseStage
 			case "Philly Glow":
 				if (flValue1 == null || flValue1 <= 0)
 					flValue1 = 0;
+
 				var lightId:Int = Math.round(flValue1);
 
 				var chars:Array<Character> = [boyfriend, gf, dad];
@@ -133,7 +153,6 @@ class Philly extends BaseStage
 							}
 
 							blammedLightsBlack.visible = false;
-							phillyWindowEvent.visible = false;
 							phillyGlowGradient.visible = false;
 							phillyGlowParticles.visible = false;
 							curLightEvent = -1;
@@ -143,11 +162,24 @@ class Philly extends BaseStage
 								who.color = FlxColor.WHITE;
 							}
 							phillyStreet.color = FlxColor.WHITE;
+
+							resetWindowLayer();
+							phillyWindow.visible = true;
+							phillyWindow.alpha = 1;
+							curLight = FlxG.random.int(0, phillyLightsColors.length - 1, [curLight]);
+							phillyWindow.color = phillyLightsColors[curLight];
 						}
 
-					case 1: // turn on
+					case 1:
 						curLightEvent = FlxG.random.int(0, phillyLightsColors.length - 1, [curLightEvent]);
 						var color:FlxColor = phillyLightsColors[curLightEvent];
+
+						remove(phillyWindow);
+						var particleIndex:Int = members.indexOf(phillyGlowParticles);
+						if (particleIndex > 0)
+							insert(particleIndex + 1, phillyWindow);
+						else
+							add(phillyWindow);
 
 						if (!phillyGlowGradient.visible)
 						{
@@ -160,7 +192,8 @@ class Philly extends BaseStage
 
 							blammedLightsBlack.visible = true;
 							blammedLightsBlack.alpha = 1;
-							phillyWindowEvent.visible = true;
+							phillyWindow.visible = true;
+							phillyWindow.alpha = 1;
 							phillyGlowGradient.visible = true;
 							phillyGlowParticles.visible = true;
 						}
@@ -186,12 +219,12 @@ class Philly extends BaseStage
 							particle.color = color;
 						});
 						phillyGlowGradient.color = color;
-						phillyWindowEvent.color = color;
+						phillyWindow.color = color;
 
 						color.brightness *= 0.5;
 						phillyStreet.color = color;
 
-					case 2: // spawn particles
+					case 2:
 						if (!ClientPrefs.data.lowQuality)
 						{
 							var particlesNum:Int = FlxG.random.int(8, 12);
@@ -213,7 +246,179 @@ class Philly extends BaseStage
 						}
 						phillyGlowGradient.bop();
 				}
+
+			case "Blammed Lights":
+				var lightId:Int = Std.parseInt(value1);
+				if (Math.isNaN(lightId))
+					lightId = 0;
+
+				var chars:Array<Character> = [boyfriend, gf, dad];
+				if (lightId > 0 && curLightEvent != lightId)
+				{
+					if (lightId > 5)
+						lightId = FlxG.random.int(1, 5, [curLightEvent]);
+
+					var color:Int = 0xffffffff;
+					switch (lightId)
+					{
+						case 1:
+							color = 0xff31a2fd;
+						case 2:
+							color = 0xff31fd8c;
+						case 3:
+							color = 0xfff794f7;
+						case 4:
+							color = 0xfff96d63;
+						case 5:
+							color = 0xfffba633;
+					}
+					curLightEvent = lightId;
+
+					remove(phillyWindow);
+					var blackIndex:Int = members.indexOf(blammedLightsBlack);
+					if (blackIndex > 0)
+						insert(blackIndex + 1, phillyWindow);
+					else
+						add(phillyWindow);
+
+					phillyWindow.visible = true;
+					phillyWindow.color = color;
+
+					if (blammedLightsBlack.alpha == 0)
+					{
+						if (blammedLightsBlackTween != null)
+							blammedLightsBlackTween.cancel();
+
+						blammedLightsBlackTween = FlxTween.tween(blammedLightsBlack, {alpha: 1}, 1, {
+							ease: FlxEase.quadInOut,
+							onComplete: function(twn:FlxTween)
+							{
+								blammedLightsBlackTween = null;
+							}
+						});
+
+						if (phillyWindowTween != null)
+							phillyWindowTween.cancel();
+
+						phillyWindow.alpha = 0;
+						phillyWindowTween = FlxTween.tween(phillyWindow, {alpha: 1}, 1, {
+							ease: FlxEase.quadInOut,
+							onComplete: function(twn:FlxTween)
+							{
+								phillyWindowTween = null;
+							}
+						});
+
+						for (char in chars)
+						{
+							if (char != null)
+							{
+								if (char.colorTween != null)
+									char.colorTween.cancel();
+
+								char.colorTween = FlxTween.color(char, 1, FlxColor.WHITE, color, {
+									onComplete: function(twn:FlxTween)
+									{
+										char.colorTween = null;
+									},
+									ease: FlxEase.quadInOut
+								});
+							}
+						}
+					}
+					else
+					{
+						if (blammedLightsBlackTween != null)
+							blammedLightsBlackTween.cancel();
+
+						blammedLightsBlackTween = null;
+						blammedLightsBlack.alpha = 1;
+
+						if (phillyWindowTween != null)
+							phillyWindowTween.cancel();
+
+						phillyWindowTween = null;
+						phillyWindow.alpha = 1;
+
+						for (char in chars)
+						{
+							if (char != null)
+							{
+								if (char.colorTween != null)
+									char.colorTween.cancel();
+
+								char.colorTween = null;
+								char.color = color;
+							}
+						}
+					}
+				}
+				else
+				{
+					if (blammedLightsBlack.alpha != 0)
+					{
+						if (blammedLightsBlackTween != null)
+							blammedLightsBlackTween.cancel();
+
+						blammedLightsBlackTween = FlxTween.tween(blammedLightsBlack, {alpha: 0}, 1, {
+							ease: FlxEase.quadInOut,
+							onComplete: function(twn:FlxTween)
+							{
+								blammedLightsBlackTween = null;
+							}
+						});
+					}
+
+					if (phillyWindow.alpha != 0)
+					{
+						if (phillyWindowTween != null)
+							phillyWindowTween.cancel();
+
+						phillyWindowTween = FlxTween.tween(phillyWindow, {alpha: 0}, 1, {
+							ease: FlxEase.quadInOut,
+							onComplete: function(twn:FlxTween)
+							{
+								phillyWindowTween = null;
+								resetWindowLayer();
+								phillyWindow.visible = true;
+								phillyWindow.alpha = 1;
+								curLight = FlxG.random.int(0, phillyLightsColors.length - 1, [curLight]);
+								phillyWindow.color = phillyLightsColors[curLight];
+							}
+						});
+					}
+
+					for (char in chars)
+					{
+						if (char != null)
+						{
+							if (char.colorTween != null)
+								char.colorTween.cancel();
+
+							char.colorTween = FlxTween.color(char, 1, char.color, FlxColor.WHITE, {
+								onComplete: function(twn:FlxTween)
+								{
+									char.colorTween = null;
+								},
+								ease: FlxEase.quadInOut
+							});
+						}
+					}
+
+					curLight = 0;
+					curLightEvent = 0;
+				}
 		}
+	}
+
+	function resetWindowLayer()
+	{
+		remove(phillyWindow);
+		var trainIndex:Int = members.indexOf(phillyTrain);
+		if (trainIndex > 0)
+			insert(trainIndex - 1, phillyWindow);
+		else
+			add(phillyWindow);
 	}
 
 	function doFlash()

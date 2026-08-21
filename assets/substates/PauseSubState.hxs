@@ -8,6 +8,7 @@ import backend.Highscore;
 import backend.Song;
 import backend.Mods;
 import objects.Alphabet;
+import substates.StickerSubState;
 import flixel.util.FlxStringUtil;
 
 var grpMenuShit:FlxTypedGroup;
@@ -77,14 +78,23 @@ function create()
 	levelDifficulty.setFormat(Paths.font('vcr.ttf'), 32);
 	add(levelDifficulty);
 
-	blueballedTxt = new FlxText(20, 15 + 64, 0, "Blueballed: " + PlayState.deathCounter, 32);
+	blueballedTxt = new FlxText(20, 15 + 64, 0, Language.getPhrase("blueballed", "Blueballed: {1}", [PlayState.deathCounter]), 32);
 	blueballedTxt.setFormat(Paths.font('vcr.ttf'), 32);
 	add(blueballedTxt);
 
-	practiceText = new FlxText(20, 15 + 96, 0, "PRACTICE MODE", 32);
+	practiceText = new FlxText(20, 15 + 96, 0, Language.getPhrase("Practice Mode").toUpperCase(), 32);
 	practiceText.setFormat(Paths.font('vcr.ttf'), 32);
 	practiceText.visible = PlayState.instance.practiceMode;
 	add(practiceText);
+
+	var chartingText:FlxText = new FlxText(20, 15 + 101, 0, Language.getPhrase("Charting Mode").toUpperCase(), 32);
+	chartingText.scrollFactor.set();
+	chartingText.setFormat(Paths.font('vcr.ttf'), 32);
+	chartingText.x = FlxG.width - (chartingText.width + 20);
+	chartingText.y = FlxG.height - (chartingText.height + 20);
+	chartingText.updateHitbox();
+	chartingText.visible = PlayState.chartingMode;
+	add(chartingText);
 
 	levelInfo.alpha = levelDifficulty.alpha = blueballedTxt.alpha = practiceText.alpha = 0;
 	levelInfo.x = FlxG.width - (levelInfo.width + 20);
@@ -100,6 +110,8 @@ function create()
 
 	pauseMusic = new FlxSound();
 	var songName = Paths.formatToSongPath(ClientPrefs.data.pauseMusic);
+	if (ClientPrefs.data.pauseMusic == 'Breakfast' && PlayState.isPixelStage)
+		songName += '-pixel';
 	if (songName != 'none')
 	{
 		pauseMusic.loadEmbedded(Paths.music(songName), true, true);
@@ -203,9 +215,11 @@ function update(elapsed:Float)
 					PlayState.deathCounter = 0;
 					PlayState.seenCutscene = false;
 					Mods.loadTheFirstEnabledMod();
-					MusicBeatState.switchState(new ScriptedState('FreeplayState', []));
+					openSubState(new StickerSubState(null, function(sticker)
+					{
+						return new ScriptedState('FreeplayState', [sticker]);
+					}));
 					PlayState.cancelMusicFadeTween();
-					FlxG.sound.playMusic(Paths.music('freakyMenu'));
 					PlayState.chartingMode = false;
 				case "Exit to Menu":
 					#if DISCORD_ALLOWED
@@ -215,11 +229,20 @@ function update(elapsed:Float)
 					PlayState.seenCutscene = false;
 					Mods.loadTheFirstEnabledMod();
 					if (PlayState.isStoryMode)
-						MusicBeatState.switchState(new ScriptedState('StoryMenuState', []));
+					{
+						openSubState(new StickerSubState(null, function(sticker)
+						{
+							return new ScriptedState('StoryMenuState', [sticker]);
+						}));
+					}
 					else
-						MusicBeatState.switchState(new ScriptedState('MainMenuState', []));
+					{
+						openSubState(new StickerSubState(null, function(sticker)
+						{
+							return new ScriptedState('MainMenuState', [sticker]);
+						}));
+					}
 					PlayState.cancelMusicFadeTween();
-					FlxG.sound.playMusic(Paths.music('freakyMenu'));
 					PlayState.chartingMode = false;
 				case "Exit Game":
 					Sys.exit(0);
@@ -360,7 +383,7 @@ function regenMenu()
 
 	for (i in 0...menuItems.length)
 	{
-		var item = new Alphabet(90, 320, menuItems[i], true);
+		var item = new Alphabet(90, 320, Language.getPhrase('pause_' + menuItems[i], menuItems[i]), true);
 		item.isMenuItem = true;
 		item.targetY = i;
 		grpMenuShit.add(item);

@@ -39,8 +39,32 @@ var movedBack:Bool = false;
 var selectedWeek:Bool = false;
 var stopspamming:Bool = false;
 
+var stickerSubState:StickerSubState;
+
+function new(?stickers:Dynamic)
+{
+	if (stickers != null)
+	{
+		stickerSubState = stickers;
+	}
+}
+
 function create()
 {
+	if (stickerSubState != null)
+	{
+		openSubState(stickerSubState);
+		Paths.clearStoredWithoutStickers();
+		stickerSubState.degenStickers();
+		FlxG.sound.playMusic(Paths.music('freakyMenu'));
+	}
+	else
+	{
+		Paths.clearStoredMemory();
+		FlxTransitionableState.skipNextTransOut = false;
+		openSubState(new CustomFadeTransition(0.5, true));
+	}
+
 	PlayState.isStoryMode = true;
 	WeekData.reloadWeekFiles(true);
 	if (curWeek >= WeekData.weeksList.length)
@@ -56,7 +80,7 @@ function create()
 		return;
 	}
 
-	scoreText = new FlxText(10, 10, 0, "SCORE: 49324858", 36);
+	scoreText = new FlxText(10, 10, 0, Language.getPhrase('week_score', 'WEEK SCORE: {1}', [FlxStringUtil.formatMoney(lerpScore, false)]), 36);
 	scoreText.setFormat(Paths.font("vcr.ttf"), 32);
 
 	txtWeekTitle = new FlxText(FlxG.width * 0.7, 10, 0, "", 32);
@@ -173,7 +197,7 @@ function create()
 	textBG.alpha = 0.6;
 	add(textBG);
 
-	var text:FlxText = new FlxText(textBG.x, textBG.y + 4, FlxG.width, "Press CTRL to open the Gameplay Changers Menu / Press RESET to Reset your Score.", 18);
+	var text:FlxText = new FlxText(textBG.x, textBG.y + 4, FlxG.width, Language.getPhrase("story_tip", "Press CTRL to open the Gameplay Changers Menu / Press RESET to Reset your Score."), 18);
 	text.setFormat(Paths.font("vcr.ttf"), 18, FlxColor.WHITE, FlxTextAlign.CENTER);
 	text.scrollFactor.set();
 	add(text);
@@ -194,7 +218,7 @@ function update(elapsed:Float)
 	if (Math.abs(intendedScore - lerpScore) < 10)
 		lerpScore = intendedScore;
 
-	scoreText.text = "WEEK SCORE:" + FlxStringUtil.formatMoney(lerpScore, false);
+	scoreText.text = Language.getPhrase('week_score', 'WEEK SCORE: {1}', [FlxStringUtil.formatMoney(lerpScore, false)]);
 
 	if (!movedBack && !selectedWeek)
 	{
@@ -345,7 +369,7 @@ function changeDifficulty(change:Int)
 
 	WeekData.setDirectoryFromWeek(loadedWeeks[curWeek]);
 
-	var diff:String = Difficulty.getString(curDifficulty);
+	var diff:String = Difficulty.getString(curDifficulty, false);
 	var newImage:FlxGraphic = Paths.image('menudifficulties/' + Paths.formatToSongPath(diff));
 
 	if (sprDifficulty.graphic != newImage)
@@ -382,7 +406,7 @@ function changeWeek(change:Int)
 	var leWeek:WeekData = loadedWeeks[curWeek];
 	WeekData.setDirectoryFromWeek(leWeek);
 
-	var leName:String = leWeek.storyName;
+	var leName:String = Language.getPhrase('storyname_${leWeek.fileName}', leWeek.storyName);
 	txtWeekTitle.text = leName.toUpperCase();
 	txtWeekTitle.x = FlxG.width - (txtWeekTitle.width + 10);
 

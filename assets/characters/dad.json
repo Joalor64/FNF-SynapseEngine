@@ -139,5 +139,6 @@
 	],
 	"sing_duration": 6.1,
 	"scale": 1,
-	"flixel_trail": false
+	"flixel_trail": false,
+	"orbit": true
 }

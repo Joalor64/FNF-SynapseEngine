@@ -64,9 +64,9 @@ class AchievementPopup extends Sprite
 		if (achievement != null)
 		{
 			if (achievement.name != null)
-				name = achievement.name;
+				name = Language.getPhrase('achievement_$achieve', achievement.name);
 			if (achievement.description != null)
-				desc = achievement.description;
+				desc = Language.getPhrase('description_$achieve', achievement.description);
 		}
 
 		var textX = sizeX + imgX + 15;

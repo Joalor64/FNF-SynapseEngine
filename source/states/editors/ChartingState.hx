@@ -55,6 +55,10 @@ class ChartingState extends MusicBeatState
 			"Sets GF head bopping speed,\nValue 1: 1 = Normal speed,\n2 = 1/2 speed, 4 = 1/4 speed etc.\nUsed on Fresh during the beatbox parts.\n\nWarning: Value must be integer!"
 		],
 		[
+			'Blammed Lights',
+			"Value 1: 0 = Turn off, 1 = Blue, 2 = Green,\n3 = Pink, 4 = Red, 5 = Orange, Anything else = Random.\n\nNote to modders: This effect is \nREEEEALLY overused, this isn't very creative bro smh.\n\nExclusive to Week 3 for now"
+		],
+		[
 			'Philly Glow',
 			"Exclusive to Week 3\nValue 1: 0/1/2 = OFF/ON/Reset Gradient\n \nNo, i won't add it to other weeks."
 		],
@@ -169,6 +173,10 @@ class ChartingState extends MusicBeatState
 	var leftIcon:HealthIcon;
 	var rightIcon:HealthIcon;
 
+	var lilStage:FlxSprite;
+	var lilBf:FlxSprite;
+	var lilOpp:FlxSprite;
+
 	var value1InputText:FlxUIInputText;
 	var value2InputText:FlxUIInputText;
 	var currentSongName:String;
@@ -233,6 +241,39 @@ class ChartingState extends MusicBeatState
 		bg.scrollFactor.set();
 		bg.color = 0xFF222222;
 		add(bg);
+
+		lilStage = new FlxSprite(32, 432).loadGraphic(Paths.image("editors/lilStage"));
+		lilStage.scrollFactor.set();
+		add(lilStage);
+
+		lilBf = new FlxSprite(32, 432).loadGraphic(Paths.image("editors/lilBf"), true, 300, 256);
+		lilBf.animation.add("idle", [0, 1], 12, true);
+		lilBf.animation.add("0", [3, 4, 5], 12, false);
+		lilBf.animation.add("1", [6, 7, 8], 12, false);
+		lilBf.animation.add("2", [9, 10, 11], 12, false);
+		lilBf.animation.add("3", [12, 13, 14], 12, false);
+		lilBf.animation.add("yeah", [17, 20, 23], 12, false);
+		lilBf.animation.play("idle");
+		lilBf.animation.finishCallback = function(name:String)
+		{
+			lilBf.animation.play(name, true, false, lilBf.animation.getByName(name).numFrames - 2);
+		}
+		lilBf.scrollFactor.set();
+		add(lilBf);
+
+		lilOpp = new FlxSprite(32, 432).loadGraphic(Paths.image("editors/lilOpp"), true, 300, 256);
+		lilOpp.animation.add("idle", [0, 1], 12, true);
+		lilOpp.animation.add("0", [3, 4, 5], 12, false);
+		lilOpp.animation.add("1", [6, 7, 8], 12, false);
+		lilOpp.animation.add("2", [9, 10, 11], 12, false);
+		lilOpp.animation.add("3", [12, 13, 14], 12, false);
+		lilOpp.animation.play("idle");
+		lilOpp.animation.finishCallback = function(name:String)
+		{
+			lilOpp.animation.play(name, true, false, lilOpp.animation.getByName(name).numFrames - 2);
+		}
+		lilOpp.scrollFactor.set();
+		add(lilOpp);
 
 		gridLayer = new FlxTypedGroup<FlxSprite>();
 		add(gridLayer);
@@ -1890,6 +1931,8 @@ class ChartingState extends MusicBeatState
 					FlxG.sound.music.pause();
 					if (vocals != null)
 						vocals.pause();
+					resetBuddies();
+					lilBf.color = lilOpp.color = FlxColor.WHITE;
 				}
 				else
 				{
@@ -1901,6 +1944,8 @@ class ChartingState extends MusicBeatState
 						vocals.play();
 					}
 					FlxG.sound.music.play();
+					resetBuddies();
+					lilBf.color = lilOpp.color = FlxColor.WHITE;
 				}
 			}
 
@@ -1945,6 +1990,8 @@ class ChartingState extends MusicBeatState
 
 			if (FlxG.keys.pressed.W || FlxG.keys.pressed.S)
 			{
+				resetBuddies();
+				lilBf.color = lilOpp.color = FlxColor.WHITE;
 				FlxG.sound.music.pause();
 
 				var holdingShift:Float = 1;
@@ -2225,6 +2272,16 @@ class ChartingState extends MusicBeatState
 						}
 
 						data = note.noteData;
+						if (note.mustPress)
+						{
+							lilBf.color = note.rgbShader.r;
+							lilBf.animation.play("" + (data % 4), true);
+						}
+						if (!note.mustPress)
+						{
+							lilOpp.color = note.rgbShader.r;
+							lilOpp.animation.play("" + (data % 4), true);
+						}
 						if (note.mustPress != _song.notes[curSec].mustHitSection)
 						{
 							data += 4;
@@ -2262,6 +2319,12 @@ class ChartingState extends MusicBeatState
 			vocals.pitch = playbackSpeed;
 
 		return playbackSpeed;
+	}
+
+	function resetBuddies()
+	{
+		lilBf.animation.play("idle");
+		lilOpp.animation.play("idle");
 	}
 
 	function updateZoom()
@@ -2646,6 +2709,8 @@ class ChartingState extends MusicBeatState
 	{
 		if (_song.notes[sec] != null)
 		{
+			resetBuddies();
+			lilBf.color = lilOpp.color = FlxColor.WHITE;
 			curSec = sec;
 			if (updateMusic)
 			{

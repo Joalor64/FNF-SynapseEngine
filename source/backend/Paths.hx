@@ -62,6 +62,28 @@ class Paths
 		gc(true);
 	}
 
+	public static function clearStoredWithoutStickers()
+	{
+		@:privateAccess
+		var cache = FlxG.bitmap._cache;
+		for (key => val in cache)
+		{
+			if (key.toLowerCase().contains("transitionswag") || key.contains("bg_graphic_") || key == "images/justBf.png")
+				Paths.currentTrackedAssets.set(key, val);
+		}
+		Paths.clearStoredMemory();
+		cacheStickersToContext();
+	}
+
+	public static function cacheStickersToContext()
+	{
+		for (key => val in Paths.currentTrackedAssets)
+		{
+			if (key.toLowerCase().contains("transitionswag") || key.contains("bg_graphic_") || key == "images/justBf.png")
+				Paths.localTrackedAssets.push(key);
+		}
+	}
+
 	public static var localTrackedAssets:Array<String> = [];
 
 	@:access(flixel.system.frontEnds.BitmapFrontEnd._cache)
@@ -147,6 +169,10 @@ class Paths
 				return modFolders(file);
 		#end
 
+		var embedFile:String = 'assets/embed/$file';
+		if (FileAssets.exists(embedFile))
+			return embedFile;
+
 		return getPreloadPath(file);
 	}
 
@@ -191,6 +217,39 @@ class Paths
 		return false;
 	}
 
+	inline static public function python(key:String)
+		return getPath('$key.py');
+
+	#if NDLL_ALLOWED
+	inline static public function ndll(key:String)
+	{
+		var ndllName:String = key.trim();
+		if (ndllName.endsWith('.ndll'))
+			ndllName = ndllName.substring(0, ndllName.length - '.ndll'.length);
+
+		var platformSuffixes:Array<String> = ['windows_x86', 'windows', 'linux', 'mac', 'browser', 'android', 'switch'];
+		for (platform in platformSuffixes)
+		{
+			if (ndllName.endsWith('-' + platform))
+			{
+				ndllName = ndllName.substring(0, ndllName.length - ('-' + platform).length);
+				break;
+			}
+		}
+
+		ndllName += '-' + NdllUtil.os + '.ndll';
+
+		#if MODS_ALLOWED
+		var file:String = modsNdll(ndllName);
+		if (FileSystem.exists(file))
+		{
+			return file;
+		}
+		#end
+		return 'assets/ndlls/$ndllName';
+	}
+	#end
+
 	inline static public function exists(asset:String)
 		return FileAssets.exists(asset);
 
@@ -225,7 +284,7 @@ class Paths
 
 	static public function image(key:String, ?allowGPU:Bool = true):FlxGraphic
 	{
-		key = 'images/$key.png';
+		key = Language.getFileTranslation('images/$key') + '.png';
 		var bitmap:BitmapData = null;
 		if (currentTrackedAssets.exists(key))
 		{
@@ -288,12 +347,14 @@ class Paths
 
 	inline static public function font(key:String)
 	{
+		var folderKey:String = Language.getFileTranslation('fonts/$key');
+
 		#if MODS_ALLOWED
-		if (FileSystem.exists(modsFont(key)))
-			return modsFont(key);
+		if (FileSystem.exists(modsFont(folderKey)))
+			return modsFont(folderKey);
 		#end
 
-		var path:String = getPath('fonts/$key');
+		var path:String = getPath(folderKey);
 
 		if (path.extension() == '')
 		{
@@ -351,6 +412,24 @@ class Paths
 		return getPackerAtlas(key);
 	}
 
+	static public function getMultiAtlas(keys:Array<String>):FlxAtlasFrames
+	{
+		var parentFrames:FlxAtlasFrames = Paths.getAtlas(keys[0].trim());
+		if (keys.length > 1)
+		{
+			var original:FlxAtlasFrames = parentFrames;
+			parentFrames = new FlxAtlasFrames(parentFrames.parent);
+			parentFrames.addAtlas(original, true);
+			for (i in 1...keys.length)
+			{
+				var extraFrames:FlxAtlasFrames = Paths.getAtlas(keys[i].trim());
+				if (extraFrames != null)
+					parentFrames.addAtlas(extraFrames, true);
+			}
+		}
+		return parentFrames;
+	}
+
 	inline static public function getSparrowAtlas(key:String, ?allowGPU:Bool = true):FlxAtlasFrames
 	{
 		var imageLoaded:FlxGraphic = image(key, allowGPU);
@@ -361,9 +440,9 @@ class Paths
 		if (FileSystem.exists(xml))
 			xmlExists = true;
 
-		return FlxAtlasFrames.fromSparrow(imageLoaded, (xmlExists ? File.getContent(xml) : getPath('images/$key.xml')));
+		return FlxAtlasFrames.fromSparrow(imageLoaded, (xmlExists ? File.getContent(xml) : getPath(Language.getFileTranslation('images/$key') + '.xml')));
 		#else
-		return FlxAtlasFrames.fromSparrow(imageLoaded, getPath('images/$key.xml'));
+		return FlxAtlasFrames.fromSparrow(imageLoaded, getPath(Language.getFileTranslation('images/$key') + '.xml'));
 		#end
 	}
 
@@ -377,9 +456,10 @@ class Paths
 		if (FileSystem.exists(txt))
 			txtExists = true;
 
-		return FlxAtlasFrames.fromSpriteSheetPacker(imageLoaded, (txtExists ? File.getContent(txt) : getPath('images/$key.txt')));
+		return FlxAtlasFrames.fromSpriteSheetPacker(imageLoaded,
+			(txtExists ? File.getContent(txt) : getPath(Language.getFileTranslation('images/$key') + '.txt')));
 		#else
-		return FlxAtlasFrames.fromSpriteSheetPacker(imageLoaded, getPath('images/$key.txt'));
+		return FlxAtlasFrames.fromSpriteSheetPacker(imageLoaded, getPath(Language.getFileTranslation('images/$key') + '.txt'));
 		#end
 	}
 
@@ -393,9 +473,10 @@ class Paths
 		if (FileSystem.exists(json))
 			jsonExists = true;
 
-		return FlxAtlasFrames.fromTexturePackerJson(imageLoaded, (jsonExists ? File.getContent(json) : getPath('images/$key.json')));
+		return FlxAtlasFrames.fromTexturePackerJson(imageLoaded,
+			(jsonExists ? File.getContent(json) : getPath(Language.getFileTranslation('images/$key') + '.json')));
 		#else
-		return FlxAtlasFrames.fromTexturePackerJson(imageLoaded, getPath('images/$key.json'));
+		return FlxAtlasFrames.fromTexturePackerJson(imageLoaded, getPath(Language.getFileTranslation('images/$key') + '.json'));
 		#end
 	}
 
@@ -475,7 +556,7 @@ class Paths
 
 	public static function returnSound(key:String, ?modsAllowed:Bool = true, ?beepOnNull:Bool = true)
 	{
-		var file:String = getPath('$key.ogg', modsAllowed);
+		var file:String = getPath(Language.getFileTranslation(key) + '.ogg', modsAllowed);
 
 		if (!currentTrackedSounds.exists(file))
 		{
@@ -524,6 +605,11 @@ class Paths
 
 	inline static public function modsImagesJson(key:String)
 		return modFolders('images/$key.json');
+
+	#if NDLL_ALLOWED
+	inline static public function modsNdll(key:String)
+		return modFolders('ndlls/' + key);
+	#end
 
 	static public function modFolders(key:String)
 	{

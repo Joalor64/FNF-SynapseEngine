@@ -132,5 +132,18 @@ class DiscordClient
 	{
 		trace('(Discord) Error ($errorCode: ${cast (message, String)})');
 	}
+
+	#if LUA_ALLOWED
+	public static function addLuaCallbacks(lua:State)
+	{
+		Lua_helper.add_callback(lua, "changeDiscordPresence", changePresence);
+		Lua_helper.add_callback(lua, "changeDiscordClientID", function(?newID:String)
+		{
+			if (newID == null)
+				newID = _defaultID;
+			clientID = newID;
+		});
+	}
+	#end
 }
 #end

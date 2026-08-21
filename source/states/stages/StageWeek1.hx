@@ -11,6 +11,9 @@ class StageWeek1 extends BaseStage
 
 	override function create()
 	{
+		if (songName == "tutorial")
+			StickerSubState.STICKER_PACK = "tutorial";
+
 		var bg:BGSprite = new BGSprite('stages/stage/stageback', -600, -200, 0.9, 0.9);
 		add(bg);
 

@@ -35,6 +35,7 @@ Each folder in your mod should be used as follows:
 * `fonts` - Font files. Kind of self-explanatory.
 * `images` - All image files. Can also be used to replace base game images.
 * `music` - Non-gameplay related music.
+* `ndlls` - NDLLs you can get functions from via `NdllUtil.getFunction()`. Must include "-[operating system]" in the filename for specific platforms (e.g. "example-windows.ndll").
 * `scripts` - Script files that run on every song.
 * `shaders` - Shader files. Make sure to use the proper format depending on the file (`.frag` for fragment shaders, and `.vert` for vertex shaders.)
 * `songs` - Songs for gameplay. Should include charts, audio, etc.
@@ -47,6 +48,7 @@ Each folder in your mod should be used as follows:
 * `stages` - Custom stage files. Should include `.lua`/`.hxs` and `.json` files.
 * `states` - HScript files for custom states.
 * `substates` - HScript files for custom substates.
+* `translations` - Localization files for custom languages.
 * `videos` - Custom videos used for cutscenes or other stuff.
 * `weeks` - Week files.
 

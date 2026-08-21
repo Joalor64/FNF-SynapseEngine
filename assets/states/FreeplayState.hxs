@@ -33,15 +33,39 @@ var vocals:FlxSound = null;
 
 var holdTime:Float = 0;
 
+var stickerSubState:StickerSubState;
+
+function new(?stickers:Dynamic)
+{
+	if (stickers != null)
+	{
+		stickerSubState = stickers;
+	}
+}
+
 function create()
 {
-	state.persistentUpdate = true;
-	PlayState.isStoryMode = false;
-	WeekData.reloadWeekFiles(false);
-
 	#if DISCORD_ALLOWED
 	DiscordClient.changePresence("Freeplay Menu", null);
 	#end
+
+	if (stickerSubState != null)
+	{
+		openSubState(stickerSubState);
+		Paths.clearStoredWithoutStickers();
+		stickerSubState.degenStickers();
+		FlxG.sound.playMusic(Paths.music('freakyMenu'));
+	}
+	else
+	{
+		Paths.clearStoredMemory();
+		FlxTransitionableState.skipNextTransOut = false;
+		openSubState(new CustomFadeTransition(0.5, true));
+	}
+
+	state.persistentUpdate = true;
+	PlayState.isStoryMode = false;
+	WeekData.reloadWeekFiles(false);
 
 	if (WeekData.weeksList.length < 1)
 	{
@@ -146,7 +170,7 @@ function create()
 	add(textBG);
 
 	var bottomText:FlxText = new FlxText(textBG.x, textBG.y + 4, FlxG.width,
-		"Press SPACE to listen to the Song. / Press CTRL to open the Gameplay Changers Menu. / Press RESET to Reset your Score and Accuracy.", 18);
+		Language.getPhrase("freeplay_tip", "Press SPACE to listen to the Song / Press CTRL to open the Gameplay Changers Menu / Press RESET to Reset your Score and Accuracy."), 18);
 	bottomText.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, FlxTextAlign.CENTER);
 	bottomText.scrollFactor.set();
 	add(bottomText);
@@ -173,7 +197,7 @@ function update(elapsed:Float)
 	while (ratingSplit[1].length < 2)
 		ratingSplit[1] += '0';
 
-	scoreText.text = 'PERSONAL BEST: ' + lerpScore + ' (' + ratingSplit.join('.') + '%)';
+	scoreText.text = Language.getPhrase('personal_best', 'PERSONAL BEST: {1} ({2}%)', [lerpScore, ratingSplit.join('.')]);
 	positionHighscore();
 
 	var shiftMult:Int = FlxG.keys.pressed.SHIFT ? 3 : 1;

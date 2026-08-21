@@ -1,5 +1,6 @@
 package backend;
 
+import flixel.system.FlxAssets;
 import flixel.system.ui.FlxSoundTray;
 
 class FunkinSoundTray extends FlxSoundTray
@@ -15,7 +16,7 @@ class FunkinSoundTray extends FlxSoundTray
 		super();
 		removeChildren();
 
-		var bg:Bitmap = new Bitmap(Assets.getBitmapData("assets/images/soundtray/volumebox.png"));
+		var bg:Bitmap = new Bitmap(FlxAssets.getBitmapData(Paths.getPath("images/soundtray/volumebox.png")));
 		bg.scaleX = graphicScale;
 		bg.scaleY = graphicScale;
 		bg.smoothing = true;
@@ -24,7 +25,7 @@ class FunkinSoundTray extends FlxSoundTray
 		y = -height;
 		visible = false;
 
-		var backingBar:Bitmap = new Bitmap(Assets.getBitmapData("assets/images/soundtray/bars_10.png"));
+		var backingBar:Bitmap = new Bitmap(FlxAssets.getBitmapData(Paths.getPath("images/soundtray/bars_10.png")));
 		backingBar.x = 9;
 		backingBar.y = 5;
 		backingBar.scaleX = graphicScale;
@@ -37,7 +38,7 @@ class FunkinSoundTray extends FlxSoundTray
 
 		for (i in 1...11)
 		{
-			var bar:Bitmap = new Bitmap(Assets.getBitmapData("assets/images/soundtray/bars_" + i + ".png"));
+			var bar:Bitmap = new Bitmap(FlxAssets.getBitmapData(Paths.getPath("images/soundtray/bars_" + i + ".png")));
 			bar.x = 9;
 			bar.y = 5;
 			bar.scaleX = graphicScale;
@@ -50,9 +51,9 @@ class FunkinSoundTray extends FlxSoundTray
 		screenCenter();
 		y = -height - 10;
 
-		volumeUpSound = 'assets/sounds/soundtray/Volup.ogg';
-		volumeDownSound = 'assets/sounds/soundtray/Voldown.ogg';
-		volumeMaxSound = 'assets/sounds/soundtray/VolMAX.ogg';
+		volumeUpSound = 'soundtray/Volup';
+		volumeDownSound = 'soundtray/Voldown';
+		volumeMaxSound = 'soundtray/VolMAX';
 	}
 
 	override public function update(ms:Float):Void
@@ -106,9 +107,9 @@ class FunkinSoundTray extends FlxSoundTray
 
 		if (!silent)
 		{
-			var sound:Null<String> = FlxG.sound.volume == 1 ? volumeMaxSound : (up ? volumeUpSound : volumeDownSound);
+			var sound:Null<FlxSoundAsset> = FlxG.sound.volume == 1 ? volumeMaxSound : (up ? volumeUpSound : volumeDownSound);
 			if (sound != null)
-				FlxG.sound.play(sound);
+				FlxG.sound.play(Paths.sound(sound));
 		}
 	}
 

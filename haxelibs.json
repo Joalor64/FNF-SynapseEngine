@@ -2,15 +2,18 @@
   "dependencies": [
     {
       "name": "lime",
-      "type": "haxelib"
+      "type": "haxelib",
+      "version": "8.2.2"
     },
     {
       "name": "openfl",
-      "type": "haxelib"
+      "type": "haxelib",
+      "version": "9.4.1"
     },
     {
       "name": "flixel",
-      "type": "haxelib"
+      "type": "haxelib",
+      "version": "6.1.2"
     },
     {
       "name": "flixel-addons",

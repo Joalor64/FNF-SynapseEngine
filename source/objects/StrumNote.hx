@@ -29,7 +29,7 @@ class StrumNote extends FlxSprite
 		return value;
 	}
 
-	public function new(x:Float, y:Float, leData:Int, player:Int)
+	public function new(x:Float, y:Float, leData:Int, player:Int, ?customSkin:String = null)
 	{
 		animation = new PsychAnimationController(this);
 
@@ -40,15 +40,18 @@ class StrumNote extends FlxSprite
 		this.noteData = leData;
 		super(x, y);
 
-		var skin:String = null;
-		if (PlayState.SONG != null && PlayState.SONG.arrowSkin != null && PlayState.SONG.arrowSkin.length > 1)
-			skin = PlayState.SONG.arrowSkin;
-		else
-			skin = Note.defaultNoteSkin;
+		var skin:String = customSkin;
+		if (skin == null || skin.length < 1)
+		{
+			if (PlayState.SONG != null && PlayState.SONG.arrowSkin != null && PlayState.SONG.arrowSkin.length > 1)
+				skin = PlayState.SONG.arrowSkin;
+			else
+				skin = Note.defaultNoteSkin;
+		}
 
-		var customSkin:String = skin + Note.getNoteSkinPostfix();
-		if (Paths.fileExists('images/$customSkin.png'))
-			skin = customSkin;
+		var customSkinWithPostfix:String = skin + Note.getNoteSkinPostfix();
+		if (Paths.fileExists('images/$customSkinWithPostfix.png'))
+			skin = customSkinWithPostfix;
 
 		texture = skin; // Load texture and anims
 		scrollFactor.set();

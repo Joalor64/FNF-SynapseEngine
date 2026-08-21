@@ -1,5 +1,6 @@
 package backend;
 
+import haxe.ds.StringMap;
 import flixel.addons.ui.FlxUIState;
 
 class MusicBeatState extends FlxUIState
@@ -21,6 +22,14 @@ class MusicBeatState extends FlxUIState
 		return Controls.instance;
 
 	public static var camBeat:FlxCamera;
+
+	public var variables:StringMap<Dynamic> = new StringMap<Dynamic>();
+
+	public static function getVariables():StringMap<Dynamic>
+		return getState().variables;
+
+	public static function setVariable(key:String, value:Dynamic):Void
+		getState().variables.set(key, value);
 
 	override function create()
 	{

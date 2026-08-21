@@ -10,19 +10,37 @@ typedef CharacterFile =
 	var sing_duration:Float;
 	var healthicon:String;
 
-	var trail_length:Null<Int>;
-	var trail_delay:Null<Int>;
-	var trail_alpha:Null<Float>;
-	var trail_diff:Null<Float>;
-
-	var flixel_trail:Bool;
-
 	var position:Array<Float>;
 	var camera_position:Array<Float>;
 
 	var flip_x:Bool;
 	var no_antialiasing:Bool;
 	var healthbar_colors:Array<Int>;
+
+	@:optional var trail_length:Null<Int>;
+	@:optional var trail_delay:Null<Int>;
+	@:optional var trail_alpha:Null<Float>;
+	@:optional var trail_diff:Null<Float>;
+
+	@:optional var flixel_trail:Bool;
+
+	@:optional var noteskin:String;
+
+	@:optional var health_drain:Bool;
+	@:optional var drain_amount:Float;
+	@:optional var drain_floor:Float;
+
+	@:optional var shake_screen:Bool;
+	@:optional var shake_intensity:Float;
+	@:optional var shake_duration:Float;
+
+	@:optional var scare_bf:Bool;
+	@:optional var scare_gf:Bool;
+
+	@:optional var floating:Bool;
+	@:optional var floating_magnitude:Float;
+
+	@:optional var orbit:Bool;
 }
 
 typedef AnimArray =
@@ -76,6 +94,24 @@ class Character extends FlxSprite
 
 	public var flixelTrail:Bool = false;
 
+	public var healthDrain:Bool = false;
+	public var drainAmount:Float = 0;
+	public var drainFloor:Float = 0;
+
+	public var shakeScreen:Bool = false;
+	public var shakeIntensity:Float = 0;
+	public var shakeDuration:Float = 0;
+
+	public var scareBF:Bool = false;
+	public var scareGF:Bool = false;
+
+	public var noteskin:String;
+
+	public var floating:Bool = false;
+	public var floatingMagnitude:Float = 0.6;
+
+	public var orbit:Bool = false;
+
 	public static inline final DEFAULT_CHARACTER:String = 'bf'; // In case a character is missing, it will use BF on its place
 
 	public function new(x:Float, y:Float, ?character:String = 'bf', ?isPlayer:Bool = false)
@@ -112,116 +148,17 @@ class Character extends FlxSprite
 						'.json'); // If a character couldn't be found, change him to BF just to prevent a crash
 				}
 
-				#if MODS_ALLOWED
-				var rawJson = File.getContent(path);
-				#else
-				var rawJson = Assets.getText(path);
-				#end
-
-				var json:CharacterFile = cast Json.parse(rawJson);
-				var spriteType = "sparrow";
-				// sparrow
-				// packer
-				// texture
-				#if MODS_ALLOWED
-				var modTxtToFind:String = Paths.modsTxt(json.image);
-				var txtToFind:String = Paths.getPath('images/' + json.image + '.txt');
-
-				if (FileSystem.exists(modTxtToFind) || FileSystem.exists(txtToFind) || Assets.exists(txtToFind))
-				#else
-				if (Assets.exists(Paths.getPath('images/' + json.image + '.txt')))
-				#end
+				try
 				{
-					spriteType = "packer";
+					#if MODS_ALLOWED
+					loadCharacterFile(cast Json.parse(File.getContent(path)));
+					#else
+					loadCharacterFile(cast Json.parse(Assets.getText(path)));
+					#end
 				}
-
-				#if MODS_ALLOWED
-				var modAnimToFind:String = Paths.modFolders('images/' + json.image + '/Animation.json');
-				var animToFind:String = Paths.getPath('images/' + json.image + '/Animation.json');
-
-				if (FileSystem.exists(modAnimToFind) || FileSystem.exists(animToFind) || Assets.exists(animToFind))
-				#else
-				if (Assets.exists(Paths.getPath('images/' + json.image + '/Animation.json')))
-				#end
+				catch (e:Dynamic)
 				{
-					spriteType = "texture";
-				}
-
-				switch (spriteType)
-				{
-					case "packer":
-						frames = Paths.getPackerAtlas(json.image);
-
-					case "sparrow":
-						frames = Paths.getSparrowAtlas(json.image);
-
-					case "texture":
-						frames = AtlasFrameMaker.construct(json.image);
-				}
-				imageFile = json.image;
-
-				if (json.scale != 1)
-				{
-					jsonScale = json.scale;
-					setGraphicSize(Std.int(width * jsonScale));
-					updateHitbox();
-				}
-
-				positionArray = json.position;
-				cameraPosition = json.camera_position;
-
-				healthIcon = json.healthicon;
-				singDuration = json.sing_duration;
-				flipX = !!json.flip_x;
-
-				trailLength = json.trail_length;
-				trailDelay = json.trail_delay;
-				trailAlpha = json.trail_alpha;
-				trailDiff = json.trail_diff;
-
-				flixelTrail = json.flixel_trail;
-
-				if (json.no_antialiasing)
-				{
-					antialiasing = false;
-					noAntialiasing = true;
-				}
-
-				if (json.healthbar_colors != null && json.healthbar_colors.length > 2)
-					healthColorArray = json.healthbar_colors;
-
-				antialiasing = !noAntialiasing;
-				if (!ClientPrefs.data.globalAntialiasing)
-					antialiasing = false;
-
-				animationsArray = json.animations;
-				if (animationsArray != null && animationsArray.length > 0)
-				{
-					for (anim in animationsArray)
-					{
-						var animAnim:String = '' + anim.anim;
-						var animName:String = '' + anim.name;
-						var animFps:Int = anim.fps;
-						var animLoop:Bool = !!anim.loop; // Bruh
-						var animIndices:Array<Int> = anim.indices;
-						if (animIndices != null && animIndices.length > 0)
-						{
-							animation.addByIndices(animAnim, animName, animIndices, "", animFps, animLoop);
-						}
-						else
-						{
-							animation.addByPrefix(animAnim, animName, animFps, animLoop);
-						}
-
-						if (anim.offsets != null && anim.offsets.length > 1)
-						{
-							addOffset(anim.anim, anim.offsets[0], anim.offsets[1]);
-						}
-					}
-				}
-				else
-				{
-					quickAnimAdd('idle', 'BF idle dance');
+					trace('Error loading character file of "$character": $e');
 				}
 		}
 		originalFlipX = flipX;
@@ -242,11 +179,149 @@ class Character extends FlxSprite
 				skipDance = true;
 				loadMappedAnims();
 				playAnim("shoot1");
+			case 'pico-blazin', 'darnell-blazin':
+				skipDance = true;
 		}
 	}
 
+	public function loadCharacterFile(json:CharacterFile)
+	{
+		isAnimateAtlas = false;
+
+		#if flxanimate
+		if (Paths.fileExists('images/' + json.image + '/Animation.json'))
+			isAnimateAtlas = true;
+		#end
+
+		scale.set(1, 1);
+		updateHitbox();
+
+		if (!isAnimateAtlas)
+		{
+			frames = Paths.getMultiAtlas(json.image.split(','));
+		}
+		#if flxanimate
+		else
+		{
+			atlas = new FlxAnimate();
+			atlas.showPivot = false;
+			try
+			{
+				Paths.loadAnimateAtlas(atlas, json.image);
+			}
+			catch (e:haxe.Exception)
+			{
+				FlxG.log.warn('Could not load atlas ${json.image}: $e');
+				trace(e.stack);
+			}
+		}
+		#end
+
+		imageFile = json.image;
+		noteskin = json.noteskin;
+
+		if (json.scale != 1)
+		{
+			jsonScale = json.scale;
+			setGraphicSize(Std.int(width * jsonScale));
+			updateHitbox();
+		}
+
+		positionArray = json.position;
+		cameraPosition = json.camera_position;
+
+		healthIcon = json.healthicon;
+		singDuration = json.sing_duration;
+		flipX = !!json.flip_x;
+
+		trailLength = json.trail_length;
+		trailDelay = json.trail_delay;
+		trailAlpha = json.trail_alpha;
+		trailDiff = json.trail_diff;
+
+		flixelTrail = json.flixel_trail;
+
+		if (json.no_antialiasing)
+		{
+			antialiasing = false;
+			noAntialiasing = true;
+		}
+
+		healthDrain = json.health_drain;
+		shakeScreen = json.shake_screen;
+
+		drainAmount = json.drain_amount;
+		drainFloor = json.drain_floor;
+
+		shakeIntensity = (!Math.isNaN(json.shake_intensity) ? json.shake_intensity : 0.0075);
+		shakeDuration = (!Math.isNaN(json.shake_duration) ? json.shake_duration : 0.1);
+
+		scareBF = json.scare_bf;
+		scareGF = json.scare_gf;
+
+		floating = json.floating;
+		floatingMagnitude = json.floating_magnitude;
+
+		if (json.healthbar_colors != null && json.healthbar_colors.length > 2)
+			healthColorArray = json.healthbar_colors;
+
+		antialiasing = !noAntialiasing;
+		if (!ClientPrefs.data.globalAntialiasing)
+			antialiasing = false;
+
+		animationsArray = json.animations;
+		if (animationsArray != null && animationsArray.length > 0)
+		{
+			for (anim in animationsArray)
+			{
+				var animAnim:String = '' + anim.anim;
+				var animName:String = '' + anim.name;
+				var animFps:Int = anim.fps;
+				var animLoop:Bool = !!anim.loop; // Bruh
+				var animIndices:Array<Int> = anim.indices;
+
+				if (!isAnimateAtlas)
+				{
+					if (animIndices != null && animIndices.length > 0)
+						animation.addByIndices(animAnim, animName, animIndices, "", animFps, animLoop);
+					else
+						animation.addByPrefix(animAnim, animName, animFps, animLoop);
+				}
+				#if flxanimate
+				else
+				{
+					if (animIndices != null && animIndices.length > 0)
+						atlas.anim.addBySymbolIndices(animAnim, animName, animIndices, animFps, animLoop);
+					else
+						atlas.anim.addBySymbol(animAnim, animName, animFps, animLoop);
+				}
+				#end
+
+				if (anim.offsets != null && anim.offsets.length > 1)
+				{
+					addOffset(anim.anim, anim.offsets[0], anim.offsets[1]);
+				}
+			}
+			#if flxanimate
+			if (isAnimateAtlas)
+				copyAtlasValues();
+			#end
+		}
+	}
+
+	var anim:String;
+
 	override function update(elapsed:Float)
 	{
+		if (isAnimateAtlas)
+			atlas.update(elapsed);
+
+		if (debugMode || (!isAnimateAtlas && animation.curAnim == null) || (isAnimateAtlas && atlas.anim.curSymbol == null))
+		{
+			super.update(elapsed);
+			return;
+		}
+
 		if (!debugMode && animation.curAnim != null)
 		{
 			if (heyTimer > 0)
@@ -306,6 +381,7 @@ class Character extends FlxSprite
 			if (animation.curAnim.name.endsWith('miss') && animation.curAnim.finished && !debugMode)
 				playAnim('idle', true, false, 10);
 		}
+
 		super.update(elapsed);
 	}
 
@@ -334,14 +410,26 @@ class Character extends FlxSprite
 		}
 	}
 
+	var daOffset = null;
+
 	public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0):Void
 	{
 		specialAnim = false;
-		animation.play(AnimName, Force, Reversed, Frame);
-
-		var daOffset = animOffsets.get(AnimName);
-		if (animOffsets.exists(AnimName))
+		if (!isAnimateAtlas)
 		{
+			animation.play(AnimName, Force, Reversed, Frame);
+		}
+		else
+		{
+			atlas.anim.play(AnimName, Force, Reversed, Frame);
+			atlas.update(0);
+		}
+
+		_lastPlayedAnimation = AnimName;
+
+		if (hasAnimation(AnimName))
+		{
+			daOffset = animOffsets.get(AnimName);
 			offset.set(daOffset[0], daOffset[1]);
 		}
 		else
@@ -413,12 +501,112 @@ class Character extends FlxSprite
 		animation.addByPrefix(name, anim, 24, false);
 
 	inline public function isAnimationNull():Bool
-		return animation.curAnim == null;
+		return !isAnimateAtlas ? (animation.curAnim == null) : (atlas.anim.curSymbol == null);
+
+	var _lastPlayedAnimation:String;
+
+	inline public function getAnimationName():String
+	{
+		return _lastPlayedAnimation;
+	}
 
 	public function isAnimationFinished():Bool
 	{
 		if (isAnimationNull())
 			return false;
-		return animation.curAnim.finished;
+		return !isAnimateAtlas ? animation.curAnim.finished : atlas.anim.finished;
 	}
+
+	public function finishAnimation():Void
+	{
+		if (isAnimationNull())
+			return;
+
+		if (!isAnimateAtlas)
+			animation.curAnim.finish();
+		else
+			atlas.anim.curFrame = atlas.anim.length - 1;
+	}
+
+	public function hasAnimation(anim:String):Bool
+	{
+		return animOffsets.exists(anim);
+	}
+
+	public var animPaused(get, set):Bool;
+
+	private function get_animPaused():Bool
+	{
+		if (isAnimationNull())
+			return false;
+		return !isAnimateAtlas ? animation.curAnim.paused : atlas.anim.isPlaying;
+	}
+
+	private function set_animPaused(value:Bool):Bool
+	{
+		if (isAnimationNull())
+			return value;
+		if (!isAnimateAtlas)
+			animation.curAnim.paused = value;
+		else
+		{
+			if (value)
+				atlas.anim.pause();
+			else
+				atlas.anim.resume();
+		}
+
+		return value;
+	}
+
+	public var isAnimateAtlas:Bool = false;
+	#if flxanimate
+	public var atlas:FlxAnimate;
+
+	public override function draw()
+	{
+		if (isAnimateAtlas)
+		{
+			copyAtlasValues();
+			atlas.draw();
+			return;
+		}
+		super.draw();
+	}
+
+	public function copyAtlasValues()
+	{
+		@:privateAccess
+		{
+			atlas.cameras = cameras;
+			atlas.scrollFactor = scrollFactor;
+			atlas.scale = scale;
+			atlas.offset = offset;
+			atlas.origin = origin;
+			atlas.x = x;
+			atlas.y = y;
+			atlas.angle = angle;
+			atlas.alpha = alpha;
+			atlas.visible = visible;
+			atlas.flipX = flipX;
+			atlas.flipY = flipY;
+			atlas.shader = shader;
+			atlas.antialiasing = antialiasing;
+			atlas.colorTransform = colorTransform;
+			atlas.color = color;
+		}
+	}
+
+	public override function destroy()
+	{
+		super.destroy();
+		destroyAtlas();
+	}
+
+	public function destroyAtlas()
+	{
+		if (atlas != null)
+			atlas = FlxDestroyUtil.destroy(atlas);
+	}
+	#end
 }

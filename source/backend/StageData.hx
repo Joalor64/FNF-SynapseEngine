@@ -2,6 +2,7 @@ package backend;
 
 import backend.Song;
 import scripts.FunkinLua;
+import psychlua.ModchartSprite;
 
 typedef StageFile =
 {

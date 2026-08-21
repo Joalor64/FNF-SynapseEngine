@@ -31,10 +31,12 @@ class Option
 
 	public var callback:Void->Void = null;
 
-	public function new(name:String, description:String = '', variable:String, type:String = 'bool', ?options:Array<String> = null)
+	public function new(name:String, description:String = '', variable:String, type:String = 'bool', ?options:Array<String> = null, ?translation:String = null)
 	{
-		this.name = name;
-		this.description = description;
+		_name = name;
+		_translationKey = translation != null ? translation : _name;
+		this.name = Language.getPhrase('setting_$_translationKey', name);
+		this.description = Language.getPhrase('description_$_translationKey', description);
 		this.variable = variable;
 		this.type = type;
 		if (variable != null && Reflect.hasField(ClientPrefs.defaultData, variable))
@@ -134,20 +136,20 @@ class Option
 		this.child = child;
 	}
 
+	var _name:String = null;
+	var _text:String = null;
+	var _translationKey:String = null;
+
 	private function get_text()
-	{
-		if (child != null)
-		{
-			return child.text;
-		}
-		return null;
-	}
+		return _text;
 
 	private function set_text(newValue:String = '')
 	{
 		if (child != null)
 		{
-			child.text = newValue;
+			_text = newValue;
+			child.text = Language.getPhrase('setting_$_translationKey-${getValue()}', _text);
+			return _text;
 		}
 		return null;
 	}

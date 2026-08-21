@@ -223,16 +223,7 @@ class Main extends Sprite
 		DiscordClient.shutdown();
 		#end
 
-		Lib.application.window.alert('Uncaught Error: \n'
-			+ msg
-			+
-			'\n\nPlease report this error to the GitHub page: https://github.com/Joalor64/FNF-SynapseEngine/issues\n\n> Crash Handler written by: sqirra-rng',
-			'Error!');
-		Sys.println('Uncaught Error: \n'
-			+ msg
-			+
-			'\n\nPlease report this error to the GitHub page: https://github.com/Joalor64/FNF-SynapseEngine/issues\n\n> Crash Handler written by: sqirra-rng');
-		Sys.exit(1);
+		FlxG.switchState(new CrashState(msg));
 	}
 
 	function onFatalCrash(msg:String):Void

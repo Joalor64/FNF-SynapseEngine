@@ -8,7 +8,7 @@
                     "icon": "joalor64",
                     "link": "https://joalor64.github.io/",
                     "description": "Creator/Main Programmer of Synapse Engine",
-                    "color": "00D2E6"
+                    "color": "8B4EE0"
                 }
             ]
         },
@@ -85,7 +85,7 @@
                     "name": "Keoiki",
                     "icon": "keoiki",
                     "link": "https://x.com/Keoiki_",
-                    "description": "Note Splash Animations",
+                    "description": "Note Splash Animations and Latin Alphabet",
                     "color": "D2D2D2"
                 },
                 {
@@ -96,11 +96,11 @@
                     "color": "B957ED"
                 },
                 {
-                    "name": "Smokey",
-                    "icon": "smokey",
-                    "link": "https://x.com/Smokey_5_",
-                    "description": "Sprite Atlas Support",
-                    "color": "483D92"
+                    "name": "CheemsAndFriends",
+                    "icon": "cheems",
+                    "link": "https://x.com/CheemsnFriendos",
+                    "description": "Creator of FlxAnimate",
+                    "color": "E1E1E1"
                 }
             ]
         },

@@ -87,6 +87,7 @@ import backend.Controls;
 	public var shitWindow:Int = 205;
 	public var safeFrames:Float = 10;
 	public var discordRPC:Bool = true;
+	public var language:String = 'en-US';
 }
 
 class ClientPrefs
