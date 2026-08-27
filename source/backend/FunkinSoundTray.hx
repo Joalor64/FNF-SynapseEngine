@@ -16,7 +16,7 @@ class FunkinSoundTray extends FlxSoundTray
 		super();
 		removeChildren();
 
-		var bg:Bitmap = new Bitmap(FlxAssets.getBitmapData(Paths.getPath("images/soundtray/volumebox.png")));
+		var bg:Bitmap = new Bitmap(FlxAssets.getBitmapData(Paths.getPath("images/soundtray/volumebox.png", "embed")));
 		bg.scaleX = graphicScale;
 		bg.scaleY = graphicScale;
 		bg.smoothing = true;
@@ -25,7 +25,7 @@ class FunkinSoundTray extends FlxSoundTray
 		y = -height;
 		visible = false;
 
-		var backingBar:Bitmap = new Bitmap(FlxAssets.getBitmapData(Paths.getPath("images/soundtray/bars_10.png")));
+		var backingBar:Bitmap = new Bitmap(FlxAssets.getBitmapData(Paths.getPath("images/soundtray/bars_10.png", "embed")));
 		backingBar.x = 9;
 		backingBar.y = 5;
 		backingBar.scaleX = graphicScale;
@@ -38,7 +38,7 @@ class FunkinSoundTray extends FlxSoundTray
 
 		for (i in 1...11)
 		{
-			var bar:Bitmap = new Bitmap(FlxAssets.getBitmapData(Paths.getPath("images/soundtray/bars_" + i + ".png")));
+			var bar:Bitmap = new Bitmap(FlxAssets.getBitmapData(Paths.getPath("images/soundtray/bars_" + i + ".png", "embed")));
 			bar.x = 9;
 			bar.y = 5;
 			bar.scaleX = graphicScale;
@@ -109,7 +109,7 @@ class FunkinSoundTray extends FlxSoundTray
 		{
 			var sound:Null<FlxSoundAsset> = FlxG.sound.volume == 1 ? volumeMaxSound : (up ? volumeUpSound : volumeDownSound);
 			if (sound != null)
-				FlxG.sound.play(Paths.sound(sound));
+				FlxG.sound.play(Paths.returnSound("sounds/" + sound, "embed"));
 		}
 	}
 

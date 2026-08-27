@@ -1,0 +1,5 @@
+scripts in this folder will run on every song!
+but you probably already knew that
+
+anyways, you can either use lua scripts OR haxe scripts!
+the following extensions for haxe scripts are allowed: [.hx, .hxc, .hxs, .hscript]

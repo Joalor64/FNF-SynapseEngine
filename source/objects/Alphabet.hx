@@ -1,5 +1,9 @@
 package objects;
 
+import backend.utils.AlphabetUtil;
+import backend.utils.AlphabetUtil.ParsedText;
+import backend.utils.AlphabetUtil.TagType;
+
 enum Alignment
 {
 	LEFT;
@@ -188,21 +192,40 @@ class Alphabet extends FlxSpriteGroup
 
 	private function createLetters(newText:String)
 	{
+		var parsed:ParsedText = AlphabetUtil.parse(newText);
 		var consecutiveSpaces:Int = 0;
 
 		var xPos:Float = 0;
 		var rowData:Array<Float> = [];
 		rows = 0;
-		for (character in newText.split(''))
+		for (charIndex in 0...parsed.chars.length)
 		{
+			var character:String = parsed.chars[charIndex];
 			if (character != '\n')
 			{
 				var spaceChar:Bool = (character == " " || (bold && character == "_"));
 				if (spaceChar)
 					consecutiveSpaces++;
 
-				var isAlphabet:Bool = AlphaCharacter.isTypeAlphabet(character.toLowerCase());
-				if (AlphaCharacter.allLetters.exists(character.toLowerCase()) && (!bold || !spaceChar))
+				var letterBold:Bool = bold;
+				var activeTags:Array<TagType> = [];
+				for (tag in parsed.tags)
+				{
+					if (charIndex >= tag.startIndex && charIndex < tag.endIndex)
+					{
+						activeTags.push(tag.type);
+						switch (tag.type)
+						{
+							case BoldTag:
+								letterBold = true;
+							case PlainTag:
+								letterBold = false;
+							default:
+						}
+					}
+				}
+
+				if (AlphaCharacter.allLetters.exists(character.toLowerCase()) && (!letterBold || !spaceChar))
 				{
 					if (consecutiveSpaces > 0)
 					{
@@ -217,11 +240,13 @@ class Alphabet extends FlxSpriteGroup
 					consecutiveSpaces = 0;
 
 					var letter:AlphaCharacter = cast recycle(AlphaCharacter, true);
+					letter.tags = activeTags;
+					letter.letterIndex = charIndex;
 					letter.scale.x = scaleX;
 					letter.scale.y = scaleY;
 					letter.rowWidth = 0;
 
-					letter.setupAlphaCharacter(xPos, rows * Y_PER_ROW * scale.y, character, bold);
+					letter.setupAlphaCharacter(xPos, rows * Y_PER_ROW * scale.y, character, letterBold);
 					@:privateAccess letter.parent = this;
 
 					letter.row = rows;
@@ -331,12 +356,48 @@ class AlphaCharacter extends FlxSprite
 	public var row:Int = 0;
 	public var rowWidth:Float = 0;
 	public var character:String = '?';
+	public var letterIndex:Int = 0;
+	public var tags:Array<TagType> = [];
+
+	private var effectTime:Float = 0;
+	private var effectOffsetX:Float = 0;
+	private var effectOffsetY:Float = 0;
 
 	public function new()
 	{
 		super(x, y);
 		image = 'alphabet';
 		antialiasing = ClientPrefs.data.globalAntialiasing;
+	}
+
+	override function update(elapsed:Float)
+	{
+		effectTime += elapsed;
+		offset.x -= effectOffsetX;
+		offset.y -= effectOffsetY;
+		effectOffsetX = 0;
+		effectOffsetY = 0;
+
+		for (tag in tags)
+		{
+			switch (tag)
+			{
+				case ColorTag(value):
+					color = value;
+				case RainbowTag(speed, tagOffset, saturation, brightness):
+					color = FlxColor.fromHSB((effectTime * speed * 60 + tagOffset) % 360, saturation, brightness);
+				case ShakeTag(speed, intensity):
+					effectOffsetX += Math.sin(effectTime * speed * 31 + row) * intensity;
+					effectOffsetY += Math.cos(effectTime * speed * 37 + row) * intensity;
+				case WaveTag(speed, intensity, delay):
+					effectOffsetY += Math.sin(effectTime * speed * 6 + letterIndex * delay) * intensity;
+				default:
+			}
+		}
+
+		offset.x += effectOffsetX;
+		offset.y += effectOffsetY;
+		super.update(elapsed);
 	}
 
 	public var curLetter:Letter = null;

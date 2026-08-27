@@ -1,0 +1,12 @@
+import backend.Highscore;
+
+function listSongNames()
+{
+	if (leWeek.fileName == scriptId && (!Highscore.weekCompleted.exists(scriptId) || !Highscore.weekCompleted.get(scriptId)))
+	{
+		var tracklist:Array<String> = txtTracklist.text.split('\n');
+		tracklist.pop();
+		tracklist.pop();
+		txtTracklist.text = tracklist.join('\n') + '\n';
+	}
+}

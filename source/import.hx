@@ -50,7 +50,7 @@ import backend.DiscordClient;
 #end
 
 import backend.*;
-import backend.CoolUtil;
+import backend.utils.CoolUtil;
 import backend.Conductor;
 import backend.Conductor.BPMChangeEvent;
 import backend.BaseStage.Countdown;
@@ -90,7 +90,7 @@ import flxanimate.PsychFlxAnimate as FlxAnimate;
 #end
 
 using StringTools;
-using backend.CoolUtil;
+using backend.utils.CoolUtil;
 #end
 
 using StringTools;

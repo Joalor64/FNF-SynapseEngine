@@ -6,10 +6,28 @@ import backend.BaseStage;
 import cutscenes.CutsceneHandler;
 import options.OptionsSubState;
 import options.*;
+import shaders.*;
 import flixel.math.FlxPoint;
 #if VIDEOS_ALLOWED
 import hxvlc.flixel.FlxVideoSprite;
 #end
+import haxe.Exception;
+
+enum HScriptErrorType
+{
+	Parse;
+	Runtime;
+	MissingFunction;
+	Host;
+}
+
+typedef HScriptError =
+{
+	var type:HScriptErrorType;
+	var message:String;
+	var source:String;
+	var line:Int;
+}
 
 class FunkinHScript extends FlxBasic
 {
@@ -32,6 +50,7 @@ class FunkinHScript extends FlxBasic
 
 	public var script:RuleScript = null;
 	public var scriptPath:String = null;
+	public var lastError:Null<HScriptError> = null;
 
 	public function new(?file:String, ?execute:Bool = true)
 	{
@@ -39,6 +58,10 @@ class FunkinHScript extends FlxBasic
 
 		scriptPath = file;
 		script = new RuleScript(interp, parser);
+		script.errorHandler = function(error:haxe.Exception)
+		{
+			reportError(makeError(HScriptErrorType.Runtime, error));
+		};
 
 		if (file != null)
 			script.scriptName = ~/\.(hx|hxs|hxc|hscript)$/.replace(file.split('/').pop(), '');
@@ -77,6 +100,7 @@ class FunkinHScript extends FlxBasic
 		setVariable('DateTools', DateTools);
 		setVariable('Dynamic', Dynamic);
 		setVariable('EReg', EReg);
+		setVariable('Exception', Exception);
 		#if sys
 		setVariable('File', File);
 		setVariable('FileSystem', FileSystem);
@@ -326,6 +350,8 @@ class FunkinHScript extends FlxBasic
 		setVariable('AttachedText', AttachedText);
 		setVariable('BGSprite', BGSprite);
 		setVariable('ClientPrefs', ClientPrefs);
+		setVariable('Colorblind', Colorblind);
+		setVariable('ColorSwap', ColorSwap);
 		setVariable('Conductor', Conductor);
 		setVariable('Constants', Constants);
 		setVariable('CoolUtil', CoolUtil);
@@ -341,6 +367,9 @@ class FunkinHScript extends FlxBasic
 		setVariable('Difficulty', Difficulty);
 		#if LUA_ALLOWED
 		setVariable('FunkinLua', FunkinLua);
+		#end
+		#if PYTHON_ALLOWED
+		setVariable('FunkinPython', FunkinPython);
 		#end
 		#if TRANSLATIONS_ALLOWED
 		setVariable('Language', Language);
@@ -372,6 +401,8 @@ class FunkinHScript extends FlxBasic
 		setVariable('GameplayChangersSubstate', GameplayChangersSubstate);
 		setVariable('ResetAchievementSubState', ResetAchievementSubState);
 		setVariable('ResetScoreSubState', ResetScoreSubState);
+
+		setVariable('FreeplayErrorSubState', FreeplayErrorSubState);
 
 		setVariable('NotesSubState', NotesSubState);
 		setVariable('ControlsSubState', ControlsSubState);
@@ -439,24 +470,20 @@ class FunkinHScript extends FlxBasic
 
 	public function execute(file:String, ?executeCreate:Bool = true):Void
 	{
+		lastError = null;
 		try
 		{
 			var content = File.getContent(file);
-			var result = script.tryExecute(content);
+			var result = script.tryExecute(content, handleScriptError);
+
+			if (lastError != null)
+				return;
 
 			if (result == null)
 			{
 				trace('Script returned null: $file');
 				return;
 			}
-
-			#if (rulescript >= "0.5.0")
-			if (result.error != null)
-			{
-				trace('Script error in $file: ${result.error}');
-				return;
-			}
-			#end
 
 			trace('Script Loaded Successfully: $file');
 
@@ -465,21 +492,71 @@ class FunkinHScript extends FlxBasic
 		}
 		catch (e:Dynamic)
 		{
-			Lib.application.window.alert(Std.string(e), 'Fatal error executing script $file');
+			reportError(makeError(HScriptErrorType.Host, e, file));
 		}
 	}
 
 	public function executeStr(code:String):Dynamic
 	{
+		lastError = null;
 		try
 		{
-			return script.tryExecute(code);
+			return script.tryExecute(code, handleScriptError);
 		}
 		catch (e:Dynamic)
 		{
-			Lib.application.window.alert(Std.string(e), 'Error executing string');
+			reportError(makeError(HScriptErrorType.Host, e));
 			return null;
 		}
+	}
+
+	function handleScriptError(error:haxe.Exception):Dynamic
+	{
+		reportError(makeError(HScriptErrorType.Parse, error));
+		return null;
+	}
+
+	function makeError(type:HScriptErrorType, error:Dynamic, ?source:String):HScriptError
+	{
+		var position = interp == null ? null : interp.posInfos();
+		var message = Std.string(error);
+		var line = position == null ? 0 : position.lineNumber;
+		if (type == HScriptErrorType.Parse && Std.isOfType(error, hscript.Expr.Error))
+		{
+			var parserError:hscript.Expr.Error = cast error;
+			message = parserError.toString();
+			line = parserError.line;
+			source = parserError.origin;
+		}
+
+		return {
+			type: type,
+			message: message,
+			source: source != null ? source : (position == null ? scriptPath : position.fileName),
+			line: line
+		};
+	}
+
+	public dynamic function onError(error:HScriptError):Void
+	{
+		var title = switch (error.type)
+		{
+			case Parse: 'HScript parse error';
+			case Runtime: 'HScript runtime error';
+			case MissingFunction: 'HScript callback error';
+			case Host: 'HScript host error';
+		};
+		var location = error.source == null ? '' : ' (${error.source}:${error.line})';
+		var message = '${error.message}$location';
+		lastError = error;
+		trace('$title: $message');
+		Lib.application.window.alert(message, title);
+	}
+
+	function reportError(error:HScriptError):Void
+	{
+		lastError = error;
+		onError(error);
 	}
 
 	public function setVariable(name:String, val:Dynamic):Void
@@ -543,6 +620,7 @@ class FunkinHScript extends FlxBasic
 
 	public function executeFunc(funcName:String, ?args:Array<Dynamic>):Dynamic
 	{
+		lastError = null;
 		if (!existsVariable(funcName))
 			return null;
 
@@ -550,13 +628,21 @@ class FunkinHScript extends FlxBasic
 		{
 			var func = getVariable(funcName);
 			if (func == null)
+			{
+				reportError({
+					type: HScriptErrorType.MissingFunction,
+					message: 'Variable "$funcName" is null and cannot be called.',
+					source: scriptPath,
+					line: 0
+				});
 				return null;
+			}
 
 			return Reflect.callMethod(null, func, args == null ? [] : args);
 		}
 		catch (e:Dynamic)
 		{
-			Lib.application.window.alert(Std.string(e), 'Error calling function $funcName');
+			reportError(makeError(HScriptErrorType.Runtime, e));
 		}
 
 		return null;

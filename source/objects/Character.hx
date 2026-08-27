@@ -16,6 +16,7 @@ typedef CharacterFile =
 	var flip_x:Bool;
 	var no_antialiasing:Bool;
 	var healthbar_colors:Array<Int>;
+	var vocals_file:String;
 
 	@:optional var trail_length:Null<Int>;
 	@:optional var trail_delay:Null<Int>;
@@ -87,6 +88,10 @@ class Character extends FlxSprite
 	public var originalFlipX:Bool = false;
 	public var healthColorArray:Array<Int> = [255, 0, 0];
 
+	public var missingCharacter:Bool = false;
+	public var missingText:FlxText;
+	public var vocalsFile:String = '';
+
 	public var trailLength:Null<Int> = 4;
 	public var trailDelay:Null<Int> = 24;
 	public var trailAlpha:Null<Float> = 0.3;
@@ -146,6 +151,9 @@ class Character extends FlxSprite
 				{
 					path = Paths.getPreloadPath('characters/' + DEFAULT_CHARACTER +
 						'.json'); // If a character couldn't be found, change him to BF just to prevent a crash
+					missingCharacter = true;
+					missingText = new FlxText(0, 0, 300, 'ERROR:\n$character.json', 16);
+					missingText.alignment = CENTER;
 				}
 
 				try
@@ -220,10 +228,11 @@ class Character extends FlxSprite
 		imageFile = json.image;
 		noteskin = json.noteskin;
 
+		jsonScale = json.scale;
+
 		if (json.scale != 1)
 		{
-			jsonScale = json.scale;
-			setGraphicSize(Std.int(width * jsonScale));
+			scale.set(jsonScale, jsonScale);
 			updateHitbox();
 		}
 
@@ -264,6 +273,8 @@ class Character extends FlxSprite
 
 		if (json.healthbar_colors != null && json.healthbar_colors.length > 2)
 			healthColorArray = json.healthbar_colors;
+
+		vocalsFile = json.vocals_file != null ? json.vocals_file : '';
 
 		antialiasing = !noAntialiasing;
 		if (!ClientPrefs.data.globalAntialiasing)
@@ -322,65 +333,66 @@ class Character extends FlxSprite
 			return;
 		}
 
-		if (!debugMode && animation.curAnim != null)
+		if (heyTimer > 0)
 		{
-			if (heyTimer > 0)
+			var rate:Float = (PlayState.instance != null ? PlayState.instance.playbackRate : 1.0);
+			heyTimer -= elapsed * rate;
+			if (heyTimer <= 0)
 			{
-				var rate:Float = (PlayState.instance != null ? PlayState.instance.playbackRate : 1.0);
-				heyTimer -= elapsed * rate;
-				if (heyTimer <= 0)
+				var anim:String = getAnimationName();
+				if (specialAnim && (anim == 'hey' || anim == 'cheer'))
 				{
-					if (specialAnim && animation.curAnim.name == 'hey' || animation.curAnim.name == 'cheer')
-					{
-						specialAnim = false;
-						dance();
-					}
-					heyTimer = 0;
-				}
-			}
-			else if (specialAnim && animation.curAnim.finished)
-			{
-				specialAnim = false;
-				dance();
-			}
-
-			switch (curCharacter)
-			{
-				case 'pico-speaker':
-					if (animationNotes.length > 0 && Conductor.songPosition > animationNotes[0][0])
-					{
-						var noteData:Int = 1;
-						if (animationNotes[0][1] > 2)
-							noteData = 3;
-
-						noteData += FlxG.random.int(0, 1);
-						playAnim('shoot' + noteData, true);
-						animationNotes.shift();
-					}
-					if (animation.curAnim.finished)
-						playAnim(animation.curAnim.name, false, false, animation.curAnim.frames.length - 3);
-			}
-
-			if (animation.curAnim.name.startsWith('sing'))
-				holdTimer += elapsed;
-			else if (isPlayer)
-				holdTimer = 0;
-
-			if (!isPlayer)
-			{
-				if (holdTimer >= Conductor.stepCrochet * (0.0011 #if FLX_PITCH / (FlxG.sound.music != null ? FlxG.sound.music.pitch : 1) #end) * singDuration)
-				{
+					specialAnim = false;
 					dance();
-					holdTimer = 0;
 				}
+				heyTimer = 0;
 			}
-
-			if (animation.curAnim.finished && animation.getByName(animation.curAnim.name + '-loop') != null)
-				playAnim(animation.curAnim.name + '-loop');
-
-			if (animation.curAnim.name.endsWith('miss') && animation.curAnim.finished && !debugMode)
-				playAnim('idle', true, false, 10);
 		}
+		else if (specialAnim && isAnimationFinished())
+		{
+			specialAnim = false;
+			dance();
+		}
+		else if (getAnimationName().endsWith('miss') && isAnimationFinished())
+		{
+			dance();
+			finishAnimation();
+		}
+
+		switch (curCharacter)
+		{
+			case 'pico-speaker':
+				if (animationNotes.length > 0 && Conductor.songPosition > animationNotes[0][0])
+				{
+					var noteData:Int = 1;
+					if (animationNotes[0][1] > 2)
+						noteData = 3;
+
+					noteData += FlxG.random.int(0, 1);
+					playAnim('shoot' + noteData, true);
+					animationNotes.shift();
+				}
+				if (isAnimationFinished())
+					playAnim(getAnimationName(), false, false, animation.curAnim.frames.length - 3);
+		}
+
+		if (getAnimationName().startsWith('sing'))
+			holdTimer += elapsed;
+		else if (isPlayer)
+			holdTimer = 0;
+
+		if (!isPlayer)
+		{
+			if (holdTimer >= Conductor.stepCrochet * (0.0011 #if FLX_PITCH / (FlxG.sound.music != null ? FlxG.sound.music.pitch : 1) #end) * singDuration)
+			{
+				dance();
+				holdTimer = 0;
+			}
+		}
+
+		var name:String = getAnimationName();
+		if (isAnimationFinished() && hasAnimation('$name-loop'))
+			playAnim('$name-loop');
 
 		super.update(elapsed);
 	}
@@ -403,10 +415,8 @@ class Character extends FlxSprite
 				else
 					playAnim('danceLeft' + idleSuffix);
 			}
-			else if (animation.getByName('idle' + idleSuffix) != null)
-			{
+			else if (hasAnimation('idle' + idleSuffix))
 				playAnim('idle' + idleSuffix);
-			}
 		}
 	}
 
@@ -477,10 +487,12 @@ class Character extends FlxSprite
 	public function recalculateDanceIdle()
 	{
 		var lastDanceIdle:Bool = danceIdle;
-		danceIdle = (animation.getByName('danceLeft' + idleSuffix) != null && animation.getByName('danceRight' + idleSuffix) != null);
+		danceIdle = (hasAnimation('danceLeft' + idleSuffix) && hasAnimation('danceRight' + idleSuffix));
 
 		if (settingCharacterUp)
+		{
 			danceEveryNumBeats = (danceIdle ? 1 : 2);
+		}
 		else if (lastDanceIdle != danceIdle)
 		{
 			var calc:Float = danceEveryNumBeats;
@@ -559,19 +571,47 @@ class Character extends FlxSprite
 		return value;
 	}
 
-	public var isAnimateAtlas:Bool = false;
+	@:allow(states.editors.CharacterEditorState)
+	public var isAnimateAtlas(default, null):Bool = false;
 	#if flxanimate
 	public var atlas:FlxAnimate;
 
 	public override function draw()
 	{
+		var lastAlpha:Float = alpha;
+		var lastColor:FlxColor = color;
+		if (missingCharacter)
+		{
+			alpha *= 0.6;
+			color = FlxColor.BLACK;
+		}
+
 		if (isAnimateAtlas)
 		{
-			copyAtlasValues();
-			atlas.draw();
+			if (atlas.anim.curInstance != null)
+			{
+				copyAtlasValues();
+				atlas.draw();
+				alpha = lastAlpha;
+				color = lastColor;
+				if (missingCharacter && visible)
+				{
+					missingText.x = getMidpoint().x - 150;
+					missingText.y = getMidpoint().y - 10;
+					missingText.draw();
+				}
+			}
 			return;
 		}
 		super.draw();
+		if (missingCharacter && visible)
+		{
+			alpha = lastAlpha;
+			color = lastColor;
+			missingText.x = getMidpoint().x - 150;
+			missingText.y = getMidpoint().y - 10;
+			missingText.draw();
+		}
 	}
 
 	public function copyAtlasValues()
@@ -599,14 +639,8 @@ class Character extends FlxSprite
 
 	public override function destroy()
 	{
+		atlas = FlxDestroyUtil.destroy(atlas);
 		super.destroy();
-		destroyAtlas();
-	}
-
-	public function destroyAtlas()
-	{
-		if (atlas != null)
-			atlas = FlxDestroyUtil.destroy(atlas);
 	}
 	#end
 }

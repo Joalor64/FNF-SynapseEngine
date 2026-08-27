@@ -14,9 +14,10 @@ import lime.media.AudioBuffer;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
 import openfl.net.FileReference;
+import objects.Character;
 import objects.Note;
 
-@:access(flixel.system.FlxSound._sound)
+@:access(flixel.sound.FlxSound._sound)
 @:access(openfl.media.Sound.__buffer)
 class ChartingState extends MusicBeatState
 {
@@ -35,10 +36,14 @@ class ChartingState extends MusicBeatState
 	private var noteTypeIntMap:Map<Int, String> = new Map<Int, String>();
 	private var noteTypeMap:Map<String, Null<Int>> = new Map<String, Null<Int>>();
 
+	public static var unsavedChanges:Bool = false;
+
 	public var ignoreWarnings = false;
 
 	public var undos = [];
 	public var redos = [];
+
+	var lastUndoShit:String = null;
 
 	var eventStuff:Array<Dynamic> = [
 		['', "Nothing. Yep, that's right."],
@@ -169,6 +174,7 @@ class ChartingState extends MusicBeatState
 	var playbackSpeed(default, set):Float = 1;
 
 	var vocals:FlxSound = null;
+	var opponentVocals:FlxSound = null;
 
 	var leftIcon:HealthIcon;
 	var rightIcon:HealthIcon;
@@ -206,6 +212,9 @@ class ChartingState extends MusicBeatState
 
 	override function create()
 	{
+		undos = [];
+		redos = [];
+
 		if (PlayState.SONG != null)
 			_song = PlayState.SONG;
 		else
@@ -313,6 +322,7 @@ class ChartingState extends MusicBeatState
 
 		addSection();
 
+		updateJsonData();
 		currentSongName = Paths.formatToSongPath(_song.song);
 		loadSong();
 		reloadGridLayer();
@@ -326,7 +336,7 @@ class ChartingState extends MusicBeatState
 		strumLine = new FlxSprite(0, 50).makeGraphic(Std.int(GRID_SIZE * 9), 4);
 		add(strumLine);
 
-		quant = new AttachedSprite('editors/chart_quant', 'chart_quant');
+		quant = new AttachedSprite('editors/chart_quant', null, 'chart_quant');
 		quant.animation.addByPrefix('q', 'chart_quant', 0, false);
 		quant.animation.play('q', true, false, 0);
 		quant.sprTracker = strumLine;
@@ -377,6 +387,7 @@ class ChartingState extends MusicBeatState
 			+ #end "\nHold Shift to move 4x faster
 		\nHold Control and click on an arrow to select it
 		\nZ/X - Zoom in/out
+		\nCTRL + Z - Undo
 		\n
 		\nEnter - Play your chart
 		\nQ/E - Decrease/Increase Note Sustain Length
@@ -423,6 +434,8 @@ class ChartingState extends MusicBeatState
 	}
 
 	var check_mute_inst:FlxUICheckBox = null;
+	var check_mute_vocals:FlxUICheckBox = null;
+	var check_mute_vocals_opponent:FlxUICheckBox = null;
 	var check_vortex:FlxUICheckBox = null;
 	var check_warnings:FlxUICheckBox = null;
 	var playSoundBf:FlxUICheckBox = null;
@@ -453,6 +466,7 @@ class ChartingState extends MusicBeatState
 		var reloadSong:FlxButton = new FlxButton(saveButton.x + 90, saveButton.y, "Reload Audio", function()
 		{
 			currentSongName = Paths.formatToSongPath(UI_songTitle.text);
+			updateJsonData();
 			loadSong();
 			updateWaveform();
 		});
@@ -569,6 +583,7 @@ class ChartingState extends MusicBeatState
 			function(character:String)
 			{
 				_song.player1 = characters[Std.parseInt(character)];
+				updateJsonData();
 				updateHeads();
 			});
 		player1DropDown.selectedLabel = _song.player1;
@@ -578,6 +593,7 @@ class ChartingState extends MusicBeatState
 			FlxUIDropDownMenuCustom.makeStrIdLabelArray(characters, true), function(character:String)
 		{
 			_song.gfVersion = characters[Std.parseInt(character)];
+			updateJsonData();
 			updateHeads();
 		});
 		gfVersionDropDown.selectedLabel = _song.gfVersion;
@@ -587,6 +603,7 @@ class ChartingState extends MusicBeatState
 			FlxUIDropDownMenuCustom.makeStrIdLabelArray(characters, true), function(character:String)
 		{
 			_song.player2 = characters[Std.parseInt(character)];
+			updateJsonData();
 			updateHeads();
 		});
 		player2DropDown.selectedLabel = _song.player2;
@@ -857,6 +874,7 @@ class ChartingState extends MusicBeatState
 		var stepperCopy:FlxUINumericStepper = null;
 		var copyLastButton:FlxButton = new FlxButton(10, swapSection.y + 30, "Copy last section", function()
 		{
+			saveUndo(_song); // in case you copy from the wrong section and want to easily undo it
 			var value:Int = Std.int(stepperCopy.value);
 			if (value == 0)
 				return;
@@ -990,7 +1008,18 @@ class ChartingState extends MusicBeatState
 			key++;
 		}
 
-		#if (LUA_ALLOWED || HSCRIPT_ALLOWED)
+		var songNoteTypes:Array<String> = CoolUtil.coolTextFile(Paths.txt('songs/' + Paths.formatToSongPath(_song.song) + '/notetypes'));
+		for (noteType in songNoteTypes)
+		{
+			if (noteType.length > 0 && !noteTypeMap.exists(noteType))
+			{
+				displayNameList.push(noteType);
+				noteTypeMap.set(noteType, key);
+				noteTypeIntMap.set(key, noteType);
+				key++;
+			}
+		}
+
 		var directories:Array<String> = [];
 
 		#if MODS_ALLOWED
@@ -1008,21 +1037,30 @@ class ChartingState extends MusicBeatState
 				for (file in FileSystem.readDirectory(directory))
 				{
 					var path = haxe.io.Path.join([directory, file]);
-					if (!FileSystem.isDirectory(path) && (file.endsWith('.lua') || Paths.validScriptType(file)))
+					var exts:Array<String> = ['.txt'];
+					#if LUA_ALLOWED exts.push('.lua'); #end
+					#if HSCRIPT_ALLOWED
+					for (hscriptExt in Paths.HSCRIPT_EXT)
+						exts.push(hscriptExt);
+					#end
+					#if PYTHON_ALLOWED exts.push('.py'); #end
+					for (ext in exts)
 					{
-						var fileToCheck:String = file.substr(0, file.length - 4);
-						if (!noteTypeMap.exists(fileToCheck))
+						if (!FileSystem.isDirectory(path) && file.endsWith(ext))
 						{
-							displayNameList.push(fileToCheck);
-							noteTypeMap.set(fileToCheck, key);
-							noteTypeIntMap.set(key, fileToCheck);
-							key++;
+							var fileToCheck:String = file.substr(0, file.length - 4);
+							if (!noteTypeMap.exists(fileToCheck))
+							{
+								displayNameList.push(fileToCheck);
+								noteTypeMap.set(fileToCheck, key);
+								noteTypeIntMap.set(key, fileToCheck);
+								key++;
+							}
 						}
 					}
 				}
 			}
 		}
-		#end
 
 		for (i in 1...displayNameList.length)
 		{
@@ -1245,13 +1283,16 @@ class ChartingState extends MusicBeatState
 	var mouseScrollingQuant:FlxUICheckBox;
 	var metronomeStepper:FlxUINumericStepper;
 	var metronomeOffsetStepper:FlxUINumericStepper;
+	var saveUndoCheck:FlxUICheckBox;
 	var disableAutoScrolling:FlxUICheckBox;
 	#if desktop
-	var waveformUseInstrumental:FlxUICheckBox;
-	var waveformUseVoices:FlxUICheckBox;
+	var waveformUseInstrumental:FlxUICheckBox = null;
+	var waveformUseVoices:FlxUICheckBox = null;
+	var waveformUseOppVoices:FlxUICheckBox = null;
 	#end
 	var instVolume:FlxUINumericStepper;
 	var voicesVolume:FlxUINumericStepper;
+	var voicesOppVolume:FlxUINumericStepper;
 
 	function addChartingUI()
 	{
@@ -1263,14 +1304,17 @@ class ChartingState extends MusicBeatState
 			FlxG.save.data.chart_waveformInst = false;
 		if (FlxG.save.data.chart_waveformVoices == null)
 			FlxG.save.data.chart_waveformVoices = false;
+		if (FlxG.save.data.chart_waveformOppVoices == null)
+			FlxG.save.data.chart_waveformOppVoices = false;
 
 		waveformUseInstrumental = new FlxUICheckBox(10, 90, null, null, "Waveform for Instrumental", 100);
 		waveformUseInstrumental.checked = FlxG.save.data.chart_waveformInst;
 		waveformUseInstrumental.callback = function()
 		{
 			waveformUseVoices.checked = false;
-			FlxG.save.data.chart_waveformVoices = false;
 			FlxG.save.data.chart_waveformInst = waveformUseInstrumental.checked;
+			FlxG.save.data.chart_waveformVoices = false;
+			FlxG.save.data.chart_waveformOppVoices = false;
 			updateWaveform();
 		};
 
@@ -1280,7 +1324,20 @@ class ChartingState extends MusicBeatState
 		{
 			waveformUseInstrumental.checked = false;
 			FlxG.save.data.chart_waveformInst = false;
+			FlxG.save.data.chart_waveformOppVoices = false;
 			FlxG.save.data.chart_waveformVoices = waveformUseVoices.checked;
+			updateWaveform();
+		};
+
+		waveformUseOppVoices = new FlxUICheckBox(waveformUseInstrumental.x + 200, waveformUseInstrumental.y, null, null, "Waveform\n(Opp. Vocals)", 85);
+		waveformUseOppVoices.checked = FlxG.save.data.chart_waveformOppVoices && !waveformUseVoices.checked;
+		waveformUseOppVoices.callback = function()
+		{
+			waveformUseInstrumental.checked = false;
+			waveformUseVoices.checked = false;
+			FlxG.save.data.chart_waveformInst = false;
+			FlxG.save.data.chart_waveformVoices = false;
+			FlxG.save.data.chart_waveformOppVoices = waveformUseOppVoices.checked;
 			updateWaveform();
 		};
 		#end
@@ -1307,6 +1364,15 @@ class ChartingState extends MusicBeatState
 			mouseQuant = FlxG.save.data.mouseScrollingQuant;
 		};
 
+		saveUndoCheck = new FlxUICheckBox(mouseScrollingQuant.x + 150, mouseScrollingQuant.y + 25, null, null, "Save Undos", 100);
+		if (FlxG.save.data.allowUndo == null)
+			FlxG.save.data.allowUndo = true;
+		saveUndoCheck.checked = FlxG.save.data.allowUndo;
+		saveUndoCheck.callback = function()
+		{
+			FlxG.save.data.allowUndo = saveUndoCheck.checked;
+		};
+
 		check_vortex = new FlxUICheckBox(10, 160, null, null, "Vortex Editor (BETA)", 100);
 		if (FlxG.save.data.chart_vortex == null)
 			FlxG.save.data.chart_vortex = false;
@@ -1330,19 +1396,27 @@ class ChartingState extends MusicBeatState
 			ignoreWarnings = FlxG.save.data.ignoreWarnings;
 		};
 
-		var check_mute_vocals = new FlxUICheckBox(check_mute_inst.x + 120, check_mute_inst.y, null, null, "Mute Vocals (in editor)", 100);
+		check_mute_vocals = new FlxUICheckBox(check_mute_inst.x, check_mute_inst.y + 30, null, null, "Mute Main Vocals (in editor)", 100);
 		check_mute_vocals.checked = false;
 		check_mute_vocals.callback = function()
 		{
+			var vol:Float = voicesVolume.value;
+			if (check_mute_vocals.checked)
+				vol = 0;
+
 			if (vocals != null)
-			{
-				var vol:Float = 1;
-
-				if (check_mute_vocals.checked)
-					vol = 0;
-
 				vocals.volume = vol;
-			}
+		};
+		check_mute_vocals_opponent = new FlxUICheckBox(check_mute_vocals.x + 120, check_mute_vocals.y, null, null, "Mute Opp. Vocals (in editor)", 100);
+		check_mute_vocals_opponent.checked = false;
+		check_mute_vocals_opponent.callback = function()
+		{
+			var vol:Float = voicesOppVolume.value;
+			if (check_mute_vocals_opponent.checked)
+				vol = 0;
+
+			if (opponentVocals != null)
+				opponentVocals.volume = vol;
 		};
 
 		playSoundBf = new FlxUICheckBox(check_mute_inst.x, check_mute_vocals.y + 30, null, null, 'Play Sound (Boyfriend notes)', 100, function()
@@ -1388,9 +1462,14 @@ class ChartingState extends MusicBeatState
 		blockPressWhileTypingOnStepper.push(instVolume);
 
 		voicesVolume = new FlxUINumericStepper(instVolume.x + 100, instVolume.y, 0.1, 1, 0, 1, 1);
-		voicesVolume.value = vocals.volume;
+		voicesVolume.value = vocals != null ? vocals.volume : 1;
 		voicesVolume.name = 'voices_volume';
 		blockPressWhileTypingOnStepper.push(voicesVolume);
+
+		voicesOppVolume = new FlxUINumericStepper(instVolume.x + 200, instVolume.y, 0.1, 1, 0, 1, 1);
+		voicesOppVolume.value = vocals.volume;
+		voicesOppVolume.name = 'voices_opp_volume';
+		blockPressWhileTypingOnStepper.push(voicesOppVolume);
 
 		#if FLX_PITCH
 		sliderRate = new FlxUISlider(this, 'playbackSpeed', 120, 120, 0.5, 3, 150, null, 5, FlxColor.WHITE, FlxColor.BLACK);
@@ -1402,6 +1481,7 @@ class ChartingState extends MusicBeatState
 		tab_group_chart.add(new FlxText(metronomeOffsetStepper.x, metronomeOffsetStepper.y - 15, 0, 'Offset (ms):'));
 		tab_group_chart.add(new FlxText(instVolume.x, instVolume.y - 15, 0, 'Inst Volume'));
 		tab_group_chart.add(new FlxText(voicesVolume.x, voicesVolume.y - 15, 0, 'Voices Volume'));
+		tab_group_chart.add(new FlxText(voicesOppVolume.x, voicesOppVolume.y - 15, 0, 'Opp. Vocals'));
 		tab_group_chart.add(metronome);
 		tab_group_chart.add(disableAutoScrolling);
 		tab_group_chart.add(metronomeStepper);
@@ -1409,11 +1489,15 @@ class ChartingState extends MusicBeatState
 		#if desktop
 		tab_group_chart.add(waveformUseInstrumental);
 		tab_group_chart.add(waveformUseVoices);
+		tab_group_chart.add(waveformUseOppVoices);
 		#end
+		tab_group_chart.add(saveUndoCheck);
 		tab_group_chart.add(instVolume);
 		tab_group_chart.add(voicesVolume);
+		tab_group_chart.add(voicesOppVolume);
 		tab_group_chart.add(check_mute_inst);
 		tab_group_chart.add(check_mute_vocals);
+		tab_group_chart.add(check_mute_vocals_opponent);
 		tab_group_chart.add(check_vortex);
 		tab_group_chart.add(mouseScrollingQuant);
 		tab_group_chart.add(check_warnings);
@@ -1494,16 +1578,39 @@ class ChartingState extends MusicBeatState
 			FlxG.sound.music.stop();
 		}
 
-		if (_song.needsVoices)
+		if (vocals != null)
 		{
-			var file:Dynamic = Paths.voices(currentSongName);
-			vocals = new FlxSound();
-			if (Std.isOfType(file, Sound) || Assets.exists(file))
-			{
-				vocals.loadEmbedded(file);
-			}
+			vocals.stop();
+			vocals.destroy();
 		}
+		if (opponentVocals != null)
+		{
+			opponentVocals.stop();
+			opponentVocals.destroy();
+		}
+
+		vocals = new FlxSound();
+		opponentVocals = new FlxSound();
+		try
+		{
+			var playerVocals = Paths.voices(currentSongName,
+				(characterData.vocalsP1 == null || characterData.vocalsP1.length < 1) ? 'Player' : characterData.vocalsP1);
+			vocals.loadEmbedded(playerVocals != null ? playerVocals : Paths.voices(currentSongName));
+		}
+		vocals.autoDestroy = false;
 		FlxG.sound.list.add(vocals);
+
+		opponentVocals = new FlxSound();
+		try
+		{
+			var oppVocals = Paths.voices(currentSongName,
+				(characterData.vocalsP2 == null || characterData.vocalsP2.length < 1) ? 'Opponent' : characterData.vocalsP2);
+			if (oppVocals != null)
+				opponentVocals.loadEmbedded(oppVocals);
+		}
+		opponentVocals.autoDestroy = false;
+		FlxG.sound.list.add(opponentVocals);
+
 		generateSong();
 		FlxG.sound.music.pause();
 		Conductor.songPosition = sectionStartTime();
@@ -1527,11 +1634,19 @@ class ChartingState extends MusicBeatState
 				vocals.pause();
 				vocals.time = 0;
 			}
+			if (opponentVocals != null)
+			{
+				opponentVocals.pause();
+				opponentVocals.time = 0;
+			}
 			changeSection();
 			curSec = 0;
 			updateGrid();
 			updateSectionUI();
-			vocals.play();
+			if (vocals != null)
+				vocals.play();
+			if (opponentVocals != null)
+				opponentVocals.play();
 		};
 	}
 
@@ -1615,7 +1730,17 @@ class ChartingState extends MusicBeatState
 			}
 			else if (wname == 'voices_volume')
 			{
-				vocals.volume = nums.value;
+				if (vocals != null)
+					vocals.volume = nums.value;
+				if (check_mute_vocals.checked)
+					vocals.volume = 0;
+			}
+			else if (wname == 'voices_opp_volume')
+			{
+				if (opponentVocals != null)
+					opponentVocals.volume = nums.value;
+				if (check_mute_vocals_opponent.checked)
+					opponentVocals.volume = 0;
 			}
 		}
 		else if (id == FlxUIInputText.CHANGE_EVENT && (sender is FlxUIInputText))
@@ -1802,6 +1927,7 @@ class ChartingState extends MusicBeatState
 					&& FlxG.mouse.y > gridBG.y
 					&& FlxG.mouse.y < gridBG.y + (GRID_SIZE * getSectionBeats() * 4) * zoomList[curZoom])
 				{
+					saveUndo(_song);
 					FlxG.log.add('added note');
 					addNote();
 				}
@@ -1866,6 +1992,8 @@ class ChartingState extends MusicBeatState
 				FlxG.sound.music.stop();
 				if (vocals != null)
 					vocals.stop();
+				if (opponentVocals != null)
+					opponentVocals.stop();
 
 				StageData.loadDirectory(_song);
 				LoadingState.loadAndSwitchState(new PlayState());
@@ -1892,9 +2020,10 @@ class ChartingState extends MusicBeatState
 				return;
 			}
 
-			if (FlxG.keys.justPressed.Z && FlxG.keys.pressed.CONTROL)
+			if (FlxG.keys.pressed.CONTROL)
 			{
-				undo();
+				if (FlxG.keys.justPressed.Z)
+					undo();
 			}
 
 			if (FlxG.keys.justPressed.Z && curZoom > 0 && !FlxG.keys.pressed.CONTROL)
@@ -1926,27 +2055,23 @@ class ChartingState extends MusicBeatState
 
 			if (FlxG.keys.justPressed.SPACE)
 			{
-				if (FlxG.sound.music.playing)
+				if (vocals != null)
+					vocals.play();
+				if (opponentVocals != null)
+					opponentVocals.play();
+				pauseAndSetVocalsTime();
+				if (!FlxG.sound.music.playing)
 				{
-					FlxG.sound.music.pause();
+					FlxG.sound.music.play();
 					if (vocals != null)
-						vocals.pause();
-					resetBuddies();
-					lilBf.color = lilOpp.color = FlxColor.WHITE;
+						vocals.play();
+					if (opponentVocals != null)
+						opponentVocals.play();
 				}
 				else
-				{
-					if (vocals != null)
-					{
-						vocals.play();
-						vocals.pause();
-						vocals.time = FlxG.sound.music.time;
-						vocals.play();
-					}
-					FlxG.sound.music.play();
-					resetBuddies();
-					lilBf.color = lilOpp.color = FlxColor.WHITE;
-				}
+					FlxG.sound.music.pause();
+				resetBuddies();
+				lilBf.color = lilOpp.color = FlxColor.WHITE;
 			}
 
 			if (!FlxG.keys.pressed.ALT && FlxG.keys.justPressed.R)
@@ -2009,11 +2134,7 @@ class ChartingState extends MusicBeatState
 				else
 					FlxG.sound.music.time += daTime;
 
-				if (vocals != null)
-				{
-					vocals.pause();
-					vocals.time = FlxG.sound.music.time;
-				}
+				pauseAndSetVocalsTime();
 			}
 
 			if (!vortex)
@@ -2109,11 +2230,7 @@ class ChartingState extends MusicBeatState
 						feces = Conductor.beatToSeconds(fuck);
 					}
 					FlxTween.tween(FlxG.sound.music, {time: feces}, 0.1, {ease: FlxEase.circOut});
-					if (vocals != null)
-					{
-						vocals.pause();
-						vocals.time = FlxG.sound.music.time;
-					}
+					pauseAndSetVocalsTime();
 
 					var dastrum = 0;
 
@@ -2305,6 +2422,21 @@ class ChartingState extends MusicBeatState
 		super.update(elapsed);
 	}
 
+	function pauseAndSetVocalsTime()
+	{
+		if (vocals != null)
+		{
+			vocals.pause();
+			vocals.time = FlxG.sound.music.time;
+		}
+
+		if (opponentVocals != null)
+		{
+			opponentVocals.pause();
+			opponentVocals.time = FlxG.sound.music.time;
+		}
+	}
+
 	inline function set_playbackSpeed(rate:Float)
 	{
 		playbackSpeed = rate;
@@ -2317,6 +2449,9 @@ class ChartingState extends MusicBeatState
 		FlxG.sound.music.pitch = playbackSpeed;
 		if (vocals != null)
 			vocals.pitch = playbackSpeed;
+
+		if (opponentVocals != null)
+			opponentVocals.pitch = playbackSpeed;
 
 		return playbackSpeed;
 	}
@@ -2354,7 +2489,7 @@ class ChartingState extends MusicBeatState
 		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 9, Std.int(GRID_SIZE * getSectionBeats() * 4 * zoomList[curZoom]));
 
 		#if desktop
-		if (FlxG.save.data.chart_waveformInst || FlxG.save.data.chart_waveformVoices)
+		if (FlxG.save.data.chart_waveformInst || FlxG.save.data.chart_waveformVoices || FlxG.save.data.chart_waveformOppVoices)
 		{
 			updateWaveform();
 		}
@@ -2423,7 +2558,7 @@ class ChartingState extends MusicBeatState
 		}
 		waveformPrinted = false;
 
-		if (!FlxG.save.data.chart_waveformInst && !FlxG.save.data.chart_waveformVoices)
+		if (!FlxG.save.data.chart_waveformInst && !FlxG.save.data.chart_waveformVoices && !FlxG.save.data.chart_waveformOppVoices)
 		{
 			return;
 		}
@@ -2449,16 +2584,17 @@ class ChartingState extends MusicBeatState
 			}
 		}
 
+		var sound:FlxSound = FlxG.sound.music;
 		if (FlxG.save.data.chart_waveformVoices)
-		{
-			var sound:FlxSound = vocals;
-			@:privateAccess
-			if (sound._sound != null && sound._sound.__buffer != null)
-			{
-				var bytes:Bytes = sound._sound.__buffer.data.toBytes();
+			sound = vocals;
+		else if (FlxG.save.data.chart_waveformOppVoices)
+			sound = opponentVocals;
 
-				wavData = waveformData(sound._sound.__buffer, bytes, st, et, 1, wavData, Std.int(gridBG.height));
-			}
+		if (sound != null && sound._sound != null && sound._sound.__buffer != null)
+		{
+			var bytes:Bytes = sound._sound.__buffer.data.toBytes();
+
+			wavData = waveformData(sound._sound.__buffer, bytes, st, et, 1, wavData, Std.int(gridBG.height));
 		}
 
 		// Draws
@@ -2693,11 +2829,7 @@ class ChartingState extends MusicBeatState
 			curSec = 0;
 		}
 
-		if (vocals != null)
-		{
-			vocals.pause();
-			vocals.time = FlxG.sound.music.time;
-		}
+		pauseAndSetVocalsTime();
 		updateCurStep();
 
 		updateGrid();
@@ -2717,11 +2849,7 @@ class ChartingState extends MusicBeatState
 				FlxG.sound.music.pause();
 
 				FlxG.sound.music.time = sectionStartTime();
-				if (vocals != null)
-				{
-					vocals.pause();
-					vocals.time = FlxG.sound.music.time;
-				}
+				pauseAndSetVocalsTime();
 				updateCurStep();
 			}
 
@@ -2763,29 +2891,46 @@ class ChartingState extends MusicBeatState
 		updateHeads();
 	}
 
+	var characterData:Dynamic = {
+		iconP1: null,
+		iconP2: null,
+		vocalsP1: null,
+		vocalsP2: null
+	};
+
+	function updateJsonData():Void
+	{
+		for (i in 1...3)
+		{
+			var data:CharacterFile = loadCharacterFile(Reflect.field(_song, 'player$i'));
+			Reflect.setField(characterData, 'iconP$i', !characterFailed ? data.healthicon : 'face');
+			Reflect.setField(characterData, 'vocalsP$i', data.vocals_file != null ? data.vocals_file : '');
+		}
+	}
+
 	function updateHeads():Void
 	{
-		var healthIconP1:String = loadHealthIconFromCharacter(_song.player1);
-		var healthIconP2:String = loadHealthIconFromCharacter(_song.player2);
-
 		if (_song.notes[curSec].mustHitSection)
 		{
-			leftIcon.changeIcon(healthIconP1);
-			rightIcon.changeIcon(healthIconP2);
+			leftIcon.changeIcon(characterData.iconP1);
+			rightIcon.changeIcon(characterData.iconP2);
 			if (_song.notes[curSec].gfSection)
 				leftIcon.changeIcon('gf');
 		}
 		else
 		{
-			leftIcon.changeIcon(healthIconP2);
-			rightIcon.changeIcon(healthIconP1);
+			leftIcon.changeIcon(characterData.iconP2);
+			rightIcon.changeIcon(characterData.iconP1);
 			if (_song.notes[curSec].gfSection)
 				leftIcon.changeIcon('gf');
 		}
 	}
 
-	function loadHealthIconFromCharacter(char:String)
+	var characterFailed:Bool = false;
+
+	function loadCharacterFile(char:String):CharacterFile
 	{
+		characterFailed = false;
 		var characterPath:String = 'characters/' + char + '.json';
 		#if MODS_ALLOWED
 		var path:String = Paths.modFolders(characterPath);
@@ -2797,21 +2942,20 @@ class ChartingState extends MusicBeatState
 		if (!FileSystem.exists(path))
 		#else
 		var path:String = Paths.getPreloadPath(characterPath);
-		if (!Assets.exists(path))
+		if (!OpenFlAssets.exists(path))
 		#end
 		{
 			path = Paths.getPreloadPath('characters/' + Character.DEFAULT_CHARACTER +
 				'.json'); // If a character couldn't be found, change him to BF just to prevent a crash
+			characterFailed = true;
 		}
 
 		#if MODS_ALLOWED
 		var rawJson = File.getContent(path);
 		#else
-		var rawJson = Assets.getText(path);
+		var rawJson = OpenFlAssets.getText(path);
 		#end
-
-		var json:Character.CharacterFile = cast Json.parse(rawJson);
-		return json.healthicon;
+		return cast Json.parse(rawJson);
 	}
 
 	function updateNoteUI():Void
@@ -3208,9 +3352,43 @@ class ChartingState extends MusicBeatState
 		updateNoteUI();
 	}
 
-	inline function undo()
+	public function saveUndo(_song:SwagSong)
 	{
-		undos.pop();
+		if (CoolUtil.getNoteAmount(_song) <= 50000 && FlxG.save.data.allowUndo)
+		{
+			var shit = Json.stringify({ // doin this so it doesnt act as a reference
+				"song": _song
+			});
+			if (lastUndoShit == shit)
+				return;
+			lastUndoShit = shit;
+			var song:SwagSong = Song.parseJSON(shit);
+
+			undos.unshift(song.notes);
+			redos = []; // Reset redos
+			if (undos.length > 50) // keep at most 50 undos, drop the oldest (last element after unshift)
+				undos.pop();
+		}
+	}
+
+	public function undo()
+	{
+		if (undos.length > 0 && saveUndoCheck.checked)
+		{
+			_song.notes = undos[0];
+			redos.unshift(undos[0]);
+			undos.splice(0, 1);
+			lastUndoShit = null;
+			trace("Performed an Undo! Undos remaining: " + undos.length);
+			unsavedChanges = true;
+			if (curSection > _song.notes.length)
+				changeSection(_song.notes.length - 1);
+			updateGrid();
+		}
+	}
+
+	function redo()
+	{
 	}
 
 	inline function getStrumTime(yPos:Float, doZoomCalc:Bool = true):Float

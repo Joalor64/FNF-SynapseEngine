@@ -1,0 +1,35 @@
+{
+	"directory": "weekend1",
+	"defaultZoom": 0.77,
+	"stageUI": "",
+
+	"boyfriend": [1930, 450],
+	"girlfriend": [1175, 200],
+	"opponent": [620, 445],
+	"hide_girlfriend": false,
+
+	"camera_boyfriend": [-220, -15],
+	"camera_opponent": [450, -110],
+	"camera_girlfriend": [0, 0],
+	"camera_speed": 1,
+
+	"preload": {
+		"images/phillyStreets/abot/": 3,
+		"images/phillyStreets/abot/systemEyes/": 3,
+		"images/phillyStreets/abot/abotSystem/": 3,
+
+		"images/phillyStreets/SpraycanPile": 3,
+		"images/phillyStreets/phillyStreets/phillyConstruction": 3,
+		"images/phillyStreets/phillyStreets/phillyHighwayLights": 3,
+		"images/phillyStreets/phillyStreets/phillyHighway": 3,
+		"images/phillyStreets/phillyStreets/phillyForeground": 3,
+		"images/phillyStreets/phillyStreets/phillySkybox": 2,
+		"images/phillyStreets/phillyStreets/phillySkyline": 2,
+		"images/phillyStreets/phillyStreets/phillyHighwayLights_lightmap": 2,
+		"images/phillyStreets/phillyStreets/phillySmog": 2,
+		"images/phillyStreets/phillyStreets/phillyCars": 2,
+		"images/phillyStreets/phillyStreets/phillyTraffic": 2,
+		"images/phillyStreets/phillyStreets/phillyTraffic_lightmap": 2,
+		"images/phillyStreets/phillyStreets/phillyForegroundCity": 2
+	}
+}

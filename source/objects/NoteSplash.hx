@@ -4,6 +4,17 @@ import shaders.RGBPalette;
 import flixel.system.FlxAssets.FlxShader;
 import backend.animation.PsychAnimationController;
 import flixel.graphics.frames.FlxFrame;
+import haxe.Json;
+
+typedef NoteSplashJsonAnim =
+{
+	name:String,
+	noteData:Int,
+	prefix:String,
+	indices:Array<Int>,
+	offsets:Array<Float>,
+	fps:Array<Int>
+}
 
 typedef NoteSplashConfig =
 {
@@ -21,9 +32,14 @@ class NoteSplash extends FlxSprite
 
 	private var _textureLoaded:String = null;
 	private var _configLoaded:String = null;
+	private var _jsonAnims:Array<NoteSplashJsonAnim> = null;
 
 	public static var defaultNoteSplash(default, never):String = 'noteSplashes/noteSplashes';
 	public static var configs:Map<String, NoteSplashConfig> = new Map<String, NoteSplashConfig>();
+
+	public var babyArrow:StrumNote;
+
+	public var inEditor:Bool = false;
 
 	public function new(x:Float = 0, y:Float = 0, ?note:Int = 0, redColor:FlxColor = 0, greenColor:FlxColor = 0, blueColor:FlxColor = 0)
 	{
@@ -32,7 +48,7 @@ class NoteSplash extends FlxSprite
 		animation = new PsychAnimationController(this);
 
 		var skin:String = null;
-		if (PlayState.SONG.splashSkin != null && PlayState.SONG.splashSkin.length > 0)
+		if (PlayState.SONG != null && PlayState.SONG.splashSkin != null && PlayState.SONG.splashSkin.length > 0)
 			skin = PlayState.SONG.splashSkin;
 		else
 			skin = defaultNoteSplash + getSplashSkinPostfix();
@@ -53,6 +69,12 @@ class NoteSplash extends FlxSprite
 
 	var maxAnims:Int = 2;
 
+	public function loadSplash(skin:String)
+	{
+		loadAnims(skin);
+		_textureLoaded = skin;
+	}
+
 	public function setupNoteSplash(x:Float, y:Float, direction:Int = 0, ?note:Note = null, redColor:FlxColor = 0, greenColor:FlxColor = 0,
 			blueColor:FlxColor = 0)
 	{
@@ -63,7 +85,9 @@ class NoteSplash extends FlxSprite
 		var texture:String = null;
 		if (note != null && note.noteSplashData.texture != null)
 			texture = note.noteSplashData.texture;
-		else if (PlayState.SONG.splashSkin != null && PlayState.SONG.splashSkin.length > 0)
+		else if (inEditor && _textureLoaded != null)
+			texture = _textureLoaded;
+		else if (PlayState.SONG != null && PlayState.SONG.splashSkin != null && PlayState.SONG.splashSkin.length > 0)
 			texture = PlayState.SONG.splashSkin;
 		else
 			texture = defaultNoteSplash + getSplashSkinPostfix();
@@ -87,6 +111,12 @@ class NoteSplash extends FlxSprite
 			else
 				tempShader = Note.globalRgbShaders[direction];
 		}
+		if (tempShader != null)
+		{
+			rgbShader.copyValues(tempShader);
+			rgbShader.enabled = true;
+			shader = rgbShader.shader;
+		}
 
 		alpha = ClientPrefs.data.splashAlpha;
 		if (note != null)
@@ -106,12 +136,26 @@ class NoteSplash extends FlxSprite
 
 		var minFps:Int = 22;
 		var maxFps:Int = 26;
-		if (config != null)
+		if (_jsonAnims != null)
+		{
+			var jsonAnim:NoteSplashJsonAnim = _jsonAnims[(animNum - 1) * Note.colArray.length + direction];
+			if (jsonAnim != null)
+			{
+				offset.x += jsonAnim.offsets[0];
+				offset.y += jsonAnim.offsets[1];
+				minFps = jsonAnim.fps[0];
+				maxFps = jsonAnim.fps[1];
+			}
+		}
+		else if (config != null)
 		{
 			var animID:Int = direction + ((animNum - 1) * Note.colArray.length);
-			var offs:Array<Float> = config.offsets[FlxMath.wrap(animID, 0, config.offsets.length - 1)];
-			offset.x += offs[0];
-			offset.y += offs[1];
+			if (config.offsets.length > 0)
+			{
+				var offs:Array<Float> = config.offsets[FlxMath.wrap(animID, 0, config.offsets.length - 1)];
+				offset.x += offs[0];
+				offset.y += offs[1];
+			}
 			minFps = config.minFps;
 			maxFps = config.maxFps;
 		}
@@ -136,6 +180,7 @@ class NoteSplash extends FlxSprite
 	function loadAnims(skin:String, ?animName:String = null):NoteSplashConfig
 	{
 		maxAnims = 0;
+		_jsonAnims = null;
 		frames = Paths.getSparrowAtlas(skin);
 		var config:NoteSplashConfig = null;
 		if (frames == null)
@@ -147,6 +192,13 @@ class NoteSplash extends FlxSprite
 				skin = defaultNoteSplash;
 				frames = Paths.getSparrowAtlas(skin);
 			}
+		}
+
+		config = loadJsonAnims(skin);
+		if (_jsonAnims != null)
+		{
+			_configLoaded = skin;
+			return config;
 		}
 
 		config = precacheConfig(skin);
@@ -167,6 +219,102 @@ class NoteSplash extends FlxSprite
 			}
 			maxAnims++;
 		}
+	}
+
+	function loadJsonAnims(skin:String):NoteSplashConfig
+	{
+		var path:String = 'images/$skin.json';
+		var jsonText:String = Paths.getTextFromFile(path);
+		if (jsonText == null)
+			return null;
+
+		var raw:Dynamic = Json.parse(jsonText);
+		if (raw == null || raw.animations == null)
+			return null;
+
+		var animations:Array<NoteSplashJsonAnim> = [];
+		for (field in Reflect.fields(raw.animations))
+		{
+			var value:Dynamic = Reflect.field(raw.animations, field);
+			if (value == null || value.prefix == null || value.noteData == null)
+				continue;
+
+			var noteData:Int = Std.int(value.noteData);
+			if (noteData < 0)
+				continue;
+
+			var fps:Array<Int> = [22, 26];
+			if (value.fps != null)
+			{
+				if (value.fps[0] != null) fps[0] = Std.int(value.fps[0]);
+				if (value.fps[1] != null) fps[1] = Std.int(value.fps[1]);
+			}
+
+			var offsets:Array<Float> = [0, 0];
+			if (value.offsets != null)
+			{
+				if (value.offsets[0] != null) offsets[0] = value.offsets[0];
+				if (value.offsets[1] != null) offsets[1] = value.offsets[1];
+			}
+
+			var indices:Array<Int> = [];
+			if (value.indices != null)
+			{
+				var rawIndices:Array<Dynamic> = cast value.indices;
+				for (index in rawIndices)
+					indices.push(Std.int(index));
+			}
+
+			var jsonAnim:NoteSplashJsonAnim = {
+				name: value.name != null ? value.name : field,
+				noteData: noteData,
+				prefix: value.prefix,
+				indices: indices,
+				offsets: offsets,
+				fps: fps
+			};
+			animations[noteData] = jsonAnim;
+		}
+
+		if (animations.length < 1)
+			return null;
+
+		_jsonAnims = [];
+		for (noteData in 0...animations.length)
+		{
+			var jsonAnim:NoteSplashJsonAnim = animations[noteData];
+			if (jsonAnim == null)
+				continue;
+
+			var direction:Int = noteData % Note.colArray.length;
+			var animNum:Int = Std.int(noteData / Note.colArray.length) + 1;
+			if (!addJsonAnimAndCheck('note$direction-$animNum', jsonAnim))
+			{
+				_jsonAnims = null;
+				maxAnims = 0;
+				return null;
+			}
+			_jsonAnims[noteData] = jsonAnim;
+			if (direction == 0 && animNum > maxAnims)
+				maxAnims = animNum;
+		}
+
+		return null;
+	}
+
+	function addJsonAnimAndCheck(name:String, anim:NoteSplashJsonAnim):Bool
+	{
+		var animFrames:Array<FlxFrame> = [];
+		@:privateAccess
+		animation.findByPrefix(animFrames, anim.prefix);
+		if (animFrames.length < 1)
+			return false;
+
+		if (anim.indices != null && anim.indices.length > 0)
+			animation.addByIndices(name, anim.prefix, anim.indices, '', anim.fps[1], false);
+		else
+			animation.addByPrefix(name, anim.prefix, anim.fps[1], false);
+		return true;
 	}
 
 	public static function precacheConfig(skin:String)

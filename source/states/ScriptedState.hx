@@ -3,6 +3,7 @@ package states;
 class ScriptedState extends MusicBeatState
 {
 	public var tag:String = null;
+	public var scriptName:String = '';
 	public var path:String = '';
 	public var script:FunkinHScript = null;
 	public var scriptArgs:Array<Dynamic> = null;
@@ -12,7 +13,10 @@ class ScriptedState extends MusicBeatState
 	public function new(_path:String = null, ?args:Array<Dynamic>, ?_tag:String = null):Void
 	{
 		if (_path != null)
+		{
+			scriptName = _path;
 			path = _path;
+		}
 		tag = _tag;
 		scriptArgs = args;
 		instance = this;
@@ -44,7 +48,7 @@ class ScriptedState extends MusicBeatState
 				{
 					for (file in FileSystem.readDirectory(folder))
 					{
-						if (file.startsWith(path) && Paths.validScriptType(file))
+						if (file.startsWith(scriptName) && Paths.validScriptType(file))
 						{
 							foundPath = folder + file;
 							break;
@@ -147,6 +151,12 @@ class ScriptedState extends MusicBeatState
 				return scriptState;
 		}
 		return null;
+	}
+
+	public static function resetScriptedState():Void
+	{
+		if (instance != null)
+			FlxG.switchState(new ScriptedState(instance.scriptName, instance.scriptArgs, instance.tag));
 	}
 
 	public function scriptSet(key:String, value:Dynamic):Void

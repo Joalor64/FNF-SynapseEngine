@@ -132,7 +132,7 @@ class LoadingState extends MusicBeatState
 
 		funkay = new FlxSprite(0, 0).loadGraphic(Paths.image('funkay'));
 		funkay.antialiasing = ClientPrefs.data.globalAntialiasing;
-		funkay.setGraphicSize(0, FlxG.height);
+		funkay.scale.set(0.8, 0.8);
 		funkay.updateHitbox();
 		addBehindBar(funkay);
 
@@ -156,13 +156,15 @@ class LoadingState extends MusicBeatState
 	{
 		if (funkay != null)
 		{
-			funkay.setGraphicSize(Std.int(0.88 * FlxG.width + 0.9 * (funkay.width - 0.88 * FlxG.width)));
+			var bgCalc = FlxMath.lerp(funkay.scale.x, 0.75, elapsed * 6);
+			funkay.scale.set(bgCalc, bgCalc);
 			funkay.updateHitbox();
+			funkay.screenCenter();
 
 			if (controls.ACCEPT)
 			{
-				funkay.setGraphicSize(Std.int(funkay.width + 60));
-				funkay.updateHitbox();
+				funkay.scale.x += 0.04;
+				funkay.scale.y += 0.04;
 			}
 		}
 
@@ -586,7 +588,7 @@ class LoadingState extends MusicBeatState
 				myKey = '$member$ext';
 
 			var doTrace:Bool = false;
-			if (member.endsWith('/') || (!Paths.fileExists(myKey) && (doTrace = true)))
+			if (member.endsWith('/') || (!Paths.fileExists(myKey, false, parentFolder) && (doTrace = true)))
 			{
 				arr.remove(member);
 				if (doTrace)
@@ -716,7 +718,7 @@ class LoadingState extends MusicBeatState
 	// thread safe sound loader
 	static function preloadSound(key:String, ?path:String, ?modsAllowed:Bool = true, ?beepOnNull:Bool = true):Null<Sound>
 	{
-		var file:String = Paths.getPath(path + key + '.ogg', modsAllowed);
+		var file:String = Paths.getPath(Language.getFileTranslation(key) + '.ogg', path, modsAllowed);
 
 		if (!Paths.currentTrackedSounds.exists(file))
 		{

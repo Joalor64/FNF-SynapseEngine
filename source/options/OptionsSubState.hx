@@ -416,7 +416,7 @@ class GameplaySubState extends BaseOptionsMenu
 {
 	var noteOptionID:Int = -1;
 	var notes:FlxTypedGroup<StrumNote>;
-	var notesTween:Array<FlxTween> = [];
+	var splashes:FlxTypedGroup<NoteSplash>;
 	var noteY:Float = 90;
 
 	var windowBar:FlxSprite;
@@ -431,6 +431,7 @@ class GameplaySubState extends BaseOptionsMenu
 		rpcTitle = 'Gameplay Settings Menu'; // for Discord Rich Presence
 
 		notes = new FlxTypedGroup<StrumNote>();
+		splashes = new FlxTypedGroup<NoteSplash>();
 		for (i in 0...Note.colArray.length)
 		{
 			var note:StrumNote = new StrumNote(370 + (560 / Note.colArray.length) * i, -200, i, 0);
@@ -438,6 +439,14 @@ class GameplaySubState extends BaseOptionsMenu
 			note.centerOrigin();
 			note.playAnim('static');
 			notes.add(note);
+
+			var splash:NoteSplash = new NoteSplash(0, 0, i);
+			splash.inEditor = true;
+			splash.babyArrow = note;
+			splash.ID = i;
+			splash.loadSplash(NoteSplash.defaultNoteSplash + NoteSplash.getSplashSkinPostfix());
+			splash.kill();
+			splashes.add(splash);
 		}
 
 		var noteSkins:Array<String> = Mods.mergeAllTextsNamed('images/noteSkins/list.txt');
@@ -463,6 +472,7 @@ class GameplaySubState extends BaseOptionsMenu
 			var option:Option = new Option('Note Splashes:', "Select your prefered Note Splash variation or turn it off.", 'splashSkin', 'string',
 				noteSplashes);
 			addOption(option);
+			option.onChange = onChangeSplashSkin;
 		}
 
 		var option:Option = new Option('Note Splash Opacity', 'How much transparent should the Note Splashes be.', 'splashAlpha', 'percent');
@@ -472,6 +482,7 @@ class GameplaySubState extends BaseOptionsMenu
 		option.changeValue = 0.1;
 		option.decimals = 1;
 		addOption(option);
+		option.onChange = playNoteSplashes;
 
 		var option:Option = new Option('Sustain Splash Opacity', 'How much transparent should the Sustain Splashes be.', 'susSplashAlpha', 'percent');
 		option.scrollSpeed = 1.6;
@@ -614,6 +625,10 @@ class GameplaySubState extends BaseOptionsMenu
 
 		add(notes);
 
+		for (i in 0...Note.colArray.length)
+			Note.initializeGlobalRGBShader(i, false);
+		add(splashes);
+
 		windowBar = new FlxSprite((FlxG.width / 4) * 3 + 150, FlxG.height / 4 - 100).makeGraphic(80, 220, 0x00ffffff);
 		windowBar.visible = false;
 		windowBar.setGraphicSize(80, 440);
@@ -630,23 +645,51 @@ class GameplaySubState extends BaseOptionsMenu
 	function onChangeAutoPause()
 		FlxG.autoPause = ClientPrefs.data.autoPause;
 
+	var notesShown:Bool = false;
+
 	override function changeSelection(change:Int = 0)
 	{
 		super.changeSelection(change);
 
-		if (noteOptionID < 0)
-			return;
-
-		for (i in 0...Note.colArray.length)
+		switch (curOption.variable)
 		{
-			var note:StrumNote = notes.members[i];
-			if (notesTween[i] != null)
-				notesTween[i].cancel();
-			if (curSelected == noteOptionID)
-				notesTween[i] = FlxTween.tween(note, {y: noteY}, Math.abs(note.y / (200 + noteY)) / 3, {ease: FlxEase.quadInOut});
-			else
-				notesTween[i] = FlxTween.tween(note, {y: -200}, Math.abs(note.y / (200 + noteY)) / 3, {ease: FlxEase.quadInOut});
+			case 'noteSkin', 'splashSkin', 'splashAlpha':
+				if (!notesShown)
+				{
+					var revealTweens:Int = notes.members.length;
+					for (note in notes.members)
+					{
+						FlxTween.cancelTweensOf(note);
+						FlxTween.tween(note, {y: noteY}, Math.abs(note.y / (200 + noteY)) / 3, {
+							ease: FlxEase.quadInOut,
+							onComplete: function(_)
+							{
+								revealTweens--;
+								if (revealTweens == 0 && curOption.variable.startsWith('splash'))
+									playNoteSplashes();
+							}
+						});
+					}
+				}
+				notesShown = true;
+
+			default:
+				if (notesShown)
+				{
+					for (note in notes.members)
+					{
+						FlxTween.cancelTweensOf(note);
+						FlxTween.tween(note, {y: -200}, Math.abs(note.y / (200 + noteY)) / 3, {ease: FlxEase.quadInOut});
+					}
+				}
+				notesShown = false;
 		}
+
+		if (splashes != null
+			&& splashes.members.length > 0
+			&& curOption.variable.startsWith('splash')
+			&& Math.abs(notes.members[0].y - noteY) < 25)
+			playNoteSplashes();
 
 		if (windowBar != null)
 			windowBar.visible = (optionsArray[curSelected].name.contains('Hit Window'));
@@ -672,6 +715,32 @@ class GameplaySubState extends BaseOptionsMenu
 		note.texture = skin; // Load texture and anims
 		note.reloadNote();
 		note.playAnim('static');
+	}
+
+	function onChangeSplashSkin()
+	{
+		var skin:String = NoteSplash.defaultNoteSplash + NoteSplash.getSplashSkinPostfix();
+		for (splash in splashes)
+			splash.loadSplash(skin);
+
+		playNoteSplashes();
+	}
+
+	function playNoteSplashes()
+	{
+		for (splash in splashes)
+		{
+			splash.revive();
+			var noteShader:RGBPalette = Note.globalRgbShaders[splash.ID];
+			if (noteShader != null)
+			{
+				splash.setupNoteSplash(splash.babyArrow.x, splash.babyArrow.y, splash.ID, null, noteShader.r, noteShader.g, noteShader.b);
+			}
+			else
+			{
+				splash.setupNoteSplash(splash.babyArrow.x, splash.babyArrow.y, splash.ID);
+			}
+		}
 	}
 
 	function onChangeHitWindow()
@@ -822,6 +891,9 @@ class LanguageSubState extends MusicBeatSubstate
 		if (FlxG.mouse.wheel != 0)
 			changeSelected(FlxG.mouse.wheel * mult);
 
+		for (num => lang in grpLanguages)
+			lang.color = (ClientPrefs.data.language == languages[num] ? 0xffffcc33 : FlxColor.WHITE);
+
 		if (controls.BACK)
 		{
 			if (changedLanguage)
@@ -854,7 +926,6 @@ class LanguageSubState extends MusicBeatSubstate
 			lang.alpha = 0.6;
 			if (num == curSelected)
 				lang.alpha = 1;
-			lang.color = (ClientPrefs.data.language == languages[num] ? 0xffffcc33 : FlxColor.WHITE);
 		}
 		FlxG.sound.play(Paths.sound('scrollMenu'), 0.6);
 	}

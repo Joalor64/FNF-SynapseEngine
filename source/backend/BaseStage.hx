@@ -45,6 +45,7 @@ class BaseStage extends FlxBasic
 	public var deathSoundName(get, set):String;
 	public var loopSoundName(get, set):String;
 	public var endSoundName(get, set):String;
+	public var deathDelay(get, set):Float;
 
 	public function new()
 	{
@@ -147,8 +148,8 @@ class BaseStage extends FlxBasic
 	function add(object:FlxBasic)
 		game.add(object);
 
-	function remove(object:FlxBasic)
-		game.remove(object);
+	function remove(object:FlxBasic, splice:Bool = false)
+		game.remove(object, splice);
 
 	function insert(position:Int, object:FlxBasic)
 		game.insert(position, object);
@@ -312,6 +313,9 @@ class BaseStage extends FlxBasic
 	inline private function get_endSoundName():String
 		return game.endSoundName;
 
+	inline private function get_deathDelay():Float
+		return game.deathDelay;
+
 	inline private function set_characterName(value:String):String
 	{
 		game.characterName = value;
@@ -334,5 +338,11 @@ class BaseStage extends FlxBasic
 	{
 		game.endSoundName = value;
 		return game.endSoundName;
+	}
+
+	inline private function set_deathDelay(value:Float):Float
+	{
+		game.deathDelay = value;
+		return game.deathDelay;
 	}
 }

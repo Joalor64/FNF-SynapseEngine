@@ -1,0 +1,266 @@
+import objects.Character;
+
+var boyfriend:Character;
+
+var camFollow:FlxObject;
+var updateCamera:Bool = false;
+
+var isEnding:Bool = false;
+
+var overlay:FlxSprite;
+var overlayConfirmOffsets:FlxPoint = FlxPoint.get();
+
+var gameOverData = {
+	characterName: 'bf-dead',
+	deathSoundName: 'fnf_loss_sfx',
+	loopSoundName: 'gameOver',
+	endSoundName: 'gameOverEnd'
+};
+
+var deathDelay:Float = 0;
+var loopAudioStarted:Bool = false;
+
+function new(?data:Dynamic, ?delay:Float)
+{
+	if (data != null)
+	{
+		if (data.characterName != null)
+			gameOverData.characterName = data.characterName;
+		if (data.deathSoundName != null)
+			gameOverData.deathSoundName = data.deathSoundName;
+		if (data.loopSoundName != null)
+			gameOverData.loopSoundName = data.loopSoundName;
+		if (data.endSoundName != null)
+			gameOverData.endSoundName = data.endSoundName;
+	}
+
+	if (delay != null)
+		deathDelay = delay;
+}
+
+function create()
+{
+	Conductor.songPosition = 0;
+
+	if (boyfriend == null)
+	{
+		boyfriend = new Character(PlayState.instance.boyfriend.getScreenPosition().x, PlayState.instance.boyfriend.getScreenPosition().y, gameOverData.characterName, true);
+		boyfriend.x += boyfriend.positionArray[0] - PlayState.instance.boyfriend.positionArray[0];
+		boyfriend.y += boyfriend.positionArray[1] - PlayState.instance.boyfriend.positionArray[1];
+	}
+	boyfriend.skipDance = true;
+	add(boyfriend);
+
+	FlxG.sound.play(Paths.sound(gameOverData.deathSoundName));
+	FlxG.camera.scroll.set();
+	FlxG.camera.target = null;
+
+	boyfriend.playAnim('firstDeath');
+
+	camFollow = new FlxObject(0, 0, 1, 1);
+
+	var camX:Float = boyfriend.getMidpoint().x + boyfriend.cameraPosition[0];
+	var camY:Float = boyfriend.getMidpoint().y + boyfriend.cameraPosition[1];
+	camFollow.setPosition(camX, camY);
+	
+	FlxG.camera.focusOn(new FlxPoint(FlxG.camera.scroll.x + (FlxG.camera.width / 2), FlxG.camera.scroll.y + (FlxG.camera.height / 2)));
+	add(camFollow);
+	
+	PlayState.instance.setOnLuas('inGameOver', true);
+	PlayState.instance.callOnLuas('onGameOverStart', []);
+	PlayState.instance.callOnScripts('onGameOverStart', []);
+
+	FlxG.sound.music.loadEmbedded(Paths.music(gameOverData.loopSoundName), true);
+
+	if (gameOverData.characterName == 'pico-dead')
+	{
+		overlay = new FlxSprite(boyfriend.x + 205, boyfriend.y - 80);
+		overlay.frames = Paths.getSparrowAtlas('stages/phillyStreets/Pico_Death_Retry');
+		overlay.animation.addByPrefix('deathLoop', 'Retry Text Loop', 24, true);
+		overlay.animation.addByPrefix('deathConfirm', 'Retry Text Confirm', 24, false);
+		overlay.antialiasing = ClientPrefs.data.globalAntialiasing;
+		overlayConfirmOffsets.set(250, 200);
+		overlay.visible = false;
+		add(overlay);
+
+		boyfriend.animation.callback = function(name:String, frameNumber:Int, frameIndex:Int)
+		{
+			switch (name)
+			{
+				case 'firstDeath':
+					if (frameNumber >= 36 - 1)
+					{
+						overlay.visible = true;
+						overlay.animation.play('deathLoop');
+						boyfriend.animation.callback = null;
+					}
+				default:
+					boyfriend.animation.callback = null;
+			}
+		}
+
+		if (PlayState.instance.gf != null && PlayState.instance.gf.curCharacter == 'nene')
+		{
+			var neneKnife:FlxSprite = new FlxSprite(boyfriend.x - 450, boyfriend.y - 250);
+			neneKnife.frames = Paths.getSparrowAtlas('stages/phillyStreets/NeneKnifeToss');
+			neneKnife.animation.addByPrefix('anim', 'knife toss', 24, false);
+			neneKnife.antialiasing = ClientPrefs.data.globalAntialiasing;
+			neneKnife.animation.finishCallback = function(_)
+			{
+    			neneKnife.animation.finishCallback = null;
+				neneKnife.active = false;
+				neneKnife.visible = false;
+    			remove(neneKnife, true);
+			}
+			insert(0, neneKnife);
+			neneKnife.animation.play('anim', true);
+		}
+	}
+}
+
+function update(elapsed:Float)
+{
+	PlayState.instance.callOnLuas('onUpdate', [elapsed]);
+	PlayState.instance.callOnScripts('onUpdate', [elapsed]);
+
+	var justPlayedLoop:Bool = false;
+
+	if (!boyfriend.isAnimationNull() && boyfriend.getAnimationName() == 'firstDeath')
+	{
+		if (!updateCamera && boyfriend.animation.curAnim != null && boyfriend.animation.curAnim.curFrame >= 12)
+		{
+			var camX:Float = boyfriend.getMidpoint().x + boyfriend.cameraPosition[0];
+			var camY:Float = boyfriend.getMidpoint().y + boyfriend.cameraPosition[1];
+			camFollow.setPosition(camX, camY);
+
+			FlxG.camera.follow(camFollow, FlxCameraFollowStyle.LOCKON, 0.01);
+			updateCamera = true;
+		}
+		
+		if (boyfriend.isAnimationFinished())
+		{
+			boyfriend.playAnim('deathLoop');
+			if (overlay != null && overlay.animation.exists('deathLoop'))
+			{
+				overlay.visible = true;
+				overlay.animation.play('deathLoop');
+			}
+			justPlayedLoop = true;
+		}
+	}
+	else if (!boyfriend.isAnimationNull() && boyfriend.getAnimationName() == 'deathLoop')
+	{
+		if (!updateCamera)
+		{
+			var camX:Float = boyfriend.getMidpoint().x + boyfriend.cameraPosition[0];
+			var camY:Float = boyfriend.getMidpoint().y + boyfriend.cameraPosition[1];
+			camFollow.setPosition(camX, camY);
+			FlxG.camera.follow(camFollow, FlxCameraFollowStyle.LOCKON, 0.01);
+			updateCamera = true;
+		}
+		justPlayedLoop = true;
+	}
+	
+	if (updateCamera)
+	{
+		var camX:Float = boyfriend.getMidpoint().x + boyfriend.cameraPosition[0];
+		var camY:Float = boyfriend.getMidpoint().y + boyfriend.cameraPosition[1];
+		camFollow.setPosition(camX, camY);
+	}
+
+	if (justPlayedLoop && !loopAudioStarted && !isEnding)
+	{
+		if (PlayState.SONG.stage == 'tank')
+		{
+			coolStartDeath(0.2);
+			
+			FlxG.sound.play(Paths.sound('jeffGameover/jeffGameover-' + FlxG.random.int(1, 25)), 1, false, null, true, function()
+			{
+				if (!isEnding)
+				{
+					FlxG.sound.music.fadeIn(0.2, 1, 4);
+				}
+			});
+		}
+		else
+		{
+			coolStartDeath(1.0);
+		}
+		
+		loopAudioStarted = true;
+	}
+
+	if (!isEnding)
+	{
+		if (controls.ACCEPT)
+		{
+			endBullshit();
+		}
+		else if (controls.BACK)
+		{
+			#if DISCORD_ALLOWED
+			DiscordClient.resetClientID();
+			#end
+			FlxG.sound.music.stop();
+			PlayState.deathCounter = 0;
+			PlayState.seenCutscene = false;
+			PlayState.chartingMode = false;
+
+			Mods.loadTheFirstEnabledMod();
+			if (PlayState.isStoryMode)
+				MusicBeatState.switchState(new ScriptedState('StoryMenuState', []));
+			else
+				MusicBeatState.switchState(new ScriptedState('FreeplayState', []));
+
+			FlxG.sound.playMusic(Paths.music('freakyMenu'));
+			PlayState.instance.callOnLuas('onGameOverConfirm', [false]);
+			PlayState.instance.callOnScripts('onGameOverConfirm', [false]);
+		}
+
+		if (FlxG.sound.music != null && FlxG.sound.music.playing)
+			Conductor.songPosition = FlxG.sound.music.time;
+	}
+
+	PlayState.instance.callOnLuas('onUpdatePost', [elapsed]);
+	PlayState.instance.callOnScripts('onUpdatePost', [elapsed]);
+}
+
+function coolStartDeath(?volume:Float = 1)
+{
+	FlxG.sound.music.play(true);
+	FlxG.sound.music.volume = volume;
+}
+
+function endBullshit()
+{
+	if (!isEnding)
+	{
+		isEnding = true;
+
+		if (boyfriend.hasAnimation('deathConfirm'))
+			boyfriend.playAnim('deathConfirm', true);
+		else if (boyfriend.hasAnimation('deathLoop'))
+			boyfriend.playAnim('deathLoop', true);
+
+		if (overlay != null && overlay.animation.exists('deathConfirm'))
+		{
+			overlay.visible = true;
+			overlay.animation.play('deathConfirm');
+			overlay.offset.set(overlayConfirmOffsets.x, overlayConfirmOffsets.y);
+		}
+
+		FlxG.sound.music.stop();
+		FlxG.sound.play(Paths.music(gameOverData.endSoundName));
+
+		new FlxTimer().start(0.7, function(tmr)
+		{
+			FlxG.camera.fade(FlxColor.BLACK, 2, false, function()
+			{
+				FlxG.resetState();
+			});
+		});
+
+		PlayState.instance.callOnLuas('onGameOverConfirm', [false]);
+		PlayState.instance.callOnScripts('onGameOverConfirm', [false]);
+	}
+}

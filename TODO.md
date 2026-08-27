@@ -34,15 +34,16 @@
 
 ## V0.2.0
 ### High Priority
-* [ ] Weekend 1
+* [X] Weekend 1
 * [X] In-Game Crash Handler
 * [X] Lil' Buddies (From FPS+)
-* [ ] Backport Newer Psych Stuff (i mean, i've BEEN doing this anyways)
-    * [ ] Support for Separated Vocals
+* [X] Backport Newer Psych Stuff (i mean, i've BEEN doing this anyways)
+    * [X] Support for Separated Vocals
     * [X] Translations
     * [X] Alphabet JSON
     * [X] Add Newer Lua Stuff
     * [X] Deprecate `animateatlas` in favor of `flxanimate`
+    * [X] New Main Menu
 * [ ] Time Signature Support
 * [ ] Special Character Properties
     * [X] Floating
@@ -61,10 +62,18 @@
     * [ ] School
     * [ ] Tank
     * [ ] Philly Streets
+* [X] Special Alphabet Properties
+    * [X] Force Bold
+    * [X] Force Plain
+    * [X] Colored
+    * [X] Rainbow
+    * [X] Wavy
+    * [X] Shake
 * [X] Re-add Blammed Lights
 * [X] Python Scripting (using `Hython`)
 * [X] Sticker Transition
 * [ ] Scripted Class Support
+* [X] "Proper" Script Error Handling
 * [X] Custom Defines Support
 * [X] NDLL Support
 * [X] Fix Downscroll Bug
