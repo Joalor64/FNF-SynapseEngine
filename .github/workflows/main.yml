@@ -67,7 +67,7 @@ jobs:
         run: echo "${{github.run_id}}" > VERSION
 
       - name: Compile
-        run: haxelib run lime build ${{ matrix.target }} -debug
+        run: haxelib run lime build ${{ matrix.target }} -debug -D officialBuild
 
       - name: Clear Previous Cache
         uses: actions/github-script@main

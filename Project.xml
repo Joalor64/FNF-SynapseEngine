@@ -4,7 +4,7 @@
 
 	<app title="Friday Night Funkin': Synapse Engine" file="SynapseEngine"
 		packageName="com.joalor64.synapse" package="com.joalor64.synapse" main="Main"
-		version="0.2.8" company="Joalor64" />
+		version="0.3.2" company="Joalor64" />
 
 	<!-- NOTE TO SELF: DISABLE THIS IF ISSUES ARE FOUND -->
 	<haxedef name="LINC_LUA_RELATIVE_DYNAMIC_LIB" />
@@ -36,10 +36,13 @@
 	LOADING, WHICH IMPROVES LOADING TIMES, BUT APPARENTLY CAN FREEZE THE GAME ON SONG LOAD IN OLDER
 	PCs? -->
 	<define name="SHOW_LOADING_SCREEN" />
-	<define name="BASE_GAME_FILES" />
-	<define name="VIDEOS_ALLOWED" if="windows || linux || android || mac" unless="32bits" />
 	<define name="CRASH_HANDLER" if="desktop release" />
 	<define name="CHECK_FOR_UPDATES" if="desktop release" />
+
+	<section if="officialBuild">
+		<define name="BASE_GAME_FILES" />
+		<define name="VIDEOS_ALLOWED" if="windows || linux || android || mac" unless="32bits" /> <!-- IF YOU WANT TO USE VIDEOS ON YOUR SOURCE MOD, GET THIS LINE OUTSIDE OF THE SECTION -->
+	</section>
 
 	<!-- _____________________________ Path Settings ____________________________ -->
 
