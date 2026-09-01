@@ -78,6 +78,7 @@ jobs:
       - name: Save Current Cache
         uses: actions/cache@main
         with:
+          save-always: true
           key: cache-${{ matrix.target }}-release
           path: |
             .haxelib/
