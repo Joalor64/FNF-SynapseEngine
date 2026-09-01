@@ -49,6 +49,9 @@ class Main
 
 					if (lib.ref != null)
 						args.push(lib.ref);
+					
+					if (lib.dir != null)
+						args.push(lib.dir);
 
 					runCommand(args.concat(options));
 			}
