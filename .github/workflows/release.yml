@@ -77,7 +77,7 @@ jobs:
 
       - name: Save Current Cache
         id: cache-build-save
-        uses: actions/cachesave/@main
+        uses: actions/cache/save@main
         with:
           path: |
             .haxelib/
