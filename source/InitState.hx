@@ -23,7 +23,7 @@ class InitState extends FlxState
 		Language.reloadPhrases();
 		Colorblind.updateFilter();
 
-		#if ACHIEVEMNTS_ALLOWED
+		#if ACHIEVEMENTS_ALLOWED
 		Achievements.init();
 		#end
 
