@@ -1,37 +1,4 @@
 # To-Dos
-## V0.1.0
-### High Priority
-* [X] HScript Support
-    * [X] Custom States + Substates
-* [X] Crossfades
-* [X] New Events
-* [X] Softcoding
-    * [X] Menu States
-        * [X] Title
-        * [X] Main Menu
-        * [X] Story Mode
-        * [X] Freeplay
-        * [X] Awards
-        * [X] Credits
-        * [X] Options
-    * [X] Game Over
-    * [X] Pause Menu
-* [X] Custom Options
-* [X] Custom Achievements
-* [X] RGB Notes
-* [X] Rewrite Controls
-* [X] FlxAnimate Support
-* [X] Source Code Reorganization
-* [X] Asset Reorganization
-* [X] Options Menu Reorganization
-* [X] Restore Combo Sprite
-* [X] Colorblind Filters
-* [X] Update to hxdiscord_rpc
-
-### Low Priority
-* [X] Noteskins
-* [X] Hold Note Cover
-
 ## V0.2.0
 ### High Priority
 * [X] Weekend 1
@@ -82,3 +49,36 @@
 * [ ] New Editor UI
 * [ ] Controller Support
 * [ ] Multi-Atlas Support
+
+## V0.1.0
+### High Priority
+* [X] HScript Support
+    * [X] Custom States + Substates
+* [X] Crossfades
+* [X] New Events
+* [X] Softcoding
+    * [X] Menu States
+        * [X] Title
+        * [X] Main Menu
+        * [X] Story Mode
+        * [X] Freeplay
+        * [X] Awards
+        * [X] Credits
+        * [X] Options
+    * [X] Game Over
+    * [X] Pause Menu
+* [X] Custom Options
+* [X] Custom Achievements
+* [X] RGB Notes
+* [X] Rewrite Controls
+* [X] FlxAnimate Support
+* [X] Source Code Reorganization
+* [X] Asset Reorganization
+* [X] Options Menu Reorganization
+* [X] Restore Combo Sprite
+* [X] Colorblind Filters
+* [X] Update to hxdiscord_rpc
+
+### Low Priority
+* [X] Noteskins
+* [X] Hold Note Cover
