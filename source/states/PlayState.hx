@@ -934,21 +934,21 @@ class PlayState extends MusicBeatState
 		for (notetype in noteTypes)
 		{
 			#if MODS_ALLOWED
-			var luaToLoad:String = Paths.modFolders('custom_notetypes/' + notetype + '.lua');
+			var luaToLoad:String = Paths.modFolders('notetypes/' + notetype + '.lua');
 			if (FileSystem.exists(luaToLoad))
 			{
 				luaArray.push(new FunkinLua(luaToLoad));
 			}
 			else
 			{
-				luaToLoad = Paths.getPreloadPath('custom_notetypes/' + notetype + '.lua');
+				luaToLoad = Paths.getPreloadPath('notetypes/' + notetype + '.lua');
 				if (FileSystem.exists(luaToLoad))
 				{
 					luaArray.push(new FunkinLua(luaToLoad));
 				}
 			}
 			#elseif sys
-			var luaToLoad:String = Paths.getPreloadPath('custom_notetypes/' + notetype + '.lua');
+			var luaToLoad:String = Paths.getPreloadPath('notetypes/' + notetype + '.lua');
 			if (Assets.exists(luaToLoad))
 			{
 				luaArray.push(new FunkinLua(luaToLoad));
@@ -958,21 +958,21 @@ class PlayState extends MusicBeatState
 		for (event in eventsPushed)
 		{
 			#if MODS_ALLOWED
-			var luaToLoad:String = Paths.modFolders('custom_events/' + event + '.lua');
+			var luaToLoad:String = Paths.modFolders('events/' + event + '.lua');
 			if (FileSystem.exists(luaToLoad))
 			{
 				luaArray.push(new FunkinLua(luaToLoad));
 			}
 			else
 			{
-				luaToLoad = Paths.getPreloadPath('custom_events/' + event + '.lua');
+				luaToLoad = Paths.getPreloadPath('events/' + event + '.lua');
 				if (FileSystem.exists(luaToLoad))
 				{
 					luaArray.push(new FunkinLua(luaToLoad));
 				}
 			}
 			#elseif sys
-			var luaToLoad:String = Paths.getPreloadPath('custom_events/' + event + '.lua');
+			var luaToLoad:String = Paths.getPreloadPath('events/' + event + '.lua');
 			if (Assets.exists(luaToLoad))
 			{
 				luaArray.push(new FunkinLua(luaToLoad));
@@ -986,21 +986,21 @@ class PlayState extends MusicBeatState
 			for (notetype in noteTypes)
 			{
 				#if MODS_ALLOWED
-				var scriptToLoad:String = Paths.modFolders('custom_notetypes/' + notetype + ext);
+				var scriptToLoad:String = Paths.modFolders('notetypes/' + notetype + ext);
 				if (FileSystem.exists(scriptToLoad))
 				{
 					scriptArray.push(new FunkinHScript(scriptToLoad));
 				}
 				else
 				{
-					scriptToLoad = Paths.getPreloadPath('custom_notetypes/' + notetype + ext);
+					scriptToLoad = Paths.getPreloadPath('notetypes/' + notetype + ext);
 					if (FileSystem.exists(scriptToLoad))
 					{
 						scriptArray.push(new FunkinHScript(scriptToLoad));
 					}
 				}
 				#elseif sys
-				var scriptToLoad:String = Paths.getPreloadPath('custom_notetypes/' + notetype + ext);
+				var scriptToLoad:String = Paths.getPreloadPath('notetypes/' + notetype + ext);
 				if (Assets.exists(scriptToLoad))
 				{
 					scriptArray.push(new FunkinHScript(scriptToLoad));
@@ -1010,21 +1010,21 @@ class PlayState extends MusicBeatState
 			for (event in eventsPushed)
 			{
 				#if MODS_ALLOWED
-				var scriptToLoad:String = Paths.modFolders('custom_events/' + event + ext);
+				var scriptToLoad:String = Paths.modFolders('events/' + event + ext);
 				if (FileSystem.exists(scriptToLoad))
 				{
 					scriptArray.push(new FunkinHScript(scriptToLoad));
 				}
 				else
 				{
-					scriptToLoad = Paths.getPreloadPath('custom_events/' + event + ext);
+					scriptToLoad = Paths.getPreloadPath('events/' + event + ext);
 					if (FileSystem.exists(scriptToLoad))
 					{
 						scriptArray.push(new FunkinHScript(scriptToLoad));
 					}
 				}
 				#elseif sys
-				var scriptToLoad:String = Paths.getPreloadPath('custom_events/' + event + ext);
+				var scriptToLoad:String = Paths.getPreloadPath('events/' + event + ext);
 				if (Assets.exists(scriptToLoad))
 				{
 					scriptArray.push(new FunkinHScript(scriptToLoad));

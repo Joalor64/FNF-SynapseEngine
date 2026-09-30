@@ -30,8 +30,8 @@ Then, you're basically good to go!
 ## Mod Structure
 Each folder in your mod should be used as follows:
 * `characters` - To store your character `.json` files.
-* `custom_events` - Script files related to events. Should include `.lua`/`.hxs` and `.txt` files.
-* `custom_notetypes` - Script files related to notetypes.
+* `events` - Script files related to events. Should include `.lua`/`.hxs` and `.txt` files.
+* `notetypes` - Script files related to notetypes.
 * `fonts` - Font files. Kind of self-explanatory.
 * `images` - All image files. Can also be used to replace base game images.
 * `music` - Non-gameplay related music.
