@@ -50,6 +50,14 @@ class Main
 					if (lib.ref != null)
 						args.push(lib.ref);
 
+					if (lib.dir != null)
+					{
+						if (lib.ref == null)
+							args.push('');
+
+						args.push(lib.dir);
+					}
+
 					runCommand(args.concat(options));
 			}
 		}
