@@ -6,7 +6,7 @@ import haxe.CallStack;
 import haxe.io.Path;
 #end
 import debug.FPS;
-#if linux
+#if (linux && !debug)
 import hxgamemode.GamemodeClient;
 #end
 #if windows
@@ -41,7 +41,7 @@ class Main extends Sprite
 
 	private static function __init__():Void
 	{
-		#if linux
+		#if (linux && !debug)
 		if (GamemodeClient.request_start() != 0)
 		{
 			Sys.println('Failed to request gamemode start: ${GamemodeClient.error_string()}...');
@@ -140,7 +140,7 @@ class Main extends Sprite
 
 		Lib.current.stage.application.window.onClose.add(function()
 		{
-			#if linux
+			#if (linux && !debug)
 			if (GamemodeClient.request_end() != 0)
 			{
 				trace('Failed to request gamemode end: ${GamemodeClient.error_string()}...');

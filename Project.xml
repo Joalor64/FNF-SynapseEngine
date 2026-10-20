@@ -72,20 +72,20 @@
 		<assets path="assets/base_game" rename="assets" exclude="*.mp3" unless="web" />
 	</section>
 
-	<assets path="defines" if="CUSTOM_DEFINES" />
+	<assets path="include/defines" rename="defines" if="CUSTOM_DEFINES" />
 
 	<section if="MODS_ALLOWED">
-		<assets path='mods' embed='false' type='template' unless="mac" />
-		<assets path='mods' embed='false' if="mac" />
-		<assets path='list.txt' rename='modsList.txt' />
+		<assets path='include/mods' rename='mods' embed='false' type='template' unless="mac" />
+		<assets path='include/mods' rename='mods' embed='false' if="mac" />
+		<assets path='include/list.txt' rename='modsList.txt' />
 	</section>
 
 	<section if="desktop">
-		<assets path="alsoft.ini" if="windows" />
-		<assets path="alsoft.ini" rename="alsoft.conf" unless="windows" />
+		<assets path="include/alsoft.txt" rename="alsoft.ini" type="text" if="windows" />
+		<assets path="include/alsoft.txt" rename="alsoft.conf" type="text" unless="windows" />
 	</section>
 
-	<assets path="gamemode.ini" if="linux" />
+	<assets path="include/gamemode.ini" rename="gamemode.ini" if="linux" />
 
 	<!-- _______________________________ Libraries ______________________________ -->
 
@@ -104,7 +104,7 @@
 	<haxelib name="linc_luajit" if="LUA_ALLOWED" />
 	<haxelib name="hython" if="PYTHON_ALLOWED" />
 	<haxelib name="hxvlc" if="VIDEOS_ALLOWED" />
-	<haxelib name="hxgamemode" if="linux" />
+	<haxelib name="hxgamemode" if="linux" unless="debug" />
 	<haxelib name="hxdiscord_rpc" if="DISCORD_ALLOWED" />
 	<haxelib name="hxcpp-debug-server" if="desktop debug" />
 	<haxelib name="hxWindowColorMode" if="windows" />
@@ -156,11 +156,11 @@
 
 	<!-- _________________________________ Custom _______________________________ -->
 
-	<assets path='art/icons/iconOG.png' rename='icon.png' if="linux || mac" />
-	<icon path="art/icons/icon16.png" size='16' />
-	<icon path="art/icons/icon32.png" size='32' />
-	<icon path="art/icons/icon64.png" size='64' />
-	<icon path="art/icons/iconOG.png" />
+	<assets path='include/iconOG.png' rename='icon.png' if="linux || mac" />
+	<icon path="include/icon16.png" size='16' />
+	<icon path="include/icon32.png" size='32' />
+	<icon path="include/icon64.png" size='64' />
+	<icon path="include/iconOG.png" />
 
 	<!-- _________________________________ Misc. _______________________________ -->
 

@@ -2,8 +2,12 @@
 
 Before doing anything else, make sure to install [Haxe](https://haxe.org/download/) and [HaxeFlixel](https://haxeflixel.com/documentation/install-haxeflixel/).
 
+> [!TIP]
+> All files related to building the game are located in the `include/buildScripts/` directory.
+
 > [!NOTE]
-> All files related to building the game are located in the `art/buildScripts/` directory.
+> Linux and macOS builds should work, but have not been tested! <br>
+> So if something goes wrong, report it in the [issues](https://github.com/Joalor64/FNF-SynapseEngine/issues) tab!
 
 ## Windows
 1. Download [Visual Studio Build Tools](https://aka.ms/vs/17/release/vs_BuildTools.exe).
@@ -19,10 +23,6 @@ Before doing anything else, make sure to install [Haxe](https://haxe.org/downloa
 7. Open a `Command Prompt/Powershell` window in the `FNF-SynapseEngine` folder, and run `haxelib run lime test windows` to build and launch the game.
     * You can run `haxelib run lime setup` to make the lime command global, allowing you to execute `lime test windows` directly.
         * Alternatively, you can run one of the build scripts, for example: `test_x64-debug.bat`.
-
-> [!WARNING]
-> Linux and macOS builds have not been tested! <br>
-> So if something goes wrong, report it in the [issues](https://github.com/Joalor64/FNF-SynapseEngine/issues) tab!
 
 ## Linux
 1. Install `g++`.
