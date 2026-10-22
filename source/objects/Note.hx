@@ -26,6 +26,13 @@ typedef NoteSplashData =
 	a:Float
 }
 
+typedef RGBData =
+{
+	r:FlxColor,
+	g:FlxColor,
+	b:FlxColor
+}
+
 class Note extends FlxSprite
 {
 	public var extraData:Map<String, Dynamic> = [];
@@ -57,6 +64,7 @@ class Note extends FlxSprite
 	public var eventVal2:String = '';
 
 	public var rgbShader:RGBPalette;
+	@:optional public var rgbData:RGBData;
 
 	public static var globalRgbShaders:Array<RGBPalette> = [];
 
@@ -193,8 +201,16 @@ class Note extends FlxSprite
 
 	var noteColor:Array<Array<FlxColor>> = PlayState.isPixelStage ? ClientPrefs.data.arrowRGBPixel : ClientPrefs.data.arrowRGB;
 
-	public function updateColours()
+	public function updateColours(?rgbData:RGBData = null)
 	{
+		if (rgbData != null)
+		{
+			rgbShader.r = rgbData.r;
+			rgbShader.g = rgbData.g;
+			rgbShader.b = rgbData.b;
+			return;
+		}
+
 		var colorArray:Array<FlxColor> = noteColor[noteData % colArray.length];
 		rgbShader.r = colorArray[0];
 		rgbShader.g = colorArray[1];

@@ -1,4 +1,8 @@
 # To-Dos
+## V0.3.0
+### High Priority
+* [ ] Modcharting Support
+
 ## V0.2.0
 ### High Priority
 * [X] Weekend 1

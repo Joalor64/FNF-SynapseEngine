@@ -216,6 +216,41 @@ class Paths
 		return getPath(key + extension, folder);
 	}
 
+	static public function findStateScript(folder:String, name:String):String
+	{
+		if (name == null || name.length < 1)
+			return null;
+
+		var folders:Array<String> = [];
+		#if MODS_ALLOWED
+		for (mod in Mods.getGlobalMods())
+			if (!folders.contains(mods('$mod/$folder/')))
+				folders.push(mods('$mod/$folder/'));
+
+		for (mod in Mods.parseList().enabled)
+			if (!folders.contains(mods('$mod/$folder/')))
+				folders.push(mods('$mod/$folder/'));
+
+		if (Mods.currentModDirectory != null && Mods.currentModDirectory.length > 0)
+			if (!folders.contains(mods('${Mods.currentModDirectory}/$folder/')))
+				folders.push(mods('${Mods.currentModDirectory}/$folder/'));
+
+		folders.push(mods('$folder/'));
+		#end
+		folders.push(getPath('$folder/'));
+
+		for (dir in folders)
+		{
+			for (ext in HSCRIPT_EXT)
+			{
+				var file:String = dir + name + ext;
+				if (FileSystem.exists(file))
+					return file;
+			}
+		}
+		return null;
+	}
+
 	static public function validScriptType(key:String):Bool
 	{
 		for (ext in HSCRIPT_EXT)
