@@ -37,7 +37,7 @@ class NdllUtil
 			trace('getFunction: ndll "${ndll}" doesn\'t exist!');
 			return noop;
 		}
-		var func = lime.system.CFFI.load(Assets.getPath(ndll), name, args);
+		var func = lime.system.CFFI.load(ndll, name, args);
 		if (func != null)
 			return func;
 

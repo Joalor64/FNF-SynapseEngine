@@ -75,7 +75,7 @@ class MenuCharacter extends FlxSprite
 				#end
 
 				var charFile:MenuCharacterFile = cast Json.parse(rawJson);
-				frames = Paths.getSparrowAtlas('menucharacters/' + charFile.image);
+				frames = Paths.getFrames(charFile.image, 'menucharacters/');
 				animation.addByPrefix('idle', charFile.idle_anim, 24);
 
 				var confirmAnim:String = charFile.confirm_anim;

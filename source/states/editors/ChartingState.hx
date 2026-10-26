@@ -1043,12 +1043,11 @@ class ChartingState extends MusicBeatState
 					for (hscriptExt in Paths.HSCRIPT_EXT)
 						exts.push(hscriptExt);
 					#end
-					#if PYTHON_ALLOWED exts.push('.py'); #end
 					for (ext in exts)
 					{
 						if (!FileSystem.isDirectory(path) && file.endsWith(ext))
 						{
-							var fileToCheck:String = file.substr(0, file.length - 4);
+							var fileToCheck:String = file.substr(0, file.length - ext.length);
 							if (!noteTypeMap.exists(fileToCheck))
 							{
 								displayNameList.push(fileToCheck);

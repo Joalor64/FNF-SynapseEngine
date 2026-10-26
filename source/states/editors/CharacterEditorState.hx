@@ -692,7 +692,10 @@ class CharacterEditorState extends MusicBeatState
 	var noteskinInputText:FlxUIInputText;
 	var floatingCheckBox:FlxUICheckBox;
 	var floatingMagnitudeStepper:FlxUINumericStepper;
+	var floatingSpeedStepper:FlxUINumericStepper;
 	var orbitCheckBox:FlxUICheckBox;
+	var orbitRadiusStepper:FlxUINumericStepper;
+	var orbitSpeedStepper:FlxUINumericStepper;
 
 	function addMiscUI()
 	{
@@ -768,6 +771,13 @@ class CharacterEditorState extends MusicBeatState
 			char.orbit = orbitCheckBox.checked;
 		};
 
+		orbitRadiusStepper = new FlxUINumericStepper(95, orbitCheckBox.y, 5, char.orbitRadius, 0, 1000, 1);
+		Reflect.setProperty(orbitRadiusStepper, 'name', 'orbitRadiusStepper');
+		orbitSpeedStepper = new FlxUINumericStepper(175, orbitCheckBox.y, 0.1, char.orbitSpeed, -10, 10, 2);
+		Reflect.setProperty(orbitSpeedStepper, 'name', 'orbitSpeedStepper');
+		floatingSpeedStepper = new FlxUINumericStepper(255, orbitCheckBox.y, 0.1, char.floatingSpeed, 0, 10, 2);
+		Reflect.setProperty(floatingSpeedStepper, 'name', 'floatingSpeedStepper');
+
 		tab_group.add(healthDrainCheckBox);
 		tab_group.add(minimumHealthStepper);
 		tab_group.add(drainAmountStepper);
@@ -787,6 +797,9 @@ class CharacterEditorState extends MusicBeatState
 		tab_group.add(floatingCheckBox);
 		tab_group.add(floatingMagnitudeStepper);
 		tab_group.add(orbitCheckBox);
+		tab_group.add(orbitRadiusStepper);
+		tab_group.add(orbitSpeedStepper);
+		tab_group.add(floatingSpeedStepper);
 
 		tab_group.add(new FlxText(minimumHealthStepper.x, minimumHealthStepper.y - 18, 0, 'Minimum Health:'));
 		tab_group.add(new FlxText(drainAmountStepper.x, drainAmountStepper.y - 18, 0, 'Drain Amount:'));
@@ -800,6 +813,9 @@ class CharacterEditorState extends MusicBeatState
 		tab_group.add(new FlxText(trailDiffStepper.x, trailDiffStepper.y - 18, 0, 'Trail Diff:'));
 		tab_group.add(new FlxText(noteskinInputText.x, noteskinInputText.y - 18, 0, 'Noteskin:'));
 		tab_group.add(new FlxText(floatingMagnitudeStepper.x, floatingMagnitudeStepper.y - 18, 0, 'Float Magnitude:'));
+		tab_group.add(new FlxText(orbitRadiusStepper.x, orbitRadiusStepper.y - 18, 0, 'Orbit Radius:'));
+		tab_group.add(new FlxText(orbitSpeedStepper.x, orbitSpeedStepper.y - 18, 0, 'Orbit Speed:'));
+		tab_group.add(new FlxText(floatingSpeedStepper.x, floatingSpeedStepper.y - 18, 0, 'Float Speed:'));
 
 		for (i in tab_group.members)
 			i.cameras = [camMenu];
@@ -1182,6 +1198,18 @@ class CharacterEditorState extends MusicBeatState
 			{
 				char.floatingMagnitude = sender.value;
 			}
+			else if (stepperName == 'floatingSpeedStepper')
+			{
+				char.floatingSpeed = sender.value;
+			}
+			else if (stepperName == 'orbitRadiusStepper')
+			{
+				char.orbitRadius = sender.value;
+			}
+			else if (stepperName == 'orbitSpeedStepper')
+			{
+				char.orbitSpeed = sender.value;
+			}
 		}
 	}
 
@@ -1378,6 +1406,12 @@ class CharacterEditorState extends MusicBeatState
 				floatingMagnitudeStepper.value = char.floatingMagnitude;
 			if (orbitCheckBox != null)
 				orbitCheckBox.checked = char.orbit;
+			if (floatingSpeedStepper != null)
+				floatingSpeedStepper.value = char.floatingSpeed;
+			if (orbitRadiusStepper != null)
+				orbitRadiusStepper.value = char.orbitRadius;
+			if (orbitSpeedStepper != null)
+				orbitSpeedStepper.value = char.orbitSpeed;
 
 			reloadAnimationDropDown();
 			updatePresence();
@@ -1719,7 +1753,10 @@ class CharacterEditorState extends MusicBeatState
 			"noteskin": char.noteskin,
 			"floating": char.floating,
 			"floating_magnitude": char.floatingMagnitude,
-			"orbit": char.orbit
+			"floating_speed": char.floatingSpeed,
+			"orbit": char.orbit,
+			"orbit_radius": char.orbitRadius,
+			"orbit_speed": char.orbitSpeed
 		};
 
 		var data:String = Json.stringify(json, "\t");

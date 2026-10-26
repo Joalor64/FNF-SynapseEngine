@@ -36,7 +36,7 @@ class FunkinHScript extends FlxBasic
 	function get_locals():Map<String, {r:Dynamic}>
 	{
 		@:privateAccess
-		return interp.locals;
+		return interp == null ? null : interp.locals;
 	}
 
 	function set_locals(local:Map<String, {r:Dynamic}>)
@@ -51,6 +51,10 @@ class FunkinHScript extends FlxBasic
 	public var script:RuleScript = null;
 	public var scriptPath:String = null;
 	public var lastError:Null<HScriptError> = null;
+
+	public var closed(default, null):Bool = false;
+
+	public var failedToLoad(default, null):Bool = false;
 
 	public function new(?file:String, ?execute:Bool = true)
 	{
@@ -74,6 +78,7 @@ class FunkinHScript extends FlxBasic
 		setVariable('Function_Continue', Globals.Function_Continue);
 		setVariable('Function_Halt', Globals.Function_Halt);
 		setVariable('version', Lib.application.meta.get('version'));
+		setVariable('engineVersion', Constants.SYNAPSE_ENGINE_VERSION.trim());
 
 		setVariable('trace', function(value:Dynamic)
 		{
@@ -123,20 +128,25 @@ class FunkinHScript extends FlxBasic
 		setVariable('Type', Type);
 		setVariable('Xml', Xml);
 
-		setVariable('createThread', function(func:Void->Void)
-		{
-			#if sys
-			sys.thread.Thread.create(() ->
-			{
-				func();
-			});
-			#else
-			func();
-			#end
-		});
-
 		// OpenFL
 		setVariable('Assets', Assets);
+		setVariable('BlendMode', {
+			'ADD': openfl.display.BlendMode.ADD,
+			'ALPHA': openfl.display.BlendMode.ALPHA,
+			'DARKEN': openfl.display.BlendMode.DARKEN,
+			'DIFFERENCE': openfl.display.BlendMode.DIFFERENCE,
+			'ERASE': openfl.display.BlendMode.ERASE,
+			'HARDLIGHT': openfl.display.BlendMode.HARDLIGHT,
+			'INVERT': openfl.display.BlendMode.INVERT,
+			'LAYER': openfl.display.BlendMode.LAYER,
+			'LIGHTEN': openfl.display.BlendMode.LIGHTEN,
+			'MULTIPLY': openfl.display.BlendMode.MULTIPLY,
+			'NORMAL': openfl.display.BlendMode.NORMAL,
+			'OVERLAY': openfl.display.BlendMode.OVERLAY,
+			'SCREEN': openfl.display.BlendMode.SCREEN,
+			'SHADER': openfl.display.BlendMode.SHADER,
+			'SUBTRACT': openfl.display.BlendMode.SUBTRACT
+		});
 		setVariable('BitmapData', BitmapData);
 		setVariable('Lib', Lib);
 		setVariable('ShaderFilter', openfl.filters.ShaderFilter);
@@ -368,9 +378,6 @@ class FunkinHScript extends FlxBasic
 		#if LUA_ALLOWED
 		setVariable('FunkinLua', FunkinLua);
 		#end
-		#if PYTHON_ALLOWED
-		setVariable('FunkinPython', FunkinPython);
-		#end
 		#if TRANSLATIONS_ALLOWED
 		setVariable('Language', Language);
 		#end
@@ -446,7 +453,6 @@ class FunkinHScript extends FlxBasic
 		preprocessors.set("MODS_ALLOWED", #if MODS_ALLOWED true #else false #end);
 		preprocessors.set("LUA_ALLOWED", #if LUA_ALLOWED true #else false #end);
 		preprocessors.set("HSCRIPT_ALLOWED", #if HSCRIPT_ALLOWED true #else false #end);
-		preprocessors.set("PYTHON_ALLOWED", #if PYTHON_ALLOWED true #else false #end);
 		preprocessors.set("NDLL_ALLOWED", #if NDLL_ALLOWED true #else false #end);
 		preprocessors.set("DISCORD_ALLOWED", #if DISCORD_ALLOWED true #else false #end);
 		preprocessors.set("TRANSLATIONS_ALLOWED", #if TRANSLATIONS_ALLOWED true #else false #end);
@@ -471,17 +477,15 @@ class FunkinHScript extends FlxBasic
 	public function execute(file:String, ?executeCreate:Bool = true):Void
 	{
 		lastError = null;
+		failedToLoad = false;
 		try
 		{
 			var content = File.getContent(file);
-			var result = script.tryExecute(content, handleScriptError);
+			script.tryExecute(content, handleScriptError);
 
 			if (lastError != null)
-				return;
-
-			if (result == null)
 			{
-				trace('Script returned null: $file');
+				failedToLoad = true;
 				return;
 			}
 
@@ -492,6 +496,7 @@ class FunkinHScript extends FlxBasic
 		}
 		catch (e:Dynamic)
 		{
+			failedToLoad = true;
 			reportError(makeError(HScriptErrorType.Host, e, file));
 		}
 	}
@@ -549,8 +554,9 @@ class FunkinHScript extends FlxBasic
 		var location = error.source == null ? '' : ' (${error.source}:${error.line})';
 		var message = '${error.message}$location';
 		lastError = error;
-		trace('$title: $message');
-		Lib.application.window.alert(message, title);
+
+		var popup:Bool = error.type == HScriptErrorType.Parse || error.type == HScriptErrorType.Host;
+		ScriptErrorHandler.report(title, message, popup);
 	}
 
 	function reportError(error:HScriptError):Void
@@ -577,6 +583,9 @@ class FunkinHScript extends FlxBasic
 
 	public function getVariable(name:String):Dynamic
 	{
+		if (closed)
+			return null;
+
 		try
 		{
 			if (locals.exists(name) && locals[name] != null)
@@ -621,7 +630,7 @@ class FunkinHScript extends FlxBasic
 	public function executeFunc(funcName:String, ?args:Array<Dynamic>):Dynamic
 	{
 		lastError = null;
-		if (!existsVariable(funcName))
+		if (closed || !existsVariable(funcName))
 			return null;
 
 		try
@@ -651,6 +660,8 @@ class FunkinHScript extends FlxBasic
 	public function getAll():Dynamic
 	{
 		var result:Dynamic = {};
+		if (closed)
+			return result;
 
 		try
 		{
@@ -669,6 +680,7 @@ class FunkinHScript extends FlxBasic
 
 	override function destroy()
 	{
+		closed = true;
 		super.destroy();
 		parser = null;
 		interp = null;

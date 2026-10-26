@@ -64,9 +64,9 @@ class CustomSubstate extends MusicBeatSubstate
 	{
 		instance = this;
 
-		PlayState.instance.callOnLuas('onCustomSubstateCreate', [name]);
+		PlayState.instance.callOnScripts('onCustomSubstateCreate', [name]);
 		super.create();
-		PlayState.instance.callOnLuas('onCustomSubstateCreatePost', [name]);
+		PlayState.instance.callOnScripts('onCustomSubstateCreatePost', [name]);
 	}
 
 	public function new(name:String)
@@ -78,14 +78,14 @@ class CustomSubstate extends MusicBeatSubstate
 
 	override function update(elapsed:Float)
 	{
-		PlayState.instance.callOnLuas('onCustomSubstateUpdate', [name, elapsed]);
+		PlayState.instance.callOnScripts('onCustomSubstateUpdate', [name, elapsed]);
 		super.update(elapsed);
-		PlayState.instance.callOnLuas('onCustomSubstateUpdatePost', [name, elapsed]);
+		PlayState.instance.callOnScripts('onCustomSubstateUpdatePost', [name, elapsed]);
 	}
 
 	override function destroy()
 	{
-		PlayState.instance.callOnLuas('onCustomSubstateDestroy', [name]);
+		PlayState.instance.callOnScripts('onCustomSubstateDestroy', [name]);
 		super.destroy();
 	}
 }

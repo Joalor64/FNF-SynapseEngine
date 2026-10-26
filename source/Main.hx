@@ -39,17 +39,21 @@ class Main extends Sprite
 		Lib.current.addChild(new Main());
 	}
 
+	#if (linux && !debug)
+	static var gamemodeActive:Bool;
+	#end
+
 	private static function __init__():Void
 	{
 		#if (linux && !debug)
 		if (GamemodeClient.request_start() != 0)
 		{
-			Sys.println('Failed to request gamemode start: ${GamemodeClient.error_string()}...');
-			System.exit(1);
+			Sys.println('Failed to request GameMode start (${GamemodeClient.error_string()})');
 		}
 		else
 		{
-			Sys.println('Succesfully requested gamemode to start...');
+			gamemodeActive = true;
+			Sys.println('Successfully requested GameMode to start.');
 		}
 		#end
 	}
@@ -111,6 +115,9 @@ class Main extends Sprite
 		if (fpsVar != null)
 			fpsVar.visible = ClientPrefs.data.showFPS;
 
+		addChild(new debug.ScriptErrorOverlay());
+		scripts.ScriptErrorHandler.init();
+
 		#if (linux || mac)
 		Lib.current.stage.window.setIcon(lime.graphics.Image.fromFile("icon.png"));
 		#end
@@ -141,15 +148,9 @@ class Main extends Sprite
 		Lib.current.stage.application.window.onClose.add(function()
 		{
 			#if (linux && !debug)
-			if (GamemodeClient.request_end() != 0)
-			{
-				trace('Failed to request gamemode end: ${GamemodeClient.error_string()}...');
-				System.exit(1);
-			}
-			else
-			{
-				trace('Succesfully requested gamemode to end...');
-			}
+			if (gamemodeActive && GamemodeClient.request_end() != 0)
+				trace('Failed to request GameMode end: ${GamemodeClient.error_string()}');
+			gamemodeActive = false;
 			#end
 		});
 	}

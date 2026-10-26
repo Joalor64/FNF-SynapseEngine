@@ -2,6 +2,12 @@
 ## V0.3.0
 ### High Priority
 * [ ] Modcharting Support
+* [ ] Scripted Class Support
+* [ ] Time Signature Support
+
+### Low Priority
+* [ ] New Editor UI
+* [ ] Controller Support
 
 ## V0.2.0
 ### High Priority
@@ -15,7 +21,6 @@
     * [X] Add Newer Lua Stuff
     * [X] Deprecate `animateatlas` in favor of `flxanimate`
     * [X] New Main Menu
-* [ ] Time Signature Support
 * [ ] Special Character Properties
     * [X] Floating
     * [ ] Orbit
@@ -24,15 +29,15 @@
     * [X] Scare GF
     * [X] Health Drain
     * [X] Noteskin
-* [ ] Softcode Stages
-    * [ ] Stage
-    * [ ] Spooky
-    * [ ] Philly
-    * [ ] Limo
-    * [ ] Mall
-    * [ ] School
-    * [ ] Tank
-    * [ ] Philly Streets
+* [X] Softcode Stages
+    * [X] Stage
+    * [X] Spooky
+    * [X] Philly
+    * [X] Limo
+    * [X] Mall
+    * [X] School
+    * [X] Tank
+    * [X] Philly Streets
 * [X] Special Alphabet Properties
     * [X] Force Bold
     * [X] Force Plain
@@ -41,17 +46,13 @@
     * [X] Wavy
     * [X] Shake
 * [X] Re-add Blammed Lights
-* [X] Python Scripting (using `Hython`)
 * [X] Sticker Transition
-* [ ] Scripted Class Support
 * [X] "Proper" Script Error Handling
 * [X] Custom Defines Support
 * [X] NDLL Support
 * [X] Fix Downscroll Bug
 
 ### Low Priority
-* [ ] New Editor UI
-* [ ] Controller Support
 * [ ] Multi-Atlas Support
 
 ## V0.1.0

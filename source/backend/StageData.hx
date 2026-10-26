@@ -160,7 +160,7 @@ class StageData
 						if (data.type == 'sprite')
 							spr.loadGraphic(Paths.image(data.image));
 						else
-							spr.frames = Paths.getAtlas(data.image);
+							spr.frames = Paths.isMultiAtlas(data.image) ? Paths.getMultiAtlas(data.image.split(',')) : Paths.getAtlas(data.image);
 
 						if (data.type == 'animatedSprite' && data.animations != null)
 						{

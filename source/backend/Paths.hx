@@ -261,8 +261,6 @@ class Paths
 		return false;
 	}
 
-	inline static public function python(key:String, ?folder:String)
-		return getPath('$key.py', folder);
 
 	#if NDLL_ALLOWED
 	inline static public function ndll(key:String)
@@ -456,22 +454,46 @@ class Paths
 		return getPackerAtlas(key);
 	}
 
-	static public function getMultiAtlas(keys:Array<String>):FlxAtlasFrames
+	inline static public function isMultiAtlas(image:String):Bool
+		return image != null && image.indexOf(',') != -1;
+
+	static public function getMultiAtlas(keys:Array<String>, ?prefix:String = ''):FlxAtlasFrames
 	{
-		var parentFrames:FlxAtlasFrames = Paths.getAtlas(keys[0].trim());
-		if (keys.length > 1)
+		var cleanKeys:Array<String> = [];
+		for (key in keys)
 		{
-			var original:FlxAtlasFrames = parentFrames;
-			parentFrames = new FlxAtlasFrames(parentFrames.parent);
-			parentFrames.addAtlas(original, true);
-			for (i in 1...keys.length)
+			var trimmed:String = key.trim();
+			if (trimmed.length > 0 && !cleanKeys.contains(prefix + trimmed))
+				cleanKeys.push(prefix + trimmed);
+		}
+
+		var parentFrames:FlxAtlasFrames = null;
+		for (key in cleanKeys)
+		{
+			var frames:FlxAtlasFrames = Paths.getAtlas(key);
+			if (frames == null)
 			{
-				var extraFrames:FlxAtlasFrames = Paths.getAtlas(keys[i].trim());
-				if (extraFrames != null)
-					parentFrames.addAtlas(extraFrames, true);
+				trace('getMultiAtlas: couldn\'t load "$key"');
+				continue;
 			}
+
+			if (parentFrames == null)
+			{
+				if (cleanKeys.length == 1)
+					return frames;
+
+				parentFrames = new FlxAtlasFrames(frames.parent);
+			}
+			parentFrames.addAtlas(frames, true);
 		}
 		return parentFrames;
+	}
+
+	static public function getFrames(image:String, ?prefix:String = ''):FlxAtlasFrames
+	{
+		if (isMultiAtlas(image))
+			return getMultiAtlas(image.split(','), prefix);
+		return getSparrowAtlas(prefix + image);
 	}
 
 	inline static public function getSparrowAtlas(key:String, ?parentFolder:String = null, ?allowGPU:Bool = true):FlxAtlasFrames
@@ -544,6 +566,18 @@ class Paths
 			animationJson = File.getContent(animationJson);
 		}
 
+		if (Std.isOfType(folderOrImg, String) && spriteJson == null)
+		{
+			var spritemaps = findSpritemaps(folderOrImg);
+			if (spritemaps.length > 1)
+			{
+				if (animationJson == null)
+					animationJson = getTextFromFile('images/$folderOrImg/Animation.json');
+				spr.loadAtlasMulti(spritemaps, animationJson);
+				return;
+			}
+		}
+
 		if (Std.isOfType(folderOrImg, String))
 		{
 			var originalPath:String = folderOrImg;
@@ -585,6 +619,32 @@ class Paths
 			}
 		}
 		spr.loadAtlasEx(folderOrImg, spriteJson, animationJson);
+	}
+
+	static function findSpritemaps(folder:String):Array<{json:String, image:FlxGraphic}>
+	{
+		var found:Array<{json:String, image:FlxGraphic}> = [];
+		var names:Array<String> = ['spritemap'];
+		for (i in 1...65)
+			names.push('spritemap$i');
+
+		var missesInARow:Int = 0;
+		for (name in names)
+		{
+			var json:String = getTextFromFile('images/$folder/$name.json');
+			if (json == null)
+			{
+				if (++missesInARow > 1 && found.length > 0)
+					break;
+				continue;
+			}
+			missesInARow = 0;
+
+			var image:FlxGraphic = Paths.image('$folder/$name');
+			if (image != null)
+				found.push({json: json, image: image});
+		}
+		return found;
 	}
 	#end
 

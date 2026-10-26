@@ -32,7 +32,7 @@ class InitState extends FlxState
 		if (FlxG.save.data != null && FlxG.save.data.fullscreen)
 			FlxG.fullscreen = FlxG.save.data.fullscreen;
 
-		#if LUA_ALLOWED
+		#if MODS_ALLOWED
 		Mods.pushGlobalMods();
 		#end
 
@@ -48,22 +48,48 @@ class InitState extends FlxState
 		Paths.clearStoredMemory();
 		Paths.clearUnusedMemory();
 
+		#if !CHECK_FOR_UPDATES
+		goToNextState();
+		#end
+	}
+
+	#if CHECK_FOR_UPDATES
+	static inline var UPDATE_CHECK_WAIT:Float = 3;
+
+	var waitedForUpdate:Float = 0;
+	var leaving:Bool = false;
+
+	override function update(elapsed:Float):Void
+	{
+		super.update(elapsed);
+
+		if (leaving)
+			return;
+
+		waitedForUpdate += elapsed;
+		if (!AutoUpdater.isChecking || waitedForUpdate >= UPDATE_CHECK_WAIT)
+		{
+			leaving = true;
+			goToNextState();
+		}
+	}
+	#end
+
+	function goToNextState():Void
+	{
 		if (FlxG.save.data.flashing == null && !WarningState.leftState)
 		{
 			FlxTransitionableState.skipNextTransIn = true;
 			FlxTransitionableState.skipNextTransOut = true;
 			FlxG.switchState(new WarningState('flashing'));
 		}
-		else
+		else if (AutoUpdater.mustUpdate && !WarningState.leftState)
 		{
-			if (AutoUpdater.mustUpdate && !WarningState.leftState)
-			{
-				FlxTransitionableState.skipNextTransIn = true;
-				FlxTransitionableState.skipNextTransOut = true;
-				FlxG.switchState(new WarningState('outdated'));
-			}
-			else
-				FlxG.switchState(new ScriptedState('TitleState', []));
+			FlxTransitionableState.skipNextTransIn = true;
+			FlxTransitionableState.skipNextTransOut = true;
+			FlxG.switchState(new WarningState('outdated'));
 		}
+		else
+			FlxG.switchState(new ScriptedState('TitleState', []));
 	}
 }

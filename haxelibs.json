@@ -58,18 +58,6 @@
       "url": "https://github.com/superpowers04/linc_luajit"
     },
     {
-      "name": "hython",
-      "type": "git",
-      "ref": "legacy",
-      "url": "https://github.com/Paopun20/hython.git"
-    },
-    {
-      "name": "signals.hx",
-      "type": "git",
-      "ref": "main",
-      "url": "https://github.com/Paopun20/signals.hx"
-    },
-    {
       "name": "hxdiscord_rpc",
       "type": "haxelib"
     },

@@ -37,7 +37,8 @@ class WarningState extends MusicBeatState
 					+ 'The current version is v${Constants.SYNAPSE_ENGINE_VERSION},\n'
 					+ 'while the most recent version is ${AutoUpdater.latestVersion}!\n'
 					+ 'It\'s highly recommended you update the game, but that\'s your choice!\n\n'
-					+ 'ENTER - Download Update | ESCAPE - Continue';
+					+ (AutoUpdater.canAutoInstall() ? 'ENTER - Download Update' : 'ENTER - Go to GitHub')
+					+ ' | ESCAPE - Continue';
 		}
 
 		warnText = new FlxText(0, 0, 0, warning, 32);
@@ -46,9 +47,18 @@ class WarningState extends MusicBeatState
 		add(warnText);
 	}
 
+	var updating:Bool = false;
+	var restarting:Bool = false;
+
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		if (updating)
+		{
+			updateDownloadProgress();
+			return;
+		}
 
 		if (FlxG.keys.justPressed.ENTER || FlxG.keys.justPressed.ESCAPE)
 		{
@@ -98,9 +108,51 @@ class WarningState extends MusicBeatState
 				else if (FlxG.keys.justPressed.ENTER)
 				{
 					FlxG.sound.play(Paths.sound('confirmMenu'));
+					if (AutoUpdater.canAutoInstall())
+					{
+						updating = true;
+						setWarnText('DOWNLOADING UPDATE...\n\nPlease don\'t close the game.');
+					}
 					AutoUpdater.downloadUpdate();
 				}
 		}
+	}
+
+	function updateDownloadProgress()
+	{
+		switch (AutoUpdater.status)
+		{
+			case Downloading:
+				setWarnText('DOWNLOADING UPDATE...\n\nPlease don\'t close the game.');
+			case Installing:
+				setWarnText('INSTALLING UPDATE...\n\nPlease don\'t close the game.');
+			case ReadyToRestart:
+				if (!restarting)
+				{
+					restarting = true;
+					setWarnText('UPDATE INSTALLED!\n\nRestarting...');
+					new FlxTimer().start(1, function(_) AutoUpdater.restart());
+				}
+			case Failed(reason):
+				setWarnText('UPDATE FAILED\n\n$reason\n\nYou can download it manually from GitHub.\n\nENTER - Go to GitHub | ESCAPE - Continue');
+				if (FlxG.keys.justPressed.ENTER)
+					FlxG.openURL(AutoUpdater.releaseUrl);
+				else if (FlxG.keys.justPressed.ESCAPE)
+				{
+					updating = false;
+					FlxG.sound.play(Paths.sound('cancelMenu'));
+					continueToGame();
+				}
+			default:
+		}
+	}
+
+	function setWarnText(text:String)
+	{
+		if (warnText.text == text)
+			return;
+		warnText.text = text;
+		warnText.screenCenter();
 	}
 
 	function continueToGame()

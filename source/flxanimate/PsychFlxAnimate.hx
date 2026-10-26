@@ -71,6 +71,24 @@ class PsychFlxAnimate extends OriginalFlxAnimate
 		origin = anim.curInstance.symbol.transformationPoint;
 	}
 
+	public function loadAtlasMulti(spritemaps:Array<{json:String, image:FlxGraphic}>, animJson:String)
+	{
+		anim._loadAtlas(cast haxe.Json.parse(_removeBOM(animJson)));
+
+		var allFrames:FlxAnimateFrames = new FlxAnimateFrames();
+		for (spritemap in spritemaps)
+		{
+			var mapFrames = FlxAnimateFrames.fromSpriteMap(cast haxe.Json.parse(_removeBOM(spritemap.json)), spritemap.image);
+			if (mapFrames != null)
+			{
+				allFrames.addAtlas(mapFrames, true);
+				allFrames.parents.push(spritemap.image);
+			}
+		}
+		frames = allFrames;
+		origin = anim.curInstance.symbol.transformationPoint;
+	}
+
 	override function draw()
 	{
 		if (anim.curInstance == null || anim.curSymbol == null)

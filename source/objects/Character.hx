@@ -40,8 +40,11 @@ typedef CharacterFile =
 
 	@:optional var floating:Bool;
 	@:optional var floating_magnitude:Float;
+	@:optional var floating_speed:Float;
 
 	@:optional var orbit:Bool;
+	@:optional var orbit_radius:Float;
+	@:optional var orbit_speed:Float;
 }
 
 typedef AnimArray =
@@ -113,9 +116,20 @@ class Character extends FlxSprite
 	public var noteskin:String;
 
 	public var floating:Bool = false;
-	public var floatingMagnitude:Float = 0.6;
+	public var floatingMagnitude:Float = DEFAULT_FLOATING_MAGNITUDE;
+	public var floatingSpeed:Float = 1;
 
 	public var orbit:Bool = false;
+	public var orbitRadius:Float = DEFAULT_ORBIT_RADIUS;
+	public var orbitSpeed:Float = 1;
+
+	public static inline final DEFAULT_FLOATING_MAGNITUDE:Float = 0.6;
+	public static inline final DEFAULT_ORBIT_RADIUS:Float = 40;
+	static inline final FLOATING_SCALE:Float = 50;
+
+	var motionTime:Float = 0;
+	var motionOffsetX:Float = 0;
+	var motionOffsetY:Float = 0;
 
 	public static inline final DEFAULT_CHARACTER:String = 'bf'; // In case a character is missing, it will use BF on its place
 
@@ -268,8 +282,13 @@ class Character extends FlxSprite
 		scareBF = json.scare_bf;
 		scareGF = json.scare_gf;
 
-		floating = json.floating;
-		floatingMagnitude = json.floating_magnitude;
+		floating = json.floating == true;
+		floatingMagnitude = validFloat(json.floating_magnitude, DEFAULT_FLOATING_MAGNITUDE);
+		floatingSpeed = validFloat(json.floating_speed, 1);
+
+		orbit = json.orbit == true;
+		orbitRadius = validFloat(json.orbit_radius, DEFAULT_ORBIT_RADIUS);
+		orbitSpeed = validFloat(json.orbit_speed, 1);
 
 		if (json.healthbar_colors != null && json.healthbar_colors.length > 2)
 			healthColorArray = json.healthbar_colors;
@@ -322,10 +341,48 @@ class Character extends FlxSprite
 
 	var anim:String;
 
+	static function validFloat(value:Null<Float>, defaultValue:Float):Float
+		return (value == null || Math.isNaN(value)) ? defaultValue : value;
+
+	function updateCharacterMotion(elapsed:Float)
+	{
+		if (debugMode || (!floating && !orbit && motionOffsetX == 0 && motionOffsetY == 0))
+			return;
+
+		motionTime += elapsed;
+
+		var newX:Float = 0;
+		var newY:Float = 0;
+
+		if (floating)
+			newY += (1 - Math.cos(motionTime * floatingSpeed)) * floatingMagnitude * FLOATING_SCALE;
+
+		if (orbit)
+		{
+			newX += Math.sin(motionTime * orbitSpeed) * orbitRadius;
+			newY += (1 - Math.cos(motionTime * orbitSpeed)) * orbitRadius;
+		}
+
+		x += newX - motionOffsetX;
+		y += newY - motionOffsetY;
+		motionOffsetX = newX;
+		motionOffsetY = newY;
+	}
+
+	public function resetMotion()
+	{
+		x -= motionOffsetX;
+		y -= motionOffsetY;
+		motionOffsetX = motionOffsetY = 0;
+		motionTime = 0;
+	}
+
 	override function update(elapsed:Float)
 	{
 		if (isAnimateAtlas)
 			atlas.update(elapsed);
+
+		updateCharacterMotion(elapsed);
 
 		if (debugMode || (!isAnimateAtlas && animation.curAnim == null) || (isAnimateAtlas && atlas.anim.curSymbol == null))
 		{

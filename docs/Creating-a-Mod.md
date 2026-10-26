@@ -45,7 +45,7 @@ Each folder in your mod should be used as follows:
 	* `events.json` - Custom event data.
 	* You can also add in any custom lua or haxe scripts to run on a specific song.
 * `sounds` - All sound effects.
-* `stages` - Custom stage files. Should include `.lua`/`.hxs` and `.json` files.
+* `stages` - Custom stage files. Should include a `.json` file, plus optionally a `.lua` script or an HScript stage (`.hx`/`.hxs`, see the HScript API page).
 * `states` - HScript files for custom states.
 * `substates` - HScript files for custom substates.
 * `translations` - Localization files for custom languages.

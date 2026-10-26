@@ -12,7 +12,6 @@ class MasterEditorMenu extends MusicBeatState
 		'Dialogue Editor',
 		'Dialogue Portrait Editor',
 		'Note Splash Editor',
-		'Script Editor',
 		'Test Stickers'
 	];
 	private var grpTexts:FlxTypedGroup<Alphabet>;
@@ -116,8 +115,6 @@ class MasterEditorMenu extends MusicBeatState
 					LoadingState.loadAndSwitchState(new DialogueCharacterEditorState(), false);
 				case 'Note Splash Editor':
 					MusicBeatState.switchState(new NoteSplashEditorState());
-				case 'Script Editor':
-					MusicBeatState.switchState(new ScriptEditorState());
 				case 'Test Stickers':
 					MusicBeatState.switchState(new StickerTest());
 			}

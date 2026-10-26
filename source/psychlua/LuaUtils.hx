@@ -351,6 +351,12 @@ class LuaUtils
 
 	public static function loadFrames(spr:FlxSprite, image:String, spriteType:String)
 	{
+		if (Paths.isMultiAtlas(image))
+		{
+			spr.frames = Paths.getMultiAtlas(image.split(','));
+			return;
+		}
+
 		switch (spriteType.toLowerCase().replace(' ', ''))
 		{
 			case 'aseprite', 'ase', 'json', 'jsoni8':

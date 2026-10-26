@@ -84,15 +84,15 @@ class ScriptedState extends MusicBeatState
 
 	override public function beatHit():Void
 	{
-		scriptExecute('beatHit', [curBeat]);
 		scriptSet('curBeat', curBeat);
+		scriptExecute('beatHit', [curBeat]);
 		super.beatHit();
 	}
 
 	override public function stepHit():Void
 	{
-		scriptExecute('stepHit', [curStep]);
 		scriptSet('curStep', curStep);
+		scriptExecute('stepHit', [curStep]);
 		super.stepHit();
 	}
 

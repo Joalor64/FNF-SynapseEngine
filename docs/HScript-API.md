@@ -6,10 +6,16 @@ The following are not supported:
 * Access modifiers (e.g., `private`, `public`)
 
 ## Default Variables
-* `Function_Stop` - Cancels functions (e.g., `startCountdown`, `endSong`).
+* `Function_Stop` - Cancels functions (e.g., `startCountdown`, `endSong`). One script returning it is enough, whether it's Lua or HScript.
 * `Function_Continue` - Continues the game like normal.
-* `Function_Halt` - Halts script execution entirely.
-* `version` - Returns the current game version.
+* `Function_Halt` - Stops the remaining scripts from receiving the current callback.
+* `version` - Returns the base game version (from `Project.xml`).
+* `engineVersion` - Returns the Synapse Engine version.
+* `BlendMode` - Blend mode constants (`BlendMode.ADD`, `BlendMode.MULTIPLY`, ...).
+
+## Errors
+Script errors show up in a small overlay at the bottom of the screen, and repeated errors are merged with a counter instead of spamming.
+Errors while *loading* a script (syntax errors, missing files) also show a popup, but only once.
 
 ## Default Functions
 * `trace(value:Dynamic)` - The equivalent of `trace` in normal Haxe.
@@ -100,6 +106,35 @@ function update(elapsed:Float)
 		openSubState(new ScriptedSubState('name', [/* arguments, if any */])); // load custom substate
 }
 ```
+
+### Scripted Stages
+Put a script named after your stage in `stages/` (next to its `.json`), e.g. `stages/myStage.hx`.
+If it exists, it's used instead of a hardcoded stage. The Week 1 stage (`assets/base_game/stages/stage.hx`) is an example.
+
+```hx
+import objects.BGSprite;
+
+// runs before the characters are added
+function create()
+{
+	var bg:BGSprite = new BGSprite('stages/myStage/bg', -600, -200, 0.9, 0.9);
+	add(bg);
+}
+
+function onBeatHit(curBeat:Int)
+{
+	if (curBeat % 4 == 0)
+		game.camGame.zoom += 0.015;
+}
+
+// runs once per event type found in the chart
+function onEventPushed(name:String, value1:String, value2:String, strumTime:Float) {}
+
+// runs for every single event in the chart
+function onEventPushedUnique(name:String, value1:String, value2:String, strumTime:Float) {}
+```
+
+`stage` gives access to the stage helpers: `stage.addBehindGF(obj)`, `stage.addBehindBF(obj)`, `stage.addBehindDad(obj)`, `stage.setDefaultGF(name)`, `stage.setStartCallback(fn)`, `stage.setEndCallback(fn)`.
 
 ### Using Imported Scripts
 Script 1:

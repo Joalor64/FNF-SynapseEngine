@@ -1,7 +1,7 @@
 package options;
 
 import objects.*;
-import states.stages.StageWeek1 as BackgroundStage;
+import states.stages.ScriptedStage;
 
 class NoteOffsetState extends MusicBeatState
 {
@@ -48,7 +48,7 @@ class NoteOffsetState extends MusicBeatState
 		persistentUpdate = true;
 		FlxG.sound.pause();
 		
-		new BackgroundStage();
+		ScriptedStage.tryLoad('stage');
 
 		// Characters
 		gf = new Character(400, 130, 'gf');
