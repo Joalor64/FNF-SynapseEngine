@@ -558,20 +558,9 @@ class PlayState extends MusicBeatState
 			introSoundsSuffix = '-pixel';
 		}
 
-		if (ClientPrefs.data.crossFadeLimit != null)
-			grpCrossFade = new FlxTypedGroup<CrossFade>(ClientPrefs.data.crossFadeLimit); // limit
-		else
-			grpCrossFade = new FlxTypedGroup<CrossFade>(4); // limit
-
-		if (ClientPrefs.data.crossFadeLimit != null)
-			grpGFCrossFade = new FlxTypedGroup<CrossFade>(ClientPrefs.data.crossFadeLimit); // limit
-		else
-			grpGFCrossFade = new FlxTypedGroup<CrossFade>(4); // limit
-
-		if (ClientPrefs.data.boyfriendCrossFadeLimit != null)
-			grpBFCrossFade = new FlxTypedGroup<CrossFade>(ClientPrefs.data.boyfriendCrossFadeLimit); // limit
-		else
-			grpBFCrossFade = new FlxTypedGroup<CrossFade>(1); // limit
+		grpCrossFade = new FlxTypedGroup<CrossFade>(ClientPrefs.data.crossFadeLimit ?? 4); // limit
+		grpGFCrossFade = new FlxTypedGroup<CrossFade>(ClientPrefs.data.crossFadeLimit ?? 4); // limit
+		grpBFCrossFade = new FlxTypedGroup<CrossFade>(ClientPrefs.data.boyfriendCrossFadeLimit ?? 1); // limit
 
 		add(grpCrossFade);
 		add(grpGFCrossFade);
