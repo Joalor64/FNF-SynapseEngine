@@ -21,9 +21,9 @@
     * [X] Add Newer Lua Stuff
     * [X] Deprecate `animateatlas` in favor of `flxanimate`
     * [X] New Main Menu
-* [ ] Special Character Properties
+* [X] Special Character Properties
     * [X] Floating
-    * [ ] Orbit
+    * [X] Orbit
     * [X] Shake Screen
     * [X] Scare BF
     * [X] Scare GF
@@ -53,7 +53,7 @@
 * [X] Fix Downscroll Bug
 
 ### Low Priority
-* [ ] Multi-Atlas Support
+* [X] Multi-Atlas Support
 
 ## V0.1.0
 ### High Priority
