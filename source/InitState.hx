@@ -4,6 +4,10 @@ class InitState extends FlxState
 {
 	override function create():Void
 	{
+		#if FEATURE_DEBUG_TRACY
+		Main.initTracy();
+		#end
+		
 		FlxG.game.focusLostFramerate = 60;
 		FlxG.sound.muteKeys = Main.muteKeys;
 		FlxG.sound.volumeDownKeys = Main.volumeDownKeys;

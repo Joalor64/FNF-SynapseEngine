@@ -12,6 +12,10 @@ import hxgamemode.GamemodeClient;
 #if windows
 import hxwindowmode.WindowColorMode;
 #end
+#if FEATURE_DEBUG_TRACY
+import cpp.vm.tracy.TracyProfiler;
+import openfl.events.Event;
+#end
 
 class Main extends Sprite
 {
@@ -154,6 +158,14 @@ class Main extends Sprite
 			#end
 		});
 	}
+
+	#if FEATURE_DEBUG_TRACY
+	public static function initTracy():Void
+	{
+		FlxG.stage.addEventListener(Event.EXIT_FRAME, (e:Event) -> TracyProfiler.frameMark());
+		TracyProfiler.setThreadName("main");
+	}
+	#end
 
 	static function resetSpriteCache(sprite:Sprite):Void
 	{
