@@ -57,6 +57,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * A downscroll bug
 * `addScript`/`importScript` picking the wrong file when a script exists with more than one extension
 * Builds with Discord support turned off failing to compile
+* macOS builds failing to compile with newer Xcode versions
+* The two "Note Splashes" options sharing one translation key, and a stray quote in the Hitsound Volume description
+* The Brazilian Portuguese translation's CrossFade Mode option being labeled as the colorblind filter, and the "Toaster Gamer" achievement not being translated
 * The setup and build scripts not working unless they were run from a specific folder
 
 ### Removed

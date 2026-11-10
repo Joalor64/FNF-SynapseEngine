@@ -72,6 +72,13 @@ jobs:
       - name: Installing Libraries
         run: haxe --interp -cp ./actions/libs-installer -D analyzer-optimize -main Main
 
+      - name: Patch hxcpp zlib (macOS)
+        if: matrix.target == 'macos'
+        run: |
+          for f in .haxelib/hxcpp/*/project/thirdparty/zlib-*/zutil.h; do
+            perl -pi -e 's/#if defined\(MACOS\) \|\| defined\(TARGET_OS_MAC\)/#if defined(MACOS)/' "$f"
+          done
+
       - name: Create Version Tag
         run: echo "${{ github.run_id }}" > VERSION
 

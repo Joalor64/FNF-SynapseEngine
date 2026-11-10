@@ -33,7 +33,8 @@
     },
     {
       "name": "hxcpp",
-      "type": "haxelib"
+      "type": "haxelib",
+      "version": "4.3.2"
     },
     {
       "name": "hxcpp-debug-server",

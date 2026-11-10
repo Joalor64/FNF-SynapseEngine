@@ -36,6 +36,10 @@ Before doing anything else, make sure to install [Haxe](https://haxe.org/downloa
 1. Install [`Xcode`](https://developer.apple.com/documentation/xcode) to allow C++ app building.
 2. Download and install [Git](https://git-scm.com/downloads/mac).
 3. Install the dependencies by running `setup.sh`.
+    * ⚠ With newer Xcode versions (16.3 and up), hxcpp 4.3.2 fails to compile its zlib (`error: expected identifier or '('` near `fdopen`). To fix it, run this once in the `FNF-SynapseEngine` folder after installing the dependencies:
+        ```
+        perl -pi -e 's/#if defined\(MACOS\) \|\| defined\(TARGET_OS_MAC\)/#if defined(MACOS)/' .haxelib/hxcpp/*/project/thirdparty/zlib-*/zutil.h
+        ```
 4. Open a `Terminal` window in the `FNF-SynapseEngine` folder, and run `haxelib run lime test mac` to build and launch the game.
     * You can run `haxelib run lime setup` to make the lime command global, allowing you to execute `lime test mac` directly.
         * Alternatively, you can run one of the build scripts, for example: `build_unix-debug.sh`.
