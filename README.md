@@ -11,8 +11,8 @@ Synapse Engine is a fork of Psych Engine 0.6.3, which has the main goal of being
 * Scripted stages and states/substates
 * Extensive customization via JSON and scripts
 * Backported V-Slice and Psych 1.0 stuff
-* In-game crash handler + on-screen HScript errors
-* Auto-updater
+* In-game crash handler + On-screen HScript errors
+* Auto-updater for newer releases
 * Reorganized asset and source structures
 
 Additionally, you can check out the [To-Do List](./TODO.md) for any planned features!
