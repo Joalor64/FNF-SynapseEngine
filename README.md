@@ -7,10 +7,13 @@
 Synapse Engine is a fork of Psych Engine 0.6.3, which has the main goal of being heavily customizable, with some personal changes added as well.
 
 ## Features
-* HScript System (Using RuleScript)
-* Support for custom menus and submenus
-* Extensive customization via JSON and Scripts
-* Reorganized Asset and Source Structures
+* HScript System (using RuleScript)
+* Scripted stages and states/substates
+* Extensive customization via JSON and scripts
+* Backported V-Slice and Psych 1.0 stuff
+* In-game crash handler + on-screen HScript errors
+* Auto-updater
+* Reorganized asset and source structures
 
 Additionally, you can check out the [To-Do List](./TODO.md) for any planned features!
 
@@ -20,8 +23,14 @@ If you want to figure out how the engine works, check out the [documentation](ht
 ## Credits
 ### Engine Credits / Special Thanks
 * Joalor64 - Creator/Main Programmer
-* Doido Engine Team - Some Code I Borrowed
-* Psych Engine Team (0.6.3) - Psych Engine
+* Psych Engine Team - Psych Engine (0.6.3 + 1.0)
+* Doido Engine Team - Crash handler and Alphabet code
+* Denpa Engine Team - Crossfade code
+* JS Engine Team - Compact number formatting
+* Rozebud - Lil' Buddies (from FPS+)
+* maybekoi - Original auto-updater (from Moon4K)
+* YoshiCrafter29 - Windows API code
+* Leather128 - Memory usage code
 
 ### The Funkin' Crew Inc.
 * ninjamuffin99 - Programmer

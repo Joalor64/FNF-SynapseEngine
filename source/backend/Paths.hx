@@ -206,14 +206,13 @@ class Paths
 	inline static public function lua(key:String, ?folder:String)
 		return getPath('$key.lua', folder);
 
-	inline static public function script(key:String, ?folder:String)
+	static public function script(key:String, ?folder:String)
 	{
-		var extension:String = '.hx';
-
 		for (ext in HSCRIPT_EXT)
-			extension = (exists(getPath(key + ext))) ? ext : extension;
+			if (exists(getPath(key + ext, folder)))
+				return getPath(key + ext, folder);
 
-		return getPath(key + extension, folder);
+		return getPath(key + '.hx', folder);
 	}
 
 	static public function findStateScript(folder:String, name:String):String

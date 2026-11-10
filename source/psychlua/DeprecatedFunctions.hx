@@ -10,6 +10,14 @@ class DeprecatedFunctions
 	{
 		var lua:State = funk.lua;
 		// DEPRECATED, DONT MESS WITH THESE SHITS, ITS JUST THERE FOR BACKWARD COMPATIBILITY
+		Lua_helper.add_callback(lua, "changePresence", function(details:String, state:Null<String>, ?smallImageKey:String, ?hasStartTimestamp:Bool, ?endTimestamp:Float)
+		{
+			LuaUtils.luaTrace(lua, "changePresence is deprecated! Use changeDiscordPresence instead", false, true);
+			#if DISCORD_ALLOWED
+			DiscordClient.changePresence(details, state, smallImageKey, hasStartTimestamp, endTimestamp);
+			#end
+		});
+
 		Lua_helper.add_callback(lua, "addAnimationByIndicesLoop", function(obj:String, name:String, prefix:String, indices:String, framerate:Int = 24)
 		{
 			LuaUtils.luaTrace(lua, "addAnimationByIndicesLoop is deprecated! Use addAnimationByIndices instead", false, true);

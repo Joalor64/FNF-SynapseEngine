@@ -1,4 +1,3 @@
 #!/bin/sh
-cd ../../
+cd "$(dirname "$0")/../.." || exit 1
 haxelib run lime build cpp -release
-cd ./export/release/

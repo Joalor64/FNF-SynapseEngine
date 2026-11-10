@@ -29,7 +29,7 @@ Then, you're basically good to go!
 
 ## Mod Structure
 Each folder in your mod should be used as follows:
-* `characters` - To store your character `.json` files.
+* `characters` - To store your character `.json` files, see more [here](https://github.com/Joalor64/FNF-SynapseEngine/wiki/Custom-Characters). A `.lua`/`.hx` script with the same name runs whenever that character is in a song.
 * `events` - Script files related to events. Should include `.lua`/`.hxs` and `.txt` files.
 * `notetypes` - Script files related to notetypes.
 * `fonts` - Font files. Kind of self-explanatory.
@@ -46,8 +46,8 @@ Each folder in your mod should be used as follows:
 	* You can also add in any custom lua or haxe scripts to run on a specific song.
 * `sounds` - All sound effects.
 * `stages` - Custom stage files. Should include a `.json` file, plus optionally a `.lua` script or an HScript stage (`.hx`/`.hxs`, see the HScript API page).
-* `states` - HScript files for custom states.
-* `substates` - HScript files for custom substates.
+* `states` - HScript files for custom states. A file with the same name as a built-in menu (like `TitleState.hxs`) replaces it, see more [here](https://github.com/Joalor64/FNF-SynapseEngine/wiki/HScript-API#replacing-the-built-in-menus).
+* `substates` - HScript files for custom substates (`PauseSubState` and `GameOverSubState` can be replaced the same way).
 * `translations` - Localization files for custom languages.
 * `videos` - Custom videos used for cutscenes or other stuff.
 * `weeks` - Week files.

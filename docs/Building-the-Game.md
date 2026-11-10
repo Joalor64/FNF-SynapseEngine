@@ -25,7 +25,7 @@ Before doing anything else, make sure to install [Haxe](https://haxe.org/downloa
         * Alternatively, you can run one of the build scripts, for example: `test_x64-debug.bat`.
 
 ## Linux
-1. Install `g++`.
+1. Install `g++`, plus `libvlc-dev` and `libvlccore-dev` for video support (on Debian/Ubuntu: `sudo apt install g++ libvlc-dev libvlccore-dev`).
 2. Download and install [Git](https://git-scm.com/downloads/linux).
 3. Install the dependencies by running `setup.sh`.
 4. Open a `Terminal` window in the `FNF-SynapseEngine` folder, and run `haxelib run lime test linux` to build and launch the game.
@@ -39,3 +39,20 @@ Before doing anything else, make sure to install [Haxe](https://haxe.org/downloa
 4. Open a `Terminal` window in the `FNF-SynapseEngine` folder, and run `haxelib run lime test mac` to build and launch the game.
     * You can run `haxelib run lime setup` to make the lime command global, allowing you to execute `lime test mac` directly.
         * Alternatively, you can run one of the build scripts, for example: `build_unix-debug.sh`.
+
+## Custom Defines
+Custom defines are small text files that change how the game behaves without recompiling it.
+Put them in `include/defines/` (they end up in a `defines/` folder next to the executable), one per file, named `<name>.define`:
+```
+include/defines/myFlag.define    ->  true
+include/defines/maxThings.define ->  5
+```
+Read them from HScript with `Defines.getBool('myFlag')`, `Defines.getInt('maxThings')`, `Defines.getFloat(...)` or `Defines.get(...)` (the raw text), or from Haxe with `backend.Defines`.
+They can be turned off entirely by removing the `CUSTOM_DEFINES` define in `Project.xml`.
+
+## Profiling (Tracy)
+For finding performance problems, you can build with the [Tracy](https://github.com/wolfpld/tracy) profiler:
+```
+haxelib run lime build windows -D FEATURE_DEBUG_TRACY
+```
+The build goes to `export/tracy/`. Open the Tracy profiler and connect to the running game.

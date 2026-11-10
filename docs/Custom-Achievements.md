@@ -24,12 +24,21 @@ Your `achievements.json` should be structured as follows:
 ```
 
 ## Functions and Methods
+### Lua
 * `getAchievementScore(name:String)` - Gets the score of an achievement.
 * `setAchievementScore(name:String, value:Float)` - Sets the score of an achievement.
 * `addAchievementScore(name:String, value:Float)` - Adds to the score of an achievement.
 * `unlockAchievement(name:String)` - Unlocks an achievement.
 * `isAchievementUnlocked(name:String)` - If an achievement is unlocked or not.
 * `achievementExists(name:String)` - If an achievement exists or not.
+
+### HScript
+Use the `Achievements` class:
+* `Achievements.getScore(name:String)` - Gets the score of an achievement.
+* `Achievements.setScore(name:String, value:Float)` - Sets the score of an achievement.
+* `Achievements.addScore(name:String, value:Float = 1)` - Adds to the score of an achievement.
+* `Achievements.unlock(name:String)` - Unlocks an achievement.
+* `Achievements.isUnlocked(name:String)` - Checks if an achievement is unlocked.
 
 ## Examples
 ### Lua

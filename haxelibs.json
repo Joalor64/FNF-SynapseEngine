@@ -17,16 +17,18 @@
     },
     {
       "name": "flixel-addons",
-      "type": "haxelib"
+      "type": "haxelib",
+      "version": "4.0.1"
     },
     {
       "name": "flixel-ui",
-      "type": "haxelib"
+      "type": "haxelib",
+      "version": "2.6.3"
     },
     {
       "name": "flxanimate",
       "type": "git",
-      "ref": "master",
+      "ref": "0188d47c982913eb10fad7bd75f062ddfc680f4b",
       "url": "https://github.com/Dot-Stuff/flxanimate"
     },
     {
@@ -39,12 +41,13 @@
     },
     {
       "name": "hscript",
-      "type": "haxelib"
+      "type": "haxelib",
+      "version": "2.7.0"
     },
     {
       "name": "rulescript",
       "type": "git",
-      "ref": "dev",
+      "ref": "e0911611c760f03b9191d8be8fdf00a34552069e",
       "url": "https://github.com/Kriptel/RuleScript"
     },
     {
@@ -54,7 +57,7 @@
     {
       "name": "linc_luajit",
       "type": "git",
-      "ref": "master",
+      "ref": "daf0664aee99aa8b8d6bdd1eda993a1c3a399067",
       "url": "https://github.com/superpowers04/linc_luajit"
     },
     {
