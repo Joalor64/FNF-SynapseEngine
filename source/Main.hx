@@ -38,7 +38,8 @@ class Main extends Sprite
 	{
 		#if windows
 		WindowColorMode.setDarkMode();
-		WindowColorMode.redrawWindowHeader(); // needed for windows 10
+		if (WindowColorMode.isWindows10)
+			WindowColorMode.redrawWindowHeader(); // needed for windows 10
 		#end
 		Lib.current.addChild(new Main());
 	}
@@ -52,12 +53,12 @@ class Main extends Sprite
 		#if (linux && !debug)
 		if (GamemodeClient.request_start() != 0)
 		{
-			Sys.println('Failed to request GameMode start (${GamemodeClient.error_string()})');
+			Sys.println('Failed to request gamemode start (${GamemodeClient.error_string()})');
 		}
 		else
 		{
 			gamemodeActive = true;
-			Sys.println('Successfully requested GameMode to start.');
+			Sys.println('Successfully requested gamemode to start.');
 		}
 		#end
 	}
@@ -153,7 +154,7 @@ class Main extends Sprite
 		{
 			#if (linux && !debug)
 			if (gamemodeActive && GamemodeClient.request_end() != 0)
-				trace('Failed to request GameMode end: ${GamemodeClient.error_string()}');
+				trace('Failed to request gamemode end: ${GamemodeClient.error_string()}');
 			gamemodeActive = false;
 			#end
 		});
