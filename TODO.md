@@ -8,6 +8,7 @@
 ### Low Priority
 * [ ] New Editor UI
 * [ ] Controller Support
+* [ ] HTML5 Support
 
 ## V0.2.0
 ### High Priority
