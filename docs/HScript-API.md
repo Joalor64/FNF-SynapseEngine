@@ -1,9 +1,5 @@
 ## Limitations
-The following are not supported:
-* Keywords:
-    * `typedef`, `metadata`, `final`
-* Wildcard imports (`import flixel.*`)
-* Access modifiers (e.g., `private`, `public`)
+The following keywords are not supported: `typedef`, `metadata`, `final`
 
 ## Default Variables
 * `Function_Stop` - Cancels functions (e.g., `startCountdown`, `endSong`). One script returning it is enough, whether it's Lua or HScript.
