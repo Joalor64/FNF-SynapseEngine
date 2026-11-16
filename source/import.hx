@@ -1,5 +1,5 @@
 #if !macro
-// Default Imports
+// Flixel
 import flixel.*;
 import flixel.util.*;
 import flixel.math.*;
@@ -14,7 +14,6 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
 import flixel.input.gamepad.*;
 import flixel.input.keyboard.*;
-import flixel.input.keyboard.FlxKey;
 import flixel.sound.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
@@ -22,6 +21,7 @@ import flixel.tweens.FlxTween;
 import flixel.ui.FlxButton;
 import flixel.ui.FlxBar;
 
+// OpenFL / Lime
 import openfl.Lib;
 import openfl.geom.*;
 import openfl.Assets;
@@ -35,44 +35,30 @@ import openfl.text.TextField;
 import openfl.text.TextFormat;
 import lime.app.Application;
 
+// Haxe
 import haxe.*;
 import haxe.io.Path;
 import tjson.TJSON;
 
-#if (sys || desktop || MODS_ALLOWED)
+#if sys
 import sys.*;
 import sys.io.*;
 #end
 
-// Engine Imports
-#if DISCORD_ALLOWED
-import backend.DiscordClient;
-#end
-
+// Engine
 import backend.*;
-import backend.utils.CoolUtil;
-import backend.Conductor;
-import backend.Conductor.BPMChangeEvent;
 import backend.BaseStage.Countdown;
-import backend.Controls;
-import backend.Difficulty;
-import backend.Song.SwagSection;
-import backend.Song;
+import backend.Conductor;
 import backend.Mods;
-import backend.Paths;
-import backend.Highscore;
-import backend.MusicBeatState;
-import backend.MusicBeatSubstate;
+import backend.Song;
+import backend.utils.CoolUtil;
 import objects.*;
-import objects.Alphabet;
 import options.*;
 import scripts.FunkinLua;
 import scripts.FunkinHScript;
-import shaders.Colorblind;
 import shaders.*;
 import states.*;
 import states.editors.*;
-import states.PlayState;
 import substates.*;
 
 #if LUA_ALLOWED
@@ -89,7 +75,6 @@ import flxanimate.*;
 import flxanimate.PsychFlxAnimate as FlxAnimate;
 #end
 
-using StringTools;
 using backend.utils.CoolUtil;
 #end
 
