@@ -41,7 +41,13 @@ class Main
 						args.push(lib.version);
 
 					runCommand(args.concat(options));
+
+					if (lib.version != null)
+						runCommand(['haxelib', 'set', lib.name, lib.version, '--quiet', '--always']);
 				case 'git':
+					if (lib.ref != null && checkoutExisting(lib))
+						continue;
+
 					final args:Array<String> = ['haxelib', 'git'];
 
 					args.push(lib.name);
@@ -63,6 +69,46 @@ class Main
 		}
 
 		runCommand(['haxelib', 'list']);
+	}
+
+	static function checkoutExisting(lib:LibraryConfig):Bool
+	{
+		final gitDir:String = findGitDir(lib.name);
+		if (gitDir == null)
+			return false;
+
+		Sys.println(AnsiColors.yellow('Updating ${lib.name} to ${lib.ref}'));
+
+		if (Sys.command('git', ['-C', gitDir, 'fetch', '--quiet', '--tags', 'origin']) != 0)
+			return false;
+
+		if (Sys.command('git', ['-C', gitDir, 'checkout', '--quiet', lib.ref]) != 0)
+			return false;
+
+		if (!~/^[0-9a-f]{40}$/i.match(lib.ref))
+			Sys.command('git', ['-C', gitDir, 'merge', '--quiet', '--ff-only', 'origin/${lib.ref}']);
+
+		if (lib.dir == null || lib.dir == '')
+			runCommand(['haxelib', 'set', lib.name, 'git', '--quiet', '--always']);
+		return true;
+	}
+
+	static function findGitDir(name:String):String
+	{
+		if (!FileSystem.exists('.haxelib'))
+			return null;
+
+		final folderName:String = name.toLowerCase().split('.').join(',');
+		for (entry in FileSystem.readDirectory('.haxelib'))
+		{
+			if (entry.toLowerCase() != folderName)
+				continue;
+
+			final gitDir:String = '.haxelib/$entry/git';
+			if (FileSystem.exists('$gitDir/.git'))
+				return gitDir;
+		}
+		return null;
 	}
 
 	public static function runCommand(args:Array<String>):Void
