@@ -7,7 +7,7 @@ class CoolUtil
 {
 	inline public static function quantize(f:Float, snap:Float)
 	{
-		var m:Float = Math.fround(f * snap);
+		final m:Float = Math.fround(f * snap);
 		return (m / snap);
 	}
 
